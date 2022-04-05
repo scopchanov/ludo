@@ -1,9 +1,9 @@
 #ifndef FIELDITEM_H
 #define FIELDITEM_H
 
-#include <QGraphicsPathItem>
+#include <QGraphicsEllipseItem>
 
-class FieldItem : public QGraphicsPathItem
+class FieldItem : public QGraphicsEllipseItem
 {
 public:
 	explicit FieldItem(QGraphicsItem *parent = nullptr);
@@ -13,13 +13,11 @@ public:
 
 	int number() const;
 	void setNumber(int number);
-
 	const QColor &color() const;
 	void setColor(const QColor &color);
 
 private:
 	int m_number;
-	QColor m_color;
 };
 
 #endif // FIELDITEM_H

@@ -2,11 +2,12 @@
 #include <QPainter>
 
 FieldItem::FieldItem(QGraphicsItem *parent) :
-	QGraphicsPathItem(parent),
-	m_number{0},
-	m_color{0xFFF3E0}
+	QGraphicsEllipseItem(parent),
+	m_number{0}
 {
-
+	setRect(-30, -30, 60, 60);
+	setPen(QPen(QBrush(0x313131), 4));
+	setColor(0xFFF3E0);
 }
 
 int FieldItem::number() const
@@ -21,12 +22,12 @@ void FieldItem::setNumber(int number)
 
 const QColor &FieldItem::color() const
 {
-	return m_color;
+	return brush().color();
 }
 
 void FieldItem::setColor(const QColor &color)
 {
-	m_color = color;
+	setBrush(QBrush(color));
 }
 
 void FieldItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
@@ -34,13 +35,8 @@ void FieldItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 {
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing);
-	painter->setPen(QPen(QBrush(0x313131), 3));
-	painter->setBrush(QBrush(m_color));
-	painter->drawEllipse(-30, -30, 60, 60);
-	painter->setPen(QPen(QBrush(0x313131), 1));
-//	painter->setBrush(QBrush(Qt::white));
-//	painter->drawEllipse(-22, -22, 44, 44);
-//	painter->drawText(-30, -30, 60, 60, Qt::TextSingleLine | Qt::AlignCenter,
-//					  QString::number(m_number));
+	painter->setPen(pen());
+	painter->setBrush(brush());
+	painter->drawEllipse(rect());
 	painter->restore();
 }

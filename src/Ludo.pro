@@ -3,8 +3,10 @@ QT += widgets
 CONFIG += c++17
 
 SOURCES += \
+    BoardScene.cpp \
     BoardView.cpp \
     FieldItem.cpp \
+    PlayerItem.cpp \
     ScoreDisplay.cpp \
     backend/Board.cpp \
     backend/Dice.cpp \
@@ -16,8 +18,10 @@ SOURCES += \
     MainWindow.cpp
 
 HEADERS += \
+    BoardScene.h \
     BoardView.h \
     FieldItem.h \
+    PlayerItem.h \
     ScoreDisplay.h \
     backend/Board.h \
     backend/Dice.h \

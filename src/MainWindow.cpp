@@ -94,9 +94,9 @@ void MainWindow::onPlayerPawnsCountChanged(Player *player)
 
 void MainWindow::onNextTurn(int currentPlayerId)
 {
-//	ui->labelPlayer->setText("Player: " + QString::number(currentPlayerId));
+	m_labelPlayer->setText("Player: " + QString::number(currentPlayerId));
 	m_btnRollDice->setEnabled(true);
-//	ui->btnBringOn->setEnabled(false);
+	m_boardView->enableBringOn(false);
 //	ui->labelDice->clear();
 //	ui->listMoves->clear();
 //	ui->listBoard->clear();
@@ -112,11 +112,11 @@ void MainWindow::onRollDice()
 
 void MainWindow::onBringOn()
 {
-//	m_boardView->enableBringOn(false);
+	m_boardView->enableBringOn(false);
 	m_game->bringPawnOn();
 }
 
 void MainWindow::onMoveSelected(QListWidgetItem *item)
 {
-//	m_game->movePawn(item->text().toInt());
+	m_game->movePawn(item->text().toInt());
 }

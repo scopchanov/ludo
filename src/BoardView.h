@@ -3,7 +3,7 @@
 
 #include <QGraphicsView>
 
-class FieldItem;
+class BoardScene;
 
 class BoardView : public QGraphicsView
 {
@@ -12,10 +12,18 @@ public:
 	explicit BoardView(QWidget *parent = nullptr);
 
 public slots:
-	void enableBringOn(bool b);
+	void enableBringOn(bool canBringOn);
+
+protected:
+//	void mousePressEvent(QMouseEvent *event) override;
+//	void mouseReleaseEvent(QMouseEvent *event) override;
+	void mouseDoubleClickEvent(QMouseEvent *event) override;
+//	void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
-	QList<FieldItem *> m_fieldItems;
+	void createFields();
+
+	BoardScene *m_board;
 
 signals:
 	void bringOn();
