@@ -13,12 +13,18 @@ public:
 	explicit BoardScene(QObject *parent = nullptr);
 
 	bool canBringOn() const;
+	void clearHighlight();
+	void foo(const QList<QPair<int, int>> &pawns);
+
+public slots:
 	void enableBringOn(bool canBringOn);
+	void changePawnCount(int playerId, int pawnCount);
+	void highlightFields(const QList<int> &moves);
 
 private:
 	void createPath();
-	void createPlayers(const QList<int> &colors);
-	void createFields(const QList<int> &colors);
+	void createPlayers();
+	void createFields();
 
 	QList<PlayerItem *> m_playerItems;
 	QList<FieldItem *> m_fieldItems;

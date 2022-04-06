@@ -24,7 +24,7 @@ public:
 
 	void rollDice();
 	void bringPawnOn();
-	void movePawn(int srcSquare);
+	void movePawn(int srcField);
 	void advance();
 	void reset();
 
@@ -44,7 +44,7 @@ signals:
 	void diceRolled(int score);
 	void canBringOn(bool isBringOnPossible);
 	void possibleMoves(const QList<int> &moves);
-	void playerPawnsCountChanged(Player *player);
+	void pawnCountChanged(int playerId, int pawnCount);
 	void nextTurn(int currentPlayerId);
 };
 

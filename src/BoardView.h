@@ -11,8 +11,7 @@ class BoardView : public QGraphicsView
 public:
 	explicit BoardView(QWidget *parent = nullptr);
 
-public slots:
-	void enableBringOn(bool canBringOn);
+	BoardScene *board() const;
 
 protected:
 //	void mousePressEvent(QMouseEvent *event) override;
@@ -26,7 +25,8 @@ private:
 	BoardScene *m_board;
 
 signals:
-	void bringOn();
+	void bringPawnOn();
+	void movePawn(int srcField);
 };
 
 #endif // BOARDVIEW_H

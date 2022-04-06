@@ -66,9 +66,9 @@ void Game::bringPawnOn()
 						 toBoardCoordinates(0));
 }
 
-void Game::movePawn(int srcSquare)
+void Game::movePawn(int srcField)
 {
-	m_board->movePawn(srcSquare, m_dice->score());
+	m_board->movePawn(srcField, m_dice->score());
 }
 
 void Game::advance()
@@ -96,5 +96,7 @@ int Game::toPlayerCoordinates(int fieldNumber) const
 
 void Game::onPawnsCountChanged()
 {
-	emit playerPawnsCountChanged(static_cast<Player *>(sender()));
+	auto *player = static_cast<Player *>(sender());
+
+	emit pawnCountChanged(player->id(), player->pawnsCount());
 }

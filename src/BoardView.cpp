@@ -1,6 +1,8 @@
 #include "BoardView.h"
 #include "BoardScene.h"
+#include "FieldItem.h"
 #include <QMouseEvent>
+#include <QGraphicsItem>
 #include <QDebug>
 
 BoardView::BoardView(QWidget *parent) :
@@ -13,9 +15,9 @@ BoardView::BoardView(QWidget *parent) :
 	setScene(m_board);
 }
 
-void BoardView::enableBringOn(bool canBringOn)
+BoardScene *BoardView::board() const
 {
-	m_board->enableBringOn(canBringOn);
+	return m_board;
 }
 
 void BoardView::mouseDoubleClickEvent(QMouseEvent *event)
@@ -25,8 +27,20 @@ void BoardView::mouseDoubleClickEvent(QMouseEvent *event)
 	if (!item)
 		return;
 
-	qDebug() << item;
 
-	if (m_board->canBringOn())
-		emit bringOn();
+	switch (item->type()) {
+	case 65536:
+		emit movePawn(static_cast<FieldItem *>(item)->number());
+		break;
+	case 65537:
+		qDebug() << item->type();
+		if (m_board->canBringOn()) {
+			m_board->enableBringOn(false);
+			emit bringPawnOn();
+		}
+		break;
+	default:
+		break;
+	}
+
 }
