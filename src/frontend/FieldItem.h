@@ -12,18 +12,18 @@ public:
 
 	int number() const;
 	void setNumber(int number);
-	bool selected() const;
-	void setSelected(bool selected);
+	bool isHighlighted() const;
+	void setHighlighted(bool value);
 	const QColor &color() const;
 	void setColor(const QColor &color);
-	void setOccupationColor(const QColor &color);
+	void setPawnColor(const QColor &color);
 
 	int type() const override;
 
 private:
 	int m_number;
-	bool m_selected;
-	QColor m_occupationColor;
+	bool m_highlighted;
+	QColor m_pawnColor;
 };
 
 #endif // FIELDITEM_H

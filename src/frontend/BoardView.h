@@ -4,6 +4,7 @@
 #include <QGraphicsView>
 
 class BoardScene;
+class FieldItem;
 
 class BoardView : public QGraphicsView
 {
@@ -14,13 +15,11 @@ public:
 	BoardScene *board() const;
 
 protected:
-//	void mousePressEvent(QMouseEvent *event) override;
-//	void mouseReleaseEvent(QMouseEvent *event) override;
-	void mouseDoubleClickEvent(QMouseEvent *event) override;
-//	void mouseMoveEvent(QMouseEvent *event) override;
+	void mousePressEvent(QMouseEvent *event) override;
 
 private:
-	void createFields();
+	void fieldClicked(FieldItem *field);
+	void arrowClicked();
 
 	BoardScene *m_board;
 

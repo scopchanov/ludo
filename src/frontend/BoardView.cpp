@@ -2,7 +2,6 @@
 #include "BoardScene.h"
 #include "FieldItem.h"
 #include <QMouseEvent>
-#include <QGraphicsItem>
 #include <QDebug>
 
 BoardView::BoardView(QWidget *parent) :
@@ -20,27 +19,36 @@ BoardScene *BoardView::board() const
 	return m_board;
 }
 
-void BoardView::mouseDoubleClickEvent(QMouseEvent *event)
-{				
+void BoardView::mousePressEvent(QMouseEvent *event)
+{
 	auto *item = itemAt(event->pos());
 
 	if (!item)
 		return;
 
-
 	switch (item->type()) {
 	case 65536:
-		emit movePawn(static_cast<FieldItem *>(item)->number());
+		fieldClicked(static_cast<FieldItem *>(item));
 		break;
 	case 65537:
-		qDebug() << item->type();
-		if (m_board->canBringOn()) {
-			m_board->enableBringOn(false);
-			emit bringPawnOn();
-		}
+		arrowClicked();
 		break;
 	default:
 		break;
 	}
+}
 
+void BoardView::fieldClicked(FieldItem *field)
+{
+	if (field->isHighlighted())
+		emit movePawn(field->number());
+}
+
+void BoardView::arrowClicked()
+{
+	if (!m_board->canBringOn())
+		return;
+
+	m_board->enableBringOn(false);
+	emit bringPawnOn();
 }

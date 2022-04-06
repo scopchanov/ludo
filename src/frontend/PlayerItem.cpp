@@ -12,8 +12,8 @@ PlayerItem::PlayerItem(int playerId, QGraphicsItem *parent) :
 
 		field->setPos(70*(n / 2) - 35, 70*(n % 2) - 35);
 		field->setFlags(ItemStacksBehindParent);
-		field->setColor(playerColor(playerId));
-		field->setOccupationColor(QColor(playerColor(playerId)));
+		field->setColor(idToColor(playerId));
+		field->setPawnColor(idToColor(playerId));
 
 		m_fields.append(field);
 	}
@@ -33,7 +33,10 @@ QColor PlayerItem::color() const
 
 void PlayerItem::setPawnCount(int n)
 {
-	foo(n);
+	for (auto *field : qAsConst(m_fields))
+		field->setPawnColor(m_fields.indexOf(field) < n
+							? m_fields.first()->color()
+							: QColor());
 }
 
 void PlayerItem::paint(QPainter *painter,
@@ -48,16 +51,7 @@ int PlayerItem::type() const
 	return QGraphicsItem::UserType + 1;
 }
 
-int PlayerItem:: playerColor(int playerId) const
+int PlayerItem:: idToColor(int playerId) const
 {
 	return QList<int>{0x1976D2, 0xFBC02D, 0x388E3C, 0xD32F2F}.at(playerId);
-}
-
-void PlayerItem::foo(int n)
-{
-	for (auto *field : qAsConst(m_fields)) {
-		field->setOccupationColor(m_fields.indexOf(field) < n
-								  ? m_fields.first()->color()
-								  : QColor());
-	}
 }

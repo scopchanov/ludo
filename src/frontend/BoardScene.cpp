@@ -23,21 +23,16 @@ bool BoardScene::canBringOn() const
 void BoardScene::clearHighlight()
 {
 	for (auto *field : qAsConst(m_fieldItems))
-		field->setSelected(false);
+		field->setHighlighted(false);
 }
 
-void BoardScene::foo(const QList<QPair<int, int> > &pawns)
+void BoardScene::updateBoard(const QList<QPair<int, int> > &pawns)
 {
 	for (auto *field : qAsConst(m_fieldItems))
-		field->setOccupationColor(QColor());
+		field->setPawnColor(QColor());
 
 	for (const auto &pawn : pawns)
-		m_fieldItems.at(pawn.first)->setOccupationColor(m_playerItems.first()->playerColor(pawn.second));
-
-
-	//		qDebug() << pawn.first << pawn.second;
-//		ui->listBoard->addItem(QString::number(pawn.first) + ": "
-//							   + QString::number(pawn.second));
+		m_fieldItems.at(pawn.first)->setPawnColor(m_playerItems.at(pawn.second)->color());
 }
 
 void BoardScene::enableBringOn(bool canBringOn)
@@ -48,7 +43,7 @@ void BoardScene::enableBringOn(bool canBringOn)
 void BoardScene::highlightFields(const QList<int> &moves)
 {
 	for (const auto &move : moves)
-		m_fieldItems.at(move)->setSelected(true);
+		m_fieldItems.at(move)->setHighlighted(true);
 }
 
 void BoardScene::changePawnCount(int playerId, int pawnCount)
@@ -82,13 +77,12 @@ void BoardScene::createPlayers()
 void BoardScene::createFields()
 {
 	const QList<int> &directions{2, 3, 2, 1, 2, 1, 0, 1, 0, 3, 0, 3};
-
 	int x = 310;
 	int y = 730;
 	int k = -1;
 
 	for (int n = 0; n < 40; n++) {
-		auto *field{new FieldItem()};
+		auto *field = new FieldItem();
 		int mod10 = n % 10;
 
 		field->setNumber(n);

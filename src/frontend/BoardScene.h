@@ -14,7 +14,7 @@ public:
 
 	bool canBringOn() const;
 	void clearHighlight();
-	void foo(const QList<QPair<int, int>> &pawns);
+	void updateBoard(const QList<QPair<int, int>> &pawns);
 
 public slots:
 	void enableBringOn(bool canBringOn);

@@ -1,9 +1,9 @@
 #include "MainWindow.h"
 #include "backend/Game.h"
 #include "backend/Player.h"
-#include "ScoreDisplay.h"
-#include "BoardView.h"
-#include "BoardScene.h"
+#include "frontend/ScoreDisplay.h"
+#include "frontend/BoardView.h"
+#include "frontend/BoardScene.h"
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QMessageBox>
@@ -68,7 +68,7 @@ void MainWindow::onNextTurn(int currentPlayerId)
 	m_boardView->board()->enableBringOn(false);
 	m_scoreDisplay->clear();
 	m_boardView->board()->clearHighlight();
-	m_boardView->board()->foo(m_game->boardLayout());
+	m_boardView->board()->updateBoard(m_game->boardLayout());
 }
 
 void MainWindow::onRollDice()

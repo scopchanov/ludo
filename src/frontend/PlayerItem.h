@@ -18,10 +18,8 @@ public:
 			   QWidget *) override;
 	int type() const override;
 
-	int playerColor(int playerId) const;
-
 private:
-	void foo(int n);
+	int idToColor(int playerId) const;
 
 	int m_playerId;
 	QList<FieldItem *> m_fields;

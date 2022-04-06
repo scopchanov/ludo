@@ -3,11 +3,11 @@ QT += widgets
 CONFIG += c++17
 
 SOURCES += \
-    BoardScene.cpp \
-    BoardView.cpp \
-    FieldItem.cpp \
-    PlayerItem.cpp \
-    ScoreDisplay.cpp \
+    frontend/BoardScene.cpp \
+    frontend/BoardView.cpp \
+    frontend/FieldItem.cpp \
+    frontend/PlayerItem.cpp \
+    frontend/ScoreDisplay.cpp \
     backend/Board.cpp \
     backend/Dice.cpp \
     backend/Field.cpp \
@@ -18,11 +18,11 @@ SOURCES += \
     MainWindow.cpp
 
 HEADERS += \
-    BoardScene.h \
-    BoardView.h \
-    FieldItem.h \
-    PlayerItem.h \
-    ScoreDisplay.h \
+    frontend/BoardScene.h \
+    frontend/BoardView.h \
+    frontend/FieldItem.h \
+    frontend/PlayerItem.h \
+    frontend/ScoreDisplay.h \
     backend/Board.h \
     backend/Dice.h \
     backend/Field.h \
@@ -30,8 +30,6 @@ HEADERS += \
     backend/Pawn.h \
     backend/Player.h \
     MainWindow.h
-
-FORMS +=
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
