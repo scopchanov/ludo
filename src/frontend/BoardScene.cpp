@@ -5,6 +5,7 @@
 
 BoardScene::BoardScene(QObject *parent) :
 	QGraphicsScene{parent},
+	m_currentPlayerId{0},
 	m_canBringPawnOn{false}
 {
 	setSceneRect(0, 0, 760, 760);
@@ -13,46 +14,6 @@ BoardScene::BoardScene(QObject *parent) :
 	createPath();
 	createPlayers();
 	createFields();
-
-	auto *arrow = new ArrowItem();
-
-	arrow->setNumber(0);
-	arrow->setColor(m_playerItems.at(0)->color());
-	arrow->setPos(205, 730);
-	arrow->setRotation(0);
-
-	addItem(arrow);
-	m_arrowItems.append(arrow);
-
-	arrow = new ArrowItem();
-
-	arrow->setNumber(1);
-	arrow->setColor(m_playerItems.at(1)->color());
-	arrow->setPos(30, 205);
-	arrow->setRotation(90);
-
-	addItem(arrow);
-	m_arrowItems.append(arrow);
-
-	arrow = new ArrowItem();
-
-	arrow->setNumber(2);
-	arrow->setColor(m_playerItems.at(2)->color());
-	arrow->setPos(555, 30);
-	arrow->setRotation(180);
-
-	addItem(arrow);
-	m_arrowItems.append(arrow);
-
-	arrow = new ArrowItem();
-
-	arrow->setNumber(3);
-	arrow->setColor(m_playerItems.at(3)->color());
-	arrow->setPos(730, 555);
-	arrow->setRotation(270);
-
-	addItem(arrow);
-	m_arrowItems.append(arrow);
 }
 
 bool BoardScene::canBringOn() const
@@ -125,6 +86,31 @@ void BoardScene::createPlayers()
 		addItem(player);
 
 		m_playerItems.append(player);
+
+		auto *arrow = new ArrowItem();
+
+		arrow->setNumber(n);
+		arrow->setColor(player->color());
+		arrow->setRotation(90*n);
+
+		switch (n) {
+		case 0:
+			arrow->setPos(205, 730);
+			break;
+		case 1:
+			arrow->setPos(30, 205);
+			break;
+		case 2:
+			arrow->setPos(555, 30);
+			break;
+		case 3:
+			arrow->setPos(730, 555);
+			break;
+		}
+
+		addItem(arrow);
+
+		m_arrowItems.append(arrow);
 	}
 }
 
