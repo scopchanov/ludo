@@ -4,6 +4,7 @@
 #include <QGraphicsView>
 
 class BoardScene;
+class ArrowItem;
 class FieldItem;
 
 class BoardView : public QGraphicsView
@@ -19,7 +20,7 @@ protected:
 
 private:
 	void fieldClicked(FieldItem *field);
-	void arrowClicked();
+	void arrowClicked(ArrowItem *arrow);
 
 	BoardScene *m_board;
 

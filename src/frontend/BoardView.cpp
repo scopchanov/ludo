@@ -1,5 +1,6 @@
 #include "BoardView.h"
 #include "BoardScene.h"
+#include "ArrowItem.h"
 #include "FieldItem.h"
 #include <QMouseEvent>
 #include <QDebug>
@@ -30,8 +31,8 @@ void BoardView::mousePressEvent(QMouseEvent *event)
 	case 65536:
 		fieldClicked(static_cast<FieldItem *>(item));
 		break;
-	case 65537:
-		arrowClicked();
+	case 65538:
+		arrowClicked(static_cast<ArrowItem *>(item));
 		break;
 	default:
 		break;
@@ -44,7 +45,7 @@ void BoardView::fieldClicked(FieldItem *field)
 		emit movePawn(field->number());
 }
 
-void BoardView::arrowClicked()
+void BoardView::arrowClicked(ArrowItem *arrow)
 {
 	if (!m_board->canBringOn())
 		return;

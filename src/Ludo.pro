@@ -3,6 +3,7 @@ QT += widgets
 CONFIG += c++17
 
 SOURCES += \
+    frontend/ArrowItem.cpp \
     frontend/BoardScene.cpp \
     frontend/BoardView.cpp \
     frontend/FieldItem.cpp \
@@ -18,6 +19,7 @@ SOURCES += \
     MainWindow.cpp
 
 HEADERS += \
+    frontend/ArrowItem.h \
     frontend/BoardScene.h \
     frontend/BoardView.h \
     frontend/FieldItem.h \

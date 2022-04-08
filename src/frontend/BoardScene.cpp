@@ -1,18 +1,54 @@
 #include "BoardScene.h"
 #include "FieldItem.h"
 #include "PlayerItem.h"
-#include "qdebug.h"
+#include "ArrowItem.h"
 
 BoardScene::BoardScene(QObject *parent) :
 	QGraphicsScene{parent},
 	m_canBringPawnOn{false}
 {
 	setSceneRect(0, 0, 760, 760);
-//	addRect(0, 0, 760, 760);
+	//	addRect(0, 0, 760, 760);
 
 	createPath();
 	createPlayers();
 	createFields();
+
+	auto *arrow = new ArrowItem();
+
+	arrow->setNumber(0);
+	arrow->setColor(m_playerItems.at(0)->color());
+	arrow->setPos(205, 730);
+	arrow->setRotation(0);
+
+	addItem(arrow);
+
+	arrow = new ArrowItem();
+
+	arrow->setNumber(1);
+	arrow->setColor(m_playerItems.at(1)->color());
+	arrow->setPos(30, 205);
+	arrow->setRotation(90);
+
+	addItem(arrow);
+
+	arrow = new ArrowItem();
+
+	arrow->setNumber(2);
+	arrow->setColor(m_playerItems.at(2)->color());
+	arrow->setPos(555, 30);
+	arrow->setRotation(180);
+
+	addItem(arrow);
+
+	arrow = new ArrowItem();
+
+	arrow->setNumber(3);
+	arrow->setColor(m_playerItems.at(3)->color());
+	arrow->setPos(730, 555);
+	arrow->setRotation(270);
+
+	addItem(arrow);
 }
 
 bool BoardScene::canBringOn() const
@@ -38,6 +74,11 @@ void BoardScene::updateBoard(const QList<QPair<int, int> > &pawns)
 void BoardScene::enableBringOn(bool canBringOn)
 {
 	m_canBringPawnOn = canBringOn;
+
+	//	if (!m_canBringPawnOn)
+	//		return;
+
+
 }
 
 void BoardScene::highlightFields(const QList<int> &moves)
