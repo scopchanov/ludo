@@ -67,6 +67,7 @@ void MainWindow::onNextTurn(int currentPlayerId)
 	m_btnRollDice->setEnabled(true);
 	m_boardView->board()->enableBringOn(false);
 	m_scoreDisplay->clear();
+	m_boardView->board()->setCurrentPlayerId(currentPlayerId);
 	m_boardView->board()->clearHighlight();
 	m_boardView->board()->updateBoard(m_game->boardLayout());
 }

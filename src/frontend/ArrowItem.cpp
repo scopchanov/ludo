@@ -41,7 +41,7 @@ void ArrowItem::setColor(const QColor &color)
 	update();
 }
 
-bool ArrowItem::highlighted() const
+bool ArrowItem::isHighlighted() const
 {
 	return m_highlighted;
 }
@@ -49,6 +49,7 @@ bool ArrowItem::highlighted() const
 void ArrowItem::setHighlighted(bool highlighted)
 {
 	m_highlighted = highlighted;
+	update();
 }
 
 void ArrowItem::paint(QPainter *painter,

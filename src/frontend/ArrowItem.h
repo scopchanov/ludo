@@ -12,7 +12,7 @@ public:
 	void setNumber(int number);
 	const QColor &color() const;
 	void setColor(const QColor &color);
-	bool highlighted() const;
+	bool isHighlighted() const;
 	void setHighlighted(bool highlighted);
 
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *,

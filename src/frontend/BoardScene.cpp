@@ -22,6 +22,7 @@ BoardScene::BoardScene(QObject *parent) :
 	arrow->setRotation(0);
 
 	addItem(arrow);
+	m_arrowItems.append(arrow);
 
 	arrow = new ArrowItem();
 
@@ -31,6 +32,7 @@ BoardScene::BoardScene(QObject *parent) :
 	arrow->setRotation(90);
 
 	addItem(arrow);
+	m_arrowItems.append(arrow);
 
 	arrow = new ArrowItem();
 
@@ -40,6 +42,7 @@ BoardScene::BoardScene(QObject *parent) :
 	arrow->setRotation(180);
 
 	addItem(arrow);
+	m_arrowItems.append(arrow);
 
 	arrow = new ArrowItem();
 
@@ -49,11 +52,22 @@ BoardScene::BoardScene(QObject *parent) :
 	arrow->setRotation(270);
 
 	addItem(arrow);
+	m_arrowItems.append(arrow);
 }
 
 bool BoardScene::canBringOn() const
 {
 	return m_canBringPawnOn;
+}
+
+int BoardScene::currentPlayerId() const
+{
+	return m_currentPlayerId;
+}
+
+void BoardScene::setCurrentPlayerId(int currentPlayerId)
+{
+	m_currentPlayerId = currentPlayerId;
 }
 
 void BoardScene::clearHighlight()
@@ -75,10 +89,9 @@ void BoardScene::enableBringOn(bool canBringOn)
 {
 	m_canBringPawnOn = canBringOn;
 
-	//	if (!m_canBringPawnOn)
-	//		return;
-
-
+	for (auto *arrow : qAsConst(m_arrowItems))
+		arrow->setHighlighted(m_canBringPawnOn
+							  && arrow->number() == m_currentPlayerId);
 }
 
 void BoardScene::highlightFields(const QList<int> &moves)

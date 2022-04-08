@@ -3,8 +3,9 @@
 
 #include <QGraphicsScene>
 
-class PlayerItem;
 class FieldItem;
+class PlayerItem;
+class ArrowItem;
 
 class BoardScene : public QGraphicsScene
 {
@@ -13,6 +14,9 @@ public:
 	explicit BoardScene(QObject *parent = nullptr);
 
 	bool canBringOn() const;
+	int currentPlayerId() const;
+	void setCurrentPlayerId(int currentPlayerId);
+
 	void clearHighlight();
 	void updateBoard(const QList<QPair<int, int>> &pawns);
 
@@ -26,8 +30,10 @@ private:
 	void createPlayers();
 	void createFields();
 
-	QList<PlayerItem *> m_playerItems;
 	QList<FieldItem *> m_fieldItems;
+	QList<PlayerItem *> m_playerItems;
+	QList<ArrowItem *> m_arrowItems;
+	int m_currentPlayerId;
 	bool m_canBringPawnOn;
 };
 

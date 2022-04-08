@@ -50,6 +50,9 @@ void BoardView::arrowClicked(ArrowItem *arrow)
 	if (!m_board->canBringOn())
 		return;
 
+	if (!arrow->isHighlighted())
+		return;
+
 	m_board->enableBringOn(false);
 	emit bringPawnOn();
 }
