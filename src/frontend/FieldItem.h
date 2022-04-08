@@ -8,10 +8,11 @@ class FieldItem : public QGraphicsEllipseItem
 public:
 	explicit FieldItem(QGraphicsItem *parent = nullptr);
 
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override;
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem *,
+			   QWidget *) override;
 
 	int number() const;
-	void setNumber(int number);
+	void setNumber(int n);
 	bool isHighlighted() const;
 	void setHighlighted(bool value);
 	const QColor &color() const;

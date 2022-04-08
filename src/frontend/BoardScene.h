@@ -4,7 +4,7 @@
 #include <QGraphicsScene>
 
 class FieldItem;
-class PlayerItem;
+class SpawnItem;
 class ArrowItem;
 
 class BoardScene : public QGraphicsScene
@@ -31,7 +31,7 @@ private:
 	void createFields();
 
 	QList<FieldItem *> m_fieldItems;
-	QList<PlayerItem *> m_playerItems;
+	QList<SpawnItem *> m_playerItems;
 	QList<ArrowItem *> m_arrowItems;
 	int m_currentPlayerId;
 	bool m_canBringPawnOn;

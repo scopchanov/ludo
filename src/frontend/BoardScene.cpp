@@ -1,7 +1,8 @@
 #include "BoardScene.h"
 #include "FieldItem.h"
-#include "PlayerItem.h"
+#include "SpawnItem.h"
 #include "ArrowItem.h"
+#include "HomeItem.h"
 
 BoardScene::BoardScene(QObject *parent) :
 	QGraphicsScene{parent},
@@ -9,11 +10,39 @@ BoardScene::BoardScene(QObject *parent) :
 	m_canBringPawnOn{false}
 {
 	setSceneRect(0, 0, 760, 760);
-	//	addRect(0, 0, 760, 760);
+//	addRect(0, 0, 760, 760);
 
 	createPath();
 	createPlayers();
 	createFields();
+
+	auto *home = new HomeItem(m_playerItems.at(0)->color());
+
+	home->setPos(380, 555);
+	home->setRotation(0);
+
+	addItem(home);
+
+	home = new HomeItem(m_playerItems.at(1)->color());
+
+	home->setPos(205, 380);
+	home->setRotation(90);
+
+	addItem(home);
+
+	home = new HomeItem(m_playerItems.at(2)->color());
+
+	home->setPos(380, 205);
+	home->setRotation(180);
+
+	addItem(home);
+
+	home = new HomeItem(m_playerItems.at(3)->color());
+
+	home->setPos(555, 380);
+	home->setRotation(270);
+
+	addItem(home);
 }
 
 bool BoardScene::canBringOn() const
@@ -79,7 +108,7 @@ void BoardScene::createPath()
 void BoardScene::createPlayers()
 {
 	for (int n = 0; n < 4; n++) {
-		auto *player = new PlayerItem(n);
+		auto *player = new SpawnItem(n);
 
 		player->setPos(630*(n / 2) + 65, -630*(n / 2 != n % 2) + 695);
 

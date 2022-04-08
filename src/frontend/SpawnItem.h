@@ -1,14 +1,14 @@
-#ifndef PLAYERITEM_H
-#define PLAYERITEM_H
+#ifndef SPAWNITEM_H
+#define SPAWNITEM_H
 
 #include <QGraphicsRectItem>
 
 class FieldItem;
 
-class PlayerItem : public QGraphicsRectItem
+class SpawnItem : public QGraphicsRectItem
 {
 public:
-	explicit PlayerItem(int playerId, QGraphicsItem *parent = nullptr);
+	explicit SpawnItem(int playerId, QGraphicsItem *parent = nullptr);
 
 	int playerId() const;
 	QColor color() const;
@@ -25,4 +25,4 @@ private:
 	QList<FieldItem *> m_fields;
 };
 
-#endif // PLAYERITEM_H
+#endif // SPAWNITEM_H

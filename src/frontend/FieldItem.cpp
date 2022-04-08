@@ -16,9 +16,9 @@ int FieldItem::number() const
 	return m_number;
 }
 
-void FieldItem::setNumber(int number)
+void FieldItem::setNumber(int n)
 {
-	m_number = number;
+	m_number = n;
 }
 
 bool FieldItem::isHighlighted() const
@@ -70,6 +70,9 @@ void FieldItem::paint(QPainter *painter,
 		painter->setBrush(m_pawnColor.lighter(130));
 		painter->drawEllipse(rect().adjusted(10, 10, -10, -10));
 	}
+
+//	painter->drawText(rect(), Qt::AlignCenter | Qt::TextSingleLine,
+//					  QString::number(m_number));
 
 	painter->restore();
 }
