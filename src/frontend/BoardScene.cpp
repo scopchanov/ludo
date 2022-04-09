@@ -3,6 +3,8 @@
 #include "SpawnItem.h"
 #include "ArrowItem.h"
 #include "HomeItem.h"
+#include "PlayerItem.h"
+#include <QDebug>
 
 BoardScene::BoardScene(QObject *parent) :
 	QGraphicsScene{parent},
@@ -10,39 +12,44 @@ BoardScene::BoardScene(QObject *parent) :
 	m_canBringPawnOn{false}
 {
 	setSceneRect(0, 0, 760, 760);
-//	addRect(0, 0, 760, 760);
+	//	addRect(0, 0, 760, 760);
 
 	createPath();
 	createPlayers();
 	createFields();
+	createHomes();
 
-	auto *home = new HomeItem(m_playerItems.at(0)->color());
+	auto *item = new PlayerItem();
 
-	home->setPos(380, 555);
-	home->setRotation(0);
+	item->setNumber(0);
+	item->setPos(190, 570);
 
-	addItem(home);
+	addItem(item);
+	m_playerItems.append(item);
 
-	home = new HomeItem(m_playerItems.at(1)->color());
+	item = new PlayerItem();
 
-	home->setPos(205, 380);
-	home->setRotation(90);
+	item->setNumber(1);
+	item->setPos(190, 190);
 
-	addItem(home);
+	addItem(item);
+	m_playerItems.append(item);
 
-	home = new HomeItem(m_playerItems.at(2)->color());
+	item = new PlayerItem();
 
-	home->setPos(380, 205);
-	home->setRotation(180);
+	item->setNumber(2);
+	item->setPos(570, 190);
 
-	addItem(home);
+	addItem(item);
+	m_playerItems.append(item);
 
-	home = new HomeItem(m_playerItems.at(3)->color());
+	item = new PlayerItem();
 
-	home->setPos(555, 380);
-	home->setRotation(270);
+	item->setNumber(3);
+	item->setPos(570, 570);
 
-	addItem(home);
+	addItem(item);
+	m_playerItems.append(item);
 }
 
 bool BoardScene::canBringOn() const
@@ -58,6 +65,9 @@ int BoardScene::currentPlayerId() const
 void BoardScene::setCurrentPlayerId(int currentPlayerId)
 {
 	m_currentPlayerId = currentPlayerId;
+
+	for (auto *player : qAsConst(m_playerItems))
+		player->setHighlighted(player->number() == m_currentPlayerId);
 }
 
 void BoardScene::clearHighlight()
@@ -72,7 +82,7 @@ void BoardScene::updateBoard(const QList<QPair<int, int> > &pawns)
 		field->setPawnColor(QColor());
 
 	for (const auto &pawn : pawns)
-		m_fieldItems.at(pawn.first)->setPawnColor(m_playerItems.at(pawn.second)->color());
+		m_fieldItems.at(pawn.first)->setPawnColor(m_spawnItems.at(pawn.second)->color());
 }
 
 void BoardScene::enableBringOn(bool canBringOn)
@@ -92,7 +102,7 @@ void BoardScene::highlightFields(const QList<int> &moves)
 
 void BoardScene::changePawnCount(int playerId, int pawnCount)
 {
-	m_playerItems.at(playerId)->setPawnCount(pawnCount);
+	m_spawnItems.at(playerId)->setPawnCount(pawnCount);
 }
 
 void BoardScene::createPath()
@@ -108,13 +118,13 @@ void BoardScene::createPath()
 void BoardScene::createPlayers()
 {
 	for (int n = 0; n < 4; n++) {
-		auto *player = new SpawnItem(n);
+		auto *player = new SpawnItem(n, playerColor(n));
 
 		player->setPos(630*(n / 2) + 65, -630*(n / 2 != n % 2) + 695);
 
 		addItem(player);
 
-		m_playerItems.append(player);
+		m_spawnItems.append(player);
 
 		auto *arrow = new ArrowItem();
 
@@ -143,6 +153,20 @@ void BoardScene::createPlayers()
 	}
 }
 
+void BoardScene::createHomes()
+{
+	for (int n = 0; n < 4; n++) {
+		auto *home = new HomeItem(m_spawnItems.at(n)->color());
+		double pi = 3.1415;
+
+		home->setPos(175*round(sin((4 - n)*pi/2)) + 380,
+					 175*round(cos((4 - n)*pi/2)) + 380);
+		home->setRotation(90*n);
+
+		addItem(home);
+	}
+}
+
 void BoardScene::createFields()
 {
 	const QList<int> &directions{2, 3, 2, 1, 2, 1, 0, 1, 0, 3, 0, 3};
@@ -158,7 +182,7 @@ void BoardScene::createFields()
 		field->setPos(x, y);
 
 		if (!mod10)
-			field->setColor(m_playerItems.at(n / 10)->color());
+			field->setColor(m_spawnItems.at(n / 10)->color());
 
 		addItem(field);
 
@@ -172,4 +196,9 @@ void BoardScene::createFields()
 		x = direction == 1 ? x + 70 : direction == 3 ? x - 70 : x;
 		y = direction == 0 ? y + 70 : direction == 2 ? y - 70 : y;
 	}
+}
+
+int BoardScene::playerColor(int playerId) const
+{
+	return QList<int>{0x1976D2, 0xFBC02D, 0x388E3C, 0xD32F2F}.at(playerId);
 }

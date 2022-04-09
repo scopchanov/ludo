@@ -18,7 +18,6 @@ public:
 private:
 	Game *m_game;
 	BoardView *m_boardView;
-	QLabel *m_labelPlayer;
 	QPushButton *m_btnRollDice;
 	ScoreDisplay *m_scoreDisplay;
 

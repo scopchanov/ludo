@@ -6,6 +6,8 @@
 class FieldItem;
 class SpawnItem;
 class ArrowItem;
+class HomeItem;
+class PlayerItem;
 
 class BoardScene : public QGraphicsScene
 {
@@ -28,11 +30,15 @@ public slots:
 private:
 	void createPath();
 	void createPlayers();
+	void createHomes();
 	void createFields();
+	int playerColor(int playerId) const;
 
 	QList<FieldItem *> m_fieldItems;
-	QList<SpawnItem *> m_playerItems;
+	QList<SpawnItem *> m_spawnItems;
 	QList<ArrowItem *> m_arrowItems;
+	QList<PlayerItem *> m_playerItems;
+	QList<HomeItem *> m_homeItems;
 	int m_currentPlayerId;
 	bool m_canBringPawnOn;
 };

@@ -8,7 +8,8 @@ class FieldItem;
 class SpawnItem : public QGraphicsRectItem
 {
 public:
-	explicit SpawnItem(int playerId, QGraphicsItem *parent = nullptr);
+	explicit SpawnItem(int playerId, const QColor &color,
+					   QGraphicsItem *parent = nullptr);
 
 	int playerId() const;
 	QColor color() const;
@@ -19,8 +20,6 @@ public:
 	int type() const override;
 
 private:
-	int idToColor(int playerId) const;
-
 	int m_playerId;
 	QList<FieldItem *> m_fields;
 };

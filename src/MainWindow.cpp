@@ -12,7 +12,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	m_game{new Game(this)},
 	m_boardView{new BoardView(this)},
-	m_labelPlayer{new QLabel("Player: 0", this)},
 	m_btnRollDice{new QPushButton(tr("&Roll Dice"), this)},
 	m_scoreDisplay{new ScoreDisplay(this)}
 {
@@ -27,7 +26,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	layoutMain->addWidget(m_boardView);
 	layoutMain->addLayout(layoutDice);
-	layoutMain->addWidget(m_labelPlayer);
 	layoutMain->setContentsMargins(0, 0, 0, 0);
 
 	setCentralWidget(widget);
@@ -63,7 +61,6 @@ void MainWindow::showPossibleMoves(const QList<int> &moves)
 
 void MainWindow::onNextTurn(int currentPlayerId)
 {
-	m_labelPlayer->setText("Player: " + QString::number(currentPlayerId));
 	m_btnRollDice->setEnabled(true);
 	m_boardView->board()->enableBringOn(false);
 	m_scoreDisplay->clear();

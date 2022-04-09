@@ -3,7 +3,7 @@
 #include <QPainter>
 #include <QDebug>
 
-SpawnItem::SpawnItem(int playerId, QGraphicsItem *parent) :
+SpawnItem::SpawnItem(int playerId, const QColor &color, QGraphicsItem *parent) :
 	QGraphicsRectItem{parent},
 	m_playerId{playerId}
 {
@@ -13,8 +13,8 @@ SpawnItem::SpawnItem(int playerId, QGraphicsItem *parent) :
 		field->setNumber(n);
 		field->setPos(70*(n / 2) - 35, 70*(n % 2) - 35);
 		field->setFlags(ItemStacksBehindParent);
-		field->setColor(idToColor(playerId));
-		field->setPawnColor(idToColor(playerId));
+		field->setColor(color);
+		field->setPawnColor(color);
 
 		m_fields.append(field);
 	}
@@ -50,9 +50,4 @@ void SpawnItem::paint(QPainter *painter,
 int SpawnItem::type() const
 {
 	return QGraphicsItem::UserType + 1;
-}
-
-int SpawnItem:: idToColor(int playerId) const
-{
-	return QList<int>{0x1976D2, 0xFBC02D, 0x388E3C, 0xD32F2F}.at(playerId);
 }

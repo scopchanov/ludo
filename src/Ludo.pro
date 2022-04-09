@@ -9,6 +9,7 @@ SOURCES += \
     frontend/BoardView.cpp \
     frontend/FieldItem.cpp \
     frontend/HomeItem.cpp \
+    frontend/PlayerItem.cpp \
     frontend/ScoreDisplay.cpp \
     backend/Board.cpp \
     backend/Dice.cpp \
@@ -26,6 +27,7 @@ HEADERS += \
     frontend/BoardView.h \
     frontend/FieldItem.h \
     frontend/HomeItem.h \
+    frontend/PlayerItem.h \
     frontend/ScoreDisplay.h \
     backend/Board.h \
     backend/Dice.h \
