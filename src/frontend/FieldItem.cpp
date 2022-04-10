@@ -8,7 +8,7 @@ FieldItem::FieldItem(QGraphicsItem *parent) :
 {
 	setRect(-30, -30, 60, 60);
 	setPen(QPen(QBrush(0x313131), 4));
-	setColor(0xFFF3E0);
+	setColor(0xEEEEEE);
 }
 
 int FieldItem::number() const
@@ -65,7 +65,7 @@ void FieldItem::paint(QPainter *painter,
 	painter->drawEllipse(rect());
 
 	if (m_pawnColor.isValid()) {
-		painter->setPen(m_highlighted ? QPen(QBrush(0x7B1FA2), 5)
+		painter->setPen(m_highlighted ? QPen(QBrush(0x7E57C2), 5)
 									  : QPen(QBrush(0x424242), 3));
 		painter->setBrush(m_pawnColor.lighter(130));
 		painter->drawEllipse(rect().adjusted(10, 10, -10, -10));

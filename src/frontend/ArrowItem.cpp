@@ -15,7 +15,6 @@ ArrowItem::ArrowItem(QGraphicsItem *parent) :
 				 });
 
 	setPath(p);
-	setBrush(QBrush(0x1976D2));
 	setPen(QPen(QBrush(0x313131), 3, Qt::SolidLine, Qt::RoundCap,
 				Qt::RoundJoin));
 }
@@ -58,7 +57,7 @@ void ArrowItem::paint(QPainter *painter,
 {
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing);
-	painter->setPen(m_highlighted ? QPen(QBrush(0x7B1FA2), 5) : pen());
+	painter->setPen(m_highlighted ? QPen(QBrush(0x7E57C2), 5) : pen());
 	painter->setBrush(brush());
 	painter->drawPath(path());
 	painter->restore();

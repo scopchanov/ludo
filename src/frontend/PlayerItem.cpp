@@ -7,6 +7,7 @@ PlayerItem::PlayerItem(QGraphicsItem *parent) :
 	m_highlighted{false}
 {
 	setRect(-70, -70, 140, 140);
+	setPen(QPen(QBrush(0x313131), 3));
 	setBrush(QBrush(Qt::white));
 }
 
@@ -20,7 +21,18 @@ void PlayerItem::setNumber(int number)
 	m_number = number;
 }
 
-bool PlayerItem::highlighted() const
+const QColor &PlayerItem::color() const
+{
+	return brush().color();
+}
+
+void PlayerItem::setColor(const QColor &color)
+{
+	setBrush(QBrush(color));
+	update();
+}
+
+bool PlayerItem::isHighlighted() const
 {
 	return m_highlighted;
 }
@@ -37,7 +49,7 @@ void PlayerItem::paint(QPainter *painter,
 {
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing);
-	painter->setPen(m_highlighted ? QPen(QBrush(0x7B1FA2), 5) : pen());
+	painter->setPen(m_highlighted ? QPen(QBrush(0x7E57C2), 8) : pen());
 	painter->setBrush(brush());
 	painter->drawEllipse(rect());
 	painter->restore();

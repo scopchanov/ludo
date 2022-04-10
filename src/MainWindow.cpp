@@ -1,7 +1,7 @@
 #include "MainWindow.h"
 #include "backend/Game.h"
 #include "backend/Player.h"
-#include "frontend/ScoreDisplay.h"
+#include "frontend/ScoreItem.h"
 #include "frontend/BoardView.h"
 #include "frontend/BoardScene.h"
 #include <QBoxLayout>
@@ -12,24 +12,19 @@ MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	m_game{new Game(this)},
 	m_boardView{new BoardView(this)},
-	m_btnRollDice{new QPushButton(tr("&Roll Dice"), this)},
-	m_scoreDisplay{new ScoreDisplay(this)}
+	m_btnRollDice{new QPushButton(tr("&Roll Dice"), this)}
 {
 	auto *widget = new QWidget(this);
-	auto *layoutMain = new QVBoxLayout(widget);
-	auto *layoutDice = new QHBoxLayout();
+	auto *layoutMain = new QHBoxLayout(widget);
 
-	m_btnRollDice->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-
-	layoutDice->addWidget(m_scoreDisplay);
-	layoutDice->addWidget(m_btnRollDice);
+	m_btnRollDice->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
 	layoutMain->addWidget(m_boardView);
-	layoutMain->addLayout(layoutDice);
+	layoutMain->addWidget(m_btnRollDice);
 	layoutMain->setContentsMargins(0, 0, 0, 0);
 
 	setCentralWidget(widget);
-	resize(1000, 1000);
+	resize(1200, 1000);
 
 	connect(m_game, &Game::diceRolled, this, &MainWindow::onDiceRolled);
 	connect(m_game, &Game::canBringOn, m_boardView->board(), &BoardScene::enableBringOn);
@@ -44,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::onDiceRolled(int score)
 {
-	m_scoreDisplay->setText(QString::number(score));
+	m_boardView->board()->setScore(score);
 }
 
 void MainWindow::showPossibleMoves(const QList<int> &moves)
@@ -63,7 +58,7 @@ void MainWindow::onNextTurn(int currentPlayerId)
 {
 	m_btnRollDice->setEnabled(true);
 	m_boardView->board()->enableBringOn(false);
-	m_scoreDisplay->clear();
+	m_boardView->board()->setScore(0);
 	m_boardView->board()->setCurrentPlayerId(currentPlayerId);
 	m_boardView->board()->clearHighlight();
 	m_boardView->board()->updateBoard(m_game->boardLayout());

@@ -3,6 +3,7 @@
 
 #include <QGraphicsScene>
 
+class ScoreItem;
 class FieldItem;
 class SpawnItem;
 class ArrowItem;
@@ -18,6 +19,8 @@ public:
 	bool canBringOn() const;
 	int currentPlayerId() const;
 	void setCurrentPlayerId(int currentPlayerId);
+
+	void setScore(int value);
 
 	void clearHighlight();
 	void updateBoard(const QList<QPair<int, int>> &pawns);
@@ -39,6 +42,7 @@ private:
 	QList<ArrowItem *> m_arrowItems;
 	QList<PlayerItem *> m_playerItems;
 	QList<HomeItem *> m_homeItems;
+	ScoreItem *m_scoreItem;
 	int m_currentPlayerId;
 	bool m_canBringPawnOn;
 };

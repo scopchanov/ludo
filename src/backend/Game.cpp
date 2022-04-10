@@ -4,6 +4,7 @@
 #include "Pawn.h"
 #include "Player.h"
 #include "Field.h"
+#include <QDebug>
 
 Game::Game(QObject *parent) :
 	QObject{parent},
@@ -41,23 +42,9 @@ void Game::rollDice()
 {
 	m_dice->roll();
 
-	int score{m_dice->score()};
-	auto *pawn{m_board->field(toBoardCoordinates(0))->pawn()};
-	bool isBringOnPossible = score == 6
-			&& m_players.at(m_currentPlayerId)->pawnsCount()
-			&& (!pawn || pawn->playerId() != m_currentPlayerId);
-	QList<int> moves;
-
-	for (int n = 0; n < 40; n++) {
-		auto *pawn = m_board->field(n)->pawn();
-
-		if (pawn && pawn->playerId() == m_currentPlayerId)
-			moves.append(n);
-	}
-
-	emit diceRolled(score);
-	emit canBringOn(isBringOnPossible);
-	emit possibleMoves(moves);
+	emit diceRolled(m_dice->score());
+	emit canBringOn(checkBringIn(m_dice->score()));
+	emit possibleMoves(findPossibleMoves(m_dice->score()));
 }
 
 void Game::bringPawnOn()
@@ -73,7 +60,8 @@ void Game::movePawn(int srcField)
 
 void Game::advance()
 {
-	if (++m_currentPlayerId >= m_players.count())
+	if (m_dice->score() != 6)
+		if (++m_currentPlayerId >= m_players.count())
 		m_currentPlayerId = 0;
 
 	emit nextTurn(m_currentPlayerId);
@@ -84,14 +72,40 @@ void Game::reset()
 
 }
 
+bool Game::checkBringIn(int score) const
+{
+	auto *pawn = m_board->field(toBoardCoordinates(0))->pawn();
+
+	return score == 6 && m_players.at(m_currentPlayerId)->pawnsCount()
+			&& (!pawn || pawn->playerId() != m_currentPlayerId);
+}
+
+QList<int> Game::findPossibleMoves(int score) const
+{
+	QList<int> moves;
+
+	for (int n = 0; n < 40; n++) {
+		auto *srcPawn = m_board->field(n)->pawn();
+
+		if (srcPawn && srcPawn->playerId() == m_currentPlayerId) {
+			int dst = n + score;
+
+			if (dst >= 40)
+				dst -= 40;
+
+			auto *dstPawn = m_board->field(dst)->pawn();
+
+			if (!(dstPawn && dstPawn->playerId() == m_currentPlayerId))
+				moves.append(n);
+		}
+	}
+
+	return moves;
+}
+
 int Game::toBoardCoordinates(int fieldNumber) const
 {
 	return 10*m_currentPlayerId + fieldNumber;
-}
-
-int Game::toPlayerCoordinates(int fieldNumber) const
-{
-	return fieldNumber - 10*m_currentPlayerId;
 }
 
 void Game::onPawnsCountChanged()

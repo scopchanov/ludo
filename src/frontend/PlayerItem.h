@@ -10,7 +10,9 @@ public:
 
 	int number() const;
 	void setNumber(int number);
-	bool highlighted() const;
+	const QColor &color() const;
+	void setColor(const QColor &color);
+	bool isHighlighted() const;
 	void setHighlighted(bool highlighted);
 
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *,

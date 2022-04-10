@@ -20,7 +20,7 @@ public:
 
 	explicit Game(QObject *parent = nullptr);
 
-	QList<QPair<int, int> > boardLayout() const;
+	QList<QPair<int, int>> boardLayout() const;
 
 	void rollDice();
 	void bringPawnOn();
@@ -29,8 +29,9 @@ public:
 	void reset();
 
 private:
+	bool checkBringIn(int score) const;
+	QList<int> findPossibleMoves(int score) const;
 	int toBoardCoordinates(int fieldNumber) const;
-	int toPlayerCoordinates(int fieldNumber) const;
 
 	Board *m_board;
 	Dice *m_dice;

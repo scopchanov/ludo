@@ -1,4 +1,5 @@
 #include "BoardScene.h"
+#include "ScoreItem.h"
 #include "FieldItem.h"
 #include "SpawnItem.h"
 #include "ArrowItem.h"
@@ -8,48 +9,59 @@
 
 BoardScene::BoardScene(QObject *parent) :
 	QGraphicsScene{parent},
+	m_scoreItem{new ScoreItem()},
 	m_currentPlayerId{0},
 	m_canBringPawnOn{false}
 {
 	setSceneRect(0, 0, 760, 760);
 	//	addRect(0, 0, 760, 760);
 
+	m_scoreItem->setPos(380, 380);
+
+
 	createPath();
 	createPlayers();
 	createFields();
 	createHomes();
 
-	auto *item = new PlayerItem();
+	auto *player = new PlayerItem();
 
-	item->setNumber(0);
-	item->setPos(190, 570);
+	player->setNumber(0);
+	player->setColor(playerColor(0));
+	player->setHighlighted(true);
+	player->setPos(190, 570);
 
-	addItem(item);
-	m_playerItems.append(item);
+	addItem(player);
+	m_playerItems.append(player);
 
-	item = new PlayerItem();
+	player = new PlayerItem();
 
-	item->setNumber(1);
-	item->setPos(190, 190);
+	player->setNumber(1);
+	player->setColor(playerColor(1));
+	player->setPos(190, 190);
 
-	addItem(item);
-	m_playerItems.append(item);
+	addItem(player);
+	m_playerItems.append(player);
 
-	item = new PlayerItem();
+	player = new PlayerItem();
 
-	item->setNumber(2);
-	item->setPos(570, 190);
+	player->setNumber(2);
+	player->setColor(playerColor(2));
+	player->setPos(570, 190);
 
-	addItem(item);
-	m_playerItems.append(item);
+	addItem(player);
+	m_playerItems.append(player);
 
-	item = new PlayerItem();
+	player = new PlayerItem();
 
-	item->setNumber(3);
-	item->setPos(570, 570);
+	player->setNumber(3);
+	player->setColor(playerColor(3));
+	player->setPos(570, 570);
 
-	addItem(item);
-	m_playerItems.append(item);
+	addItem(player);
+	m_playerItems.append(player);
+
+	addItem(m_scoreItem);
 }
 
 bool BoardScene::canBringOn() const
@@ -68,6 +80,11 @@ void BoardScene::setCurrentPlayerId(int currentPlayerId)
 
 	for (auto *player : qAsConst(m_playerItems))
 		player->setHighlighted(player->number() == m_currentPlayerId);
+}
+
+void BoardScene::setScore(int value)
+{
+	m_scoreItem->setScore(value);
 }
 
 void BoardScene::clearHighlight()
