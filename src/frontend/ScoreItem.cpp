@@ -1,5 +1,4 @@
 #include "ScoreItem.h"
-#include "qdebug.h"
 #include <QPainter>
 
 ScoreItem::ScoreItem(QGraphicsItem *parent) :

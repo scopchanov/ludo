@@ -3,6 +3,8 @@ QT += widgets
 CONFIG += c++17
 
 SOURCES += \
+    backend/Pathway.cpp \
+    backend/Home.cpp \
     backend/Player.cpp \
     frontend/ArrowItem.cpp \
     frontend/BoardScene.cpp \
@@ -21,6 +23,8 @@ SOURCES += \
     MainWindow.cpp
 
 HEADERS += \
+    backend/Pathway.h \
+    backend/Home.h \
     backend/Player.h \
     frontend/ArrowItem.h \
     frontend/BoardScene.h \

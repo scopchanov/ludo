@@ -4,8 +4,8 @@
 #include <QObject>
 
 class Board;
-class Dice;
 class Player;
+class Dice;
 
 class Game : public QObject
 {
@@ -20,19 +20,15 @@ public:
 
 	explicit Game(QObject *parent = nullptr);
 
-	QList<QPair<int, int>> boardLayout() const;
+	QJsonObject boardLayout() const;
 
 	void rollDice();
-	void bringPawnOn();
+	void bringPawnIn();
 	void movePawn(int srcField);
 	void advance();
 	void reset();
 
-private:
-	bool checkBringIn(int score) const;
-	QList<int> findPossibleMoves(int score) const;
-	int toBoardCoordinates(int fieldNumber) const;
-
+private:	
 	Board *m_board;
 	Dice *m_dice;
 	int m_currentPlayerId;
@@ -43,10 +39,11 @@ private slots:
 
 signals:
 	void diceRolled(int score);
-	void canBringOn(bool isBringOnPossible);
+	void bringInChanged(bool isBringInPossible);
 	void possibleMoves(const QList<int> &moves);
 	void pawnCountChanged(int playerId, int pawnCount);
 	void nextTurn(int currentPlayerId);
+	void playerWins(int playerId);
 };
 
 #endif // GAME_H

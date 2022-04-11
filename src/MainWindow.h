@@ -26,5 +26,6 @@ private slots:
 	void showPossibleMoves(const QList<int> &moves);
 	void onNextTurn(int currentPlayerId);
 	void onRollDice();
+	void onPlayerWins(int playerId);
 };
 #endif // MAINWINDOW_H

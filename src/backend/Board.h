@@ -3,7 +3,8 @@
 
 #include <QObject>
 
-class Field;
+class Pathway;
+class Home;
 class Pawn;
 
 class Board : public QObject
@@ -12,18 +13,28 @@ class Board : public QObject
 public:
 	explicit Board(QObject *parent = nullptr);
 
-	Field *field(int n) const;
-	bool bringPawnOn(Pawn *pawn, int fieldNumber);
-	bool movePawn(int srcSquare, int places);
+	QJsonObject boardLayout() const;
+	bool checkBringIn(int playerId) const;
+	QList<int> findPossibleMoves(int score, int playerId) const;
+
+	bool bringPawnIn(Pawn *pawn);
+	bool movePawn(int playerId, int fieldNumber, int score);
+	bool bringPawnOut(int fieldNumber, int score);
 	void reset();
 
 private:
-	bool occupyField(Field *field, Pawn *pawn);
+	bool checkBringOut(Pawn *pawn, int score) const;
+	bool checkMove(int playerId, int srcFieldNum, int score) const;
+	int toPathwayCoordinates(int fieldNumber, int playerId) const;
 
-	QList<Field *> m_fields;
+	Pathway *m_pathway;
+	QList<Home *> m_homes;
+
+private slots:
+	void onFullHome();
 
 signals:
-	void moveMade();
+	void playerWins(int playerId);
 };
 
 #endif // BOARD_H

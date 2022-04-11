@@ -1,9 +1,12 @@
 #include "Game.h"
-#include "Board.h"
 #include "Dice.h"
+#include "Board.h"
+#include "Pathway.h"
+#include "Home.h"
 #include "Pawn.h"
-#include "Player.h"
 #include "Field.h"
+#include "Player.h"
+#include <QJsonObject>
 #include <QDebug>
 
 Game::Game(QObject *parent) :
@@ -21,21 +24,12 @@ Game::Game(QObject *parent) :
 				this, &Game::onPawnsCountChanged);
 	}
 
-	connect(m_board, &Board::moveMade, this, &Game::advance);
+	connect(m_board, &Board::playerWins, this, &Game::playerWins);
 }
 
-QList<QPair<int, int>> Game::boardLayout() const
+QJsonObject Game::boardLayout() const
 {
-	QList<QPair<int, int>> pawns;
-
-	for (int n = 0; n < 40; n++) {
-		auto *pawn = m_board->field(n)->pawn();
-
-		if (pawn)
-			pawns.append(QPair<int, int>{n, pawn->playerId()});
-	}
-
-	return pawns;
+	return m_board->boardLayout();
 }
 
 void Game::rollDice()
@@ -43,69 +37,37 @@ void Game::rollDice()
 	m_dice->roll();
 
 	emit diceRolled(m_dice->score());
-	emit canBringOn(checkBringIn(m_dice->score()));
-	emit possibleMoves(findPossibleMoves(m_dice->score()));
+	emit bringInChanged(m_dice->score() == 6
+						&& m_players.at(m_currentPlayerId)->pawnsCount()
+						&& m_board->checkBringIn(m_currentPlayerId));
+	emit possibleMoves(m_board->findPossibleMoves(m_dice->score(),
+												  m_currentPlayerId));
 }
 
-void Game::bringPawnOn()
+void Game::bringPawnIn()
 {
-	m_board->bringPawnOn(m_players.at(m_currentPlayerId)->takePawn(),
-						 toBoardCoordinates(0));
+	if (m_board->bringPawnIn(m_players.at(m_currentPlayerId)->takePawn()))
+		advance();
 }
 
 void Game::movePawn(int srcField)
 {
-	m_board->movePawn(srcField, m_dice->score());
+	if (m_board->movePawn(m_currentPlayerId, srcField, m_dice->score()))
+		advance();
 }
 
 void Game::advance()
 {
 	if (m_dice->score() != 6)
 		if (++m_currentPlayerId >= m_players.count())
-		m_currentPlayerId = 0;
+			m_currentPlayerId = 0;
 
 	emit nextTurn(m_currentPlayerId);
 }
 
 void Game::reset()
 {
-
-}
-
-bool Game::checkBringIn(int score) const
-{
-	auto *pawn = m_board->field(toBoardCoordinates(0))->pawn();
-
-	return score == 6 && m_players.at(m_currentPlayerId)->pawnsCount()
-			&& (!pawn || pawn->playerId() != m_currentPlayerId);
-}
-
-QList<int> Game::findPossibleMoves(int score) const
-{
-	QList<int> moves;
-
-	for (int n = 0; n < 40; n++) {
-		auto *srcPawn = m_board->field(n)->pawn();
-
-		if (srcPawn && srcPawn->playerId() == m_currentPlayerId) {
-			int dst = n + score;
-
-			if (dst >= 40)
-				dst -= 40;
-
-			auto *dstPawn = m_board->field(dst)->pawn();
-
-			if (!(dstPawn && dstPawn->playerId() == m_currentPlayerId))
-				moves.append(n);
-		}
-	}
-
-	return moves;
-}
-
-int Game::toBoardCoordinates(int fieldNumber) const
-{
-	return 10*m_currentPlayerId + fieldNumber;
+//	m_board
 }
 
 void Game::onPawnsCountChanged()

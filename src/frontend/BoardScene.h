@@ -16,17 +16,17 @@ class BoardScene : public QGraphicsScene
 public:
 	explicit BoardScene(QObject *parent = nullptr);
 
-	bool canBringOn() const;
+	bool canBringIn() const;
 	int currentPlayerId() const;
 	void setCurrentPlayerId(int currentPlayerId);
 
 	void setScore(int value);
 
 	void clearHighlight();
-	void updateBoard(const QList<QPair<int, int>> &pawns);
+	void updateBoard(const QJsonObject &json);
 
 public slots:
-	void enableBringOn(bool canBringOn);
+	void enableBringIn(bool canBringIn);
 	void changePawnCount(int playerId, int pawnCount);
 	void highlightFields(const QList<int> &moves);
 
@@ -44,7 +44,7 @@ private:
 	QList<HomeItem *> m_homeItems;
 	ScoreItem *m_scoreItem;
 	int m_currentPlayerId;
-	bool m_canBringPawnOn;
+	bool m_canBringPawnIn;
 };
 
 #endif // BOARDSCENE_H

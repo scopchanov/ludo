@@ -25,7 +25,7 @@ private:
 	BoardScene *m_board;
 
 signals:
-	void bringPawnOn();
+	void bringPawnIn();
 	void movePawn(int srcField);
 };
 

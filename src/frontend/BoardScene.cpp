@@ -5,13 +5,15 @@
 #include "ArrowItem.h"
 #include "HomeItem.h"
 #include "PlayerItem.h"
+#include <QJsonObject>
+#include <QJsonArray>
 #include <QDebug>
 
 BoardScene::BoardScene(QObject *parent) :
 	QGraphicsScene{parent},
 	m_scoreItem{new ScoreItem()},
 	m_currentPlayerId{0},
-	m_canBringPawnOn{false}
+	m_canBringPawnIn{false}
 {
 	setSceneRect(0, 0, 760, 760);
 	//	addRect(0, 0, 760, 760);
@@ -64,9 +66,9 @@ BoardScene::BoardScene(QObject *parent) :
 	addItem(m_scoreItem);
 }
 
-bool BoardScene::canBringOn() const
+bool BoardScene::canBringIn() const
 {
-	return m_canBringPawnOn;
+	return m_canBringPawnIn;
 }
 
 int BoardScene::currentPlayerId() const
@@ -93,21 +95,32 @@ void BoardScene::clearHighlight()
 		field->setHighlighted(false);
 }
 
-void BoardScene::updateBoard(const QList<QPair<int, int> > &pawns)
+void BoardScene::updateBoard(const QJsonObject &json)
 {
 	for (auto *field : qAsConst(m_fieldItems))
 		field->setPawnColor(QColor());
 
-	for (const auto &pawn : pawns)
-		m_fieldItems.at(pawn.first)->setPawnColor(m_spawnItems.at(pawn.second)->color());
+	const QJsonArray &pathway{json.value("pathway").toArray()};
+	const QJsonArray &homes{json.value("homes").toArray()};
+
+	for (const auto &value : pathway) {
+		const QJsonObject &field{value.toObject()};
+		int n = field.value("number").toInt();
+		int playerId = field.value("player").toInt();
+
+		m_fieldItems.at(n)->setPawnColor(m_spawnItems.at(playerId)->color());
+	}
+
+	for (int n = 0; n < m_homeItems.count(); n++)
+		m_homeItems.at(n)->updateItem(homes.at(n).toArray());
 }
 
-void BoardScene::enableBringOn(bool canBringOn)
+void BoardScene::enableBringIn(bool canBringIn)
 {
-	m_canBringPawnOn = canBringOn;
+	m_canBringPawnIn = canBringIn;
 
 	for (auto *arrow : qAsConst(m_arrowItems))
-		arrow->setHighlighted(m_canBringPawnOn
+		arrow->setHighlighted(m_canBringPawnIn
 							  && arrow->number() == m_currentPlayerId);
 }
 
@@ -181,6 +194,8 @@ void BoardScene::createHomes()
 		home->setRotation(90*n);
 
 		addItem(home);
+
+		m_homeItems.append(home);
 	}
 }
 

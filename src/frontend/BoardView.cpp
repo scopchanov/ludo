@@ -47,12 +47,12 @@ void BoardView::fieldClicked(FieldItem *field)
 
 void BoardView::arrowClicked(ArrowItem *arrow)
 {
-	if (!m_board->canBringOn())
+	if (!m_board->canBringIn())
 		return;
 
 	if (!arrow->isHighlighted())
 		return;
 
-	m_board->enableBringOn(false);
-	emit bringPawnOn();
+	m_board->enableBringIn(false);
+	emit bringPawnIn();
 }
