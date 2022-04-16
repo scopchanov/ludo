@@ -57,7 +57,7 @@ void ArrowItem::paint(QPainter *painter,
 {
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing);
-	painter->setPen(m_highlighted ? QPen(QBrush(0x7E57C2), 5) : pen());
+	painter->setPen(m_highlighted ? QPen(QBrush(0xF57C00), 5) : pen());
 	painter->setBrush(brush());
 	painter->drawPath(path());
 	painter->restore();

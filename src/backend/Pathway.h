@@ -14,7 +14,7 @@ public:
 
 	Field *field(int n) const;
 	int fieldCount() const;
-	int pawnsCount() const;
+	bool isFull() const;
 
 	bool bringPawnIn(Pawn *pawn, int fieldNumber);
 	bool movePawn(int fieldNumber, int fieldCount);
@@ -22,14 +22,11 @@ public:
 	void reset();
 
 private:
-	Pawn *pawn(int fieldNumber);
+	bool isFieldIndexValid(int fieldNumber) const;
 	bool occupyField(Field *field, Pawn *pawn);
 
 	int m_pawnsCount;
 	QList<Field *> m_fields;
-
-signals:
-	void pawnsCountChanged(int pawnsCount);
 };
 
 #endif // PATHWAY_H

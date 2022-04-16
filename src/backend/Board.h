@@ -22,15 +22,12 @@ public:
 	void reset();
 
 private:
-	bool checkBringOut(Pawn *pawn, int score) const;
-	bool checkMove(int playerId, int srcFieldNum, int score) const;
+	bool isBringOutPossible(Pawn *pawn, int score) const;
+	bool isMovePossible(int playerId, int srcFieldNum, int score) const;
 	int toPathwayCoordinates(int fieldNumber, int playerId) const;
 
 	Pathway *m_pathway;
 	QList<Pathway *> m_homes;
-
-private slots:
-	void onFullHome();
 
 signals:
 	void playerWins(int playerId);

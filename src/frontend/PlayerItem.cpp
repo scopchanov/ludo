@@ -49,7 +49,7 @@ void PlayerItem::paint(QPainter *painter,
 {
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing);
-	painter->setPen(m_highlighted ? QPen(QBrush(0x7E57C2), 8) : pen());
+	painter->setPen(m_highlighted ? QPen(QBrush(0x7B1FA2), 8) : pen());
 	painter->setBrush(brush());
 	painter->drawEllipse(rect());
 	painter->restore();

@@ -65,7 +65,7 @@ void FieldItem::paint(QPainter *painter,
 	painter->drawEllipse(rect());
 
 	if (m_pawnColor.isValid()) {
-		painter->setPen(m_highlighted ? QPen(QBrush(0x7E57C2), 5)
+		painter->setPen(m_highlighted ? QPen(QBrush(0xF57C00), 5)
 									  : QPen(QBrush(0x424242), 3));
 		painter->setBrush(m_pawnColor.lighter(130));
 		painter->drawEllipse(rect().adjusted(10, 10, -10, -10));

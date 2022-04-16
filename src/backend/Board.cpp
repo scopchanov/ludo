@@ -10,13 +10,8 @@ Board::Board(QObject *parent) :
 	QObject{parent},
 	m_pathway{new Pathway(40, this)}
 {
-	for (int n = 0; n < 4; n++) {
-		auto *home = new Pathway(4, this);
-
-		m_homes.append(home);
-
-		connect(home, &Pathway::pawnsCountChanged, this, &Board::onFullHome);
-	}
+	for (int n = 0; n < 4; n++)
+		m_homes.append(new Pathway(4, this));
 }
 
 QJsonObject Board::boardLayout() const
@@ -71,8 +66,8 @@ QList<int> Board::findPossibleMoves(int score, int playerId) const
 
 		if (pawn && pawn->playerId() == playerId
 			&& (pawn->traveledDistance() + score < pathwayFieldCnt
-				? checkMove(playerId, fieldNum, score)
-				: checkBringOut(pawn, score)))
+				? isMovePossible(playerId, fieldNum, score)
+				: isBringOutPossible(pawn, score)))
 			moves.append(fieldNum);
 	}
 
@@ -94,12 +89,12 @@ bool Board::movePawn(int playerId, int fieldNumber, int score)
 	auto *pawn = m_pathway->field(fieldNumber)->pawn();
 	int pathwayFieldCnt = m_pathway->fieldCount();
 
-	if (pawn && pawn->playerId() == playerId && (pawn->traveledDistance()
-												 + score < pathwayFieldCnt)) {
-		if (checkMove(playerId, fieldNumber, score))
+	if (pawn && pawn->playerId() == playerId
+		&& (pawn->traveledDistance() + score < pathwayFieldCnt)) {
+		if (isMovePossible(playerId, fieldNumber, score))
 			return m_pathway->movePawn(fieldNumber, score);
 	} else {
-		if (checkBringOut(pawn, score))
+		if (isBringOutPossible(pawn, score))
 			return takePawnOut(fieldNumber, score);
 	}
 
@@ -113,9 +108,15 @@ bool Board::takePawnOut(int fieldNumber, int score)
 	if (!pawn)
 		return false;
 
-	return m_homes.at(pawn->playerId())->bringPawnIn(pawn,
-													 pawn->traveledDistance()
-													 - 40 + score);
+	auto *home = m_homes.at(pawn->playerId());
+
+	if (!home->bringPawnIn(pawn, pawn->traveledDistance() - 40 + score))
+		return false;
+
+	if (home->isFull())
+		emit playerWins(pawn->playerId());
+
+	return true;
 }
 
 void Board::reset()
@@ -126,7 +127,7 @@ void Board::reset()
 		home->reset();
 }
 
-bool Board::checkBringOut(Pawn *pawn, int score) const
+bool Board::isBringOutPossible(Pawn *pawn, int score) const
 {
 	if (!pawn)
 		return false;
@@ -139,7 +140,7 @@ bool Board::checkBringOut(Pawn *pawn, int score) const
 	return !m_homes.at(pawn->playerId())->field(fieldNum)->pawn();
 }
 
-bool Board::checkMove(int playerId, int srcFieldNum, int score) const
+bool Board::isMovePossible(int playerId, int srcFieldNum, int score) const
 {
 	int pathwayFieldCnt = m_pathway->fieldCount();
 	int dstFieldNum = srcFieldNum + score;
@@ -155,9 +156,4 @@ bool Board::checkMove(int playerId, int srcFieldNum, int score) const
 int Board::toPathwayCoordinates(int fieldNumber, int playerId) const
 {
 	return 10*playerId + fieldNumber;
-}
-
-void Board::onFullHome()
-{
-	emit playerWins(m_homes.indexOf(static_cast<Pathway *>(sender())));
 }

@@ -12,10 +12,7 @@ Pathway::Pathway(int fieldCount, QObject *parent) :
 
 Field *Pathway::field(int n) const
 {
-	if (n < 0 || n >= m_fields.count())
-		return nullptr;
-
-	return m_fields.at(n);
+	return isFieldIndexValid(n) ? m_fields.at(n) : nullptr;
 }
 
 int Pathway::fieldCount() const
@@ -23,22 +20,19 @@ int Pathway::fieldCount() const
 	return m_fields.count();
 }
 
-int Pathway::pawnsCount() const
+bool Pathway::isFull() const
 {
-	return m_pawnsCount;
+	return m_pawnsCount >= m_fields.count();
 }
 
 bool Pathway::bringPawnIn(Pawn *pawn, int fieldNumber)
 {
-	if (!pawn || fieldNumber < 0 || fieldNumber > m_fields.count())
-		return false;
+	bool success = !isFull() && pawn && isFieldIndexValid(fieldNumber)
+			&& occupyField(m_fields.at(fieldNumber), pawn);
 
-	if (!occupyField(m_fields.at(fieldNumber), pawn))
-		return false;
+	m_pawnsCount += success;
 
-	emit pawnsCountChanged(++m_pawnsCount);
-
-	return true;
+	return success;
 }
 
 bool Pathway::movePawn(int fieldNumber, int fieldCount)
@@ -58,7 +52,6 @@ bool Pathway::movePawn(int fieldNumber, int fieldCount)
 		return false;
 
 	pawn->increaseTraveledDistance(fieldCount);
-
 	field->setPawn(nullptr);
 
 	return true;
@@ -66,11 +59,12 @@ bool Pathway::movePawn(int fieldNumber, int fieldCount)
 
 Pawn *Pathway::takePawnOut(int fieldNumber)
 {
-	auto *pawn = Pathway::pawn(fieldNumber);
+	auto *field = Pathway::field(fieldNumber);
+	auto *pawn = field && field->pawn() ? field->pawn() : nullptr;
 
 	if (pawn) {
 		m_fields.at(fieldNumber)->setPawn(nullptr);
-		emit pawnsCountChanged(--m_pawnsCount);
+		m_pawnsCount--;
 	}
 
 	return pawn;
@@ -78,26 +72,16 @@ Pawn *Pathway::takePawnOut(int fieldNumber)
 
 void Pathway::reset()
 {
-	for (auto *field : qAsConst(m_fields)) {
-		auto *pawn = field->pawn();
-
-		if (pawn)
-			pawn->deleteLater();
-	}
+	for (auto *field : qAsConst(m_fields))
+		if (field->pawn())
+			field->pawn()->deleteLater();
 
 	m_pawnsCount = 0;
-
-	emit pawnsCountChanged(m_pawnsCount);
 }
 
-Pawn *Pathway::pawn(int fieldNumber)
+bool Pathway::isFieldIndexValid(int fieldNumber) const
 {
-	auto *field = Pathway::field(fieldNumber);
-
-	if (!field || !field->pawn())
-		return nullptr;
-
-	return field->pawn();
+	return fieldNumber >= 0 && fieldNumber < m_fields.count();
 }
 
 bool Pathway::occupyField(Field *field, Pawn *pawn)
