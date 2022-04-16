@@ -1,12 +1,12 @@
 #include "Pathway.h"
 #include "Field.h"
 #include "Pawn.h"
-#include <QDebug>
 
-Pathway::Pathway(QObject *parent) :
-	QObject{parent}
+Pathway::Pathway(int fieldCount, QObject *parent) :
+	QObject{parent},
+	m_pawnsCount{0}
 {
-	for (int n = 0; n < 40; n++)
+	for (int n = 0; n < fieldCount; n++)
 		m_fields.append(new Field(this));
 }
 
@@ -23,22 +23,33 @@ int Pathway::fieldCount() const
 	return m_fields.count();
 }
 
-bool Pathway::bringPawnIn(Pawn *pawn, int fieldNumber)
+int Pathway::pawnsCount() const
 {
-	return occupyField(m_fields.at(fieldNumber), pawn);
+	return m_pawnsCount;
 }
 
-bool Pathway::movePawn(int srcFieldNumber, int fieldCount)
+bool Pathway::bringPawnIn(Pawn *pawn, int fieldNumber)
 {
-	if (srcFieldNumber < 0 || srcFieldNumber >= m_fields.count())
+	if (!pawn || fieldNumber < 0 || fieldNumber > m_fields.count())
 		return false;
 
-	auto *pawn = m_fields.at(srcFieldNumber)->pawn();
-
-	if (!pawn)
+	if (!occupyField(m_fields.at(fieldNumber), pawn))
 		return false;
 
-	int dstFieldNumber = srcFieldNumber + fieldCount;
+	emit pawnsCountChanged(++m_pawnsCount);
+
+	return true;
+}
+
+bool Pathway::movePawn(int fieldNumber, int fieldCount)
+{
+	auto *field = Pathway::field(fieldNumber);
+
+	if (!field || !field->pawn())
+		return false;
+
+	auto *pawn = field->pawn();
+	int dstFieldNumber = fieldNumber + fieldCount;
 
 	if (dstFieldNumber >= m_fields.count())
 		dstFieldNumber -= m_fields.count();
@@ -48,27 +59,45 @@ bool Pathway::movePawn(int srcFieldNumber, int fieldCount)
 
 	pawn->increaseTraveledDistance(fieldCount);
 
-	m_fields.at(srcFieldNumber)->setPawn(nullptr);
+	field->setPawn(nullptr);
 
 	return true;
 }
 
-Pawn *Pathway::bringPawnOut(int fieldNumber)
+Pawn *Pathway::takePawnOut(int fieldNumber)
 {
-	if (fieldNumber < 0 || fieldNumber >= m_fields.count())
-		return nullptr;
+	auto *pawn = Pathway::pawn(fieldNumber);
 
-	auto *field = m_fields.at(fieldNumber);
-	auto *pawn = field->pawn();
-
-	field->setPawn(nullptr);
+	if (pawn) {
+		m_fields.at(fieldNumber)->setPawn(nullptr);
+		emit pawnsCountChanged(--m_pawnsCount);
+	}
 
 	return pawn;
 }
 
 void Pathway::reset()
 {
+	for (auto *field : qAsConst(m_fields)) {
+		auto *pawn = field->pawn();
 
+		if (pawn)
+			pawn->deleteLater();
+	}
+
+	m_pawnsCount = 0;
+
+	emit pawnsCountChanged(m_pawnsCount);
+}
+
+Pawn *Pathway::pawn(int fieldNumber)
+{
+	auto *field = Pathway::field(fieldNumber);
+
+	if (!field || !field->pawn())
+		return nullptr;
+
+	return field->pawn();
 }
 
 bool Pathway::occupyField(Field *field, Pawn *pawn)

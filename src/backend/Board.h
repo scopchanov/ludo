@@ -4,7 +4,6 @@
 #include <QObject>
 
 class Pathway;
-class Home;
 class Pawn;
 
 class Board : public QObject
@@ -19,7 +18,7 @@ public:
 
 	bool bringPawnIn(Pawn *pawn);
 	bool movePawn(int playerId, int fieldNumber, int score);
-	bool bringPawnOut(int fieldNumber, int score);
+	bool takePawnOut(int fieldNumber, int score);
 	void reset();
 
 private:
@@ -28,7 +27,7 @@ private:
 	int toPathwayCoordinates(int fieldNumber, int playerId) const;
 
 	Pathway *m_pathway;
-	QList<Home *> m_homes;
+	QList<Pathway *> m_homes;
 
 private slots:
 	void onFullHome();

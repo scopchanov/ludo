@@ -1,6 +1,5 @@
 #include "Board.h"
 #include "Pathway.h"
-#include "Home.h"
 #include "Field.h"
 #include "Pawn.h"
 #include <QDebug>
@@ -9,16 +8,14 @@
 
 Board::Board(QObject *parent) :
 	QObject{parent},
-	m_pathway{new Pathway(this)}
+	m_pathway{new Pathway(40, this)}
 {
 	for (int n = 0; n < 4; n++) {
-		auto *home = new Home(this);
-
-		home->setPlayerId(n);
+		auto *home = new Pathway(4, this);
 
 		m_homes.append(home);
 
-		connect(home, &Home::fullHome, this, &Board::onFullHome);
+		connect(home, &Pathway::pawnsCountChanged, this, &Board::onFullHome);
 	}
 }
 
@@ -103,15 +100,15 @@ bool Board::movePawn(int playerId, int fieldNumber, int score)
 			return m_pathway->movePawn(fieldNumber, score);
 	} else {
 		if (checkBringOut(pawn, score))
-			return bringPawnOut(fieldNumber, score);
+			return takePawnOut(fieldNumber, score);
 	}
 
 	return false;
 }
 
-bool Board::bringPawnOut(int fieldNumber, int score)
+bool Board::takePawnOut(int fieldNumber, int score)
 {
-	auto *pawn = m_pathway->bringPawnOut(fieldNumber);
+	auto *pawn = m_pathway->takePawnOut(fieldNumber);
 
 	if (!pawn)
 		return false;
@@ -125,7 +122,7 @@ void Board::reset()
 {
 	m_pathway->reset();
 
-	for (auto *home : m_homes)
+	for (auto *home : qAsConst(m_homes))
 		home->reset();
 }
 
@@ -162,5 +159,5 @@ int Board::toPathwayCoordinates(int fieldNumber, int playerId) const
 
 void Board::onFullHome()
 {
-	emit playerWins(static_cast<Home *>(sender())->playerId());
+	emit playerWins(m_homes.indexOf(static_cast<Pathway *>(sender())));
 }
