@@ -30,7 +30,7 @@ private:
 	QList<Pathway *> m_homes;
 
 signals:
-	void playerWins(int playerId);
+	void playerEscaped(int playerId);
 };
 
 #endif // BOARD_H

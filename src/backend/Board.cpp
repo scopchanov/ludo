@@ -114,7 +114,7 @@ bool Board::takePawnOut(int fieldNumber, int score)
 		return false;
 
 	if (home->isFull())
-		emit playerWins(pawn->playerId());
+		emit playerEscaped(pawn->playerId());
 
 	return true;
 }

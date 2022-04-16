@@ -23,7 +23,7 @@ Game::Game(QObject *parent) :
 				this, &Game::onPawnsCountChanged);
 	}
 
-	connect(m_board, &Board::playerWins, this, &Game::playerWins);
+	connect(m_board, &Board::playerEscaped, this, &Game::onPlayerEscaped);
 }
 
 QJsonObject Game::boardLayout() const
@@ -58,15 +58,24 @@ void Game::movePawn(int srcField)
 void Game::advance()
 {
 	if (m_dice->score() != 6)
-		if (++m_currentPlayerId >= m_players.count())
-			m_currentPlayerId = 0;
+		switchToNextPlayer();
 
 	emit nextTurn(m_currentPlayerId);
 }
 
 void Game::reset()
 {
-//	m_board
+	m_board->reset();
+	m_escapedPlayers.clear();
+}
+
+void Game::switchToNextPlayer()
+{
+	if (++m_currentPlayerId == m_players.count())
+		m_currentPlayerId = 0;
+
+	if (m_escapedPlayers.contains(m_players.at(m_currentPlayerId)))
+		switchToNextPlayer();
 }
 
 void Game::onPawnsCountChanged()
@@ -74,4 +83,10 @@ void Game::onPawnsCountChanged()
 	auto *player = static_cast<Player *>(sender());
 
 	emit pawnCountChanged(player->id(), player->pawnsCount());
+}
+
+void Game::onPlayerEscaped(int playerId)
+{
+	m_escapedPlayers.append(m_players.at(playerId));
+	m_escapedPlayers.count() == 3 ? emit gameOver() : emit playerWon(playerId);
 }

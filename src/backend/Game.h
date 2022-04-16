@@ -28,14 +28,18 @@ public:
 	void advance();
 	void reset();
 
-private:	
+private:
+	void switchToNextPlayer();
+
 	Board *m_board;
 	Dice *m_dice;
 	int m_currentPlayerId;
 	QList<Player *> m_players;
+	QList<Player *> m_escapedPlayers;
 
 private slots:
 	void onPawnsCountChanged();
+	void onPlayerEscaped(int playerId);
 
 signals:
 	void diceRolled(int score);
@@ -43,7 +47,8 @@ signals:
 	void possibleMoves(const QList<int> &moves);
 	void pawnCountChanged(int playerId, int pawnCount);
 	void nextTurn(int currentPlayerId);
-	void playerWins(int playerId);
+	void playerWon(int playerId);
+	void gameOver();
 };
 
 #endif // GAME_H

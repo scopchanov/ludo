@@ -32,7 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(m_game, &Game::possibleMoves, this, &MainWindow::showPossibleMoves);
 	connect(m_game, &Game::pawnCountChanged, m_boardView->board(), &BoardScene::changePawnCount);
 	connect(m_game, &Game::nextTurn, this, &MainWindow::onNextTurn);
-	connect(m_game, &Game::playerWins, this, &MainWindow::onPlayerWins);
+	connect(m_game, &Game::playerWon, this, &MainWindow::onPlayerWon);
+	connect(m_game, &Game::gameOver, this, &MainWindow::onGameOver);
 
 	connect(m_btnRollDice, &QPushButton::clicked, this, &MainWindow::onRollDice);
 	connect(m_boardView, &BoardView::bringPawnIn, m_game, &Game::bringPawnIn);
@@ -70,10 +71,14 @@ void MainWindow::onRollDice()
 	m_game->rollDice();
 }
 
-void MainWindow::onPlayerWins(int playerId)
+void MainWindow::onPlayerWon(int playerId)
 {
 	QMessageBox::information(this, "Ludo", "Player " + QString::number(playerId)
 							 + " wins.");
+}
 
-	m_game->reset();
+void MainWindow::onGameOver()
+{
+	QMessageBox::information(this, "Ludo", "Game over.");
+//	m_game->reset();
 }
