@@ -1,14 +1,13 @@
 #include "SpawnItem.h"
 #include "FieldItem.h"
 #include <QPainter>
-#include <QDebug>
 
 SpawnItem::SpawnItem(int playerId, const QColor &color, QGraphicsItem *parent) :
 	QGraphicsRectItem{parent},
 	m_playerId{playerId}
 {
-	for (int n = 0; n < 4; n++) {
-		auto *field = new FieldItem(this);
+	for (int n{0}; n < 4; n++) {
+        auto *field{new FieldItem(this)};
 
 		field->setNumber(n);
 		field->setPos(70*(n / 2) - 35, 70*(n % 2) - 35);
@@ -34,13 +33,13 @@ QColor SpawnItem::color() const
 
 void SpawnItem::setPawnCount(int n)
 {
-	for (auto *field : qAsConst(m_fields))
+    for (auto *field : m_fields)
 		field->setPawnColor(m_fields.indexOf(field) < n
 							? m_fields.first()->color()
 							: QColor());
 }
 
-void SpawnItem::paint(QPainter *painter,
+void SpawnItem::paint(QPainter */*painter*/,
 					   const QStyleOptionGraphicsItem */*option*/,
 					   QWidget */*widget*/)
 {

@@ -10,7 +10,7 @@ Board::Board(QObject *parent) :
 	QObject{parent},
 	m_pathway{new Pathway(40, this)}
 {
-	for (int n = 0; n < 4; n++)
+	for (int n{0}; n < 4; n++)
 		m_homes.append(new Pathway(4, this));
 }
 
@@ -20,7 +20,7 @@ QJsonObject Board::boardLayout() const
 	QJsonArray pathway;
 	QJsonArray homes;
 
-	for (int n = 0; n < m_pathway->fieldCount(); n++) {
+	for (int n{0}; n < m_pathway->fieldCount(); n++) {
 		auto *pawn = m_pathway->field(n)->pawn();
 
 		if (pawn)
@@ -33,7 +33,7 @@ QJsonObject Board::boardLayout() const
 	for (int m = 0; m < 4; m++) {
 		QJsonArray home;
 
-		for (int n = 0; n < 4; n++) {
+		for (int n{0}; n < 4; n++) {
 			auto *pawn = m_homes.at(m)->field(n)->pawn();
 
 			if (pawn)

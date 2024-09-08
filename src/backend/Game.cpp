@@ -1,12 +1,8 @@
 #include "Game.h"
 #include "Dice.h"
 #include "Board.h"
-#include "Pathway.h"
-#include "Pawn.h"
-#include "Field.h"
 #include "Player.h"
 #include <QJsonObject>
-#include <QDebug>
 
 Game::Game(QObject *parent) :
 	QObject{parent},
@@ -14,7 +10,7 @@ Game::Game(QObject *parent) :
 	m_dice{new Dice(this)},
 	m_currentPlayerId{0}
 {
-	for (int n = 0; n < 4; n++) {
+	for (int n{0}; n < 4; n++) {
 		auto *player = new Player(n, this);
 
 		m_players.append(player);
@@ -80,7 +76,7 @@ void Game::switchToNextPlayer()
 
 void Game::onPawnsCountChanged()
 {
-	auto *player = static_cast<Player *>(sender());
+    auto *player{static_cast<Player *>(sender())};
 
 	emit pawnCountChanged(player->id(), player->pawnsCount());
 }

@@ -22,7 +22,7 @@ BoardScene *BoardView::board() const
 
 void BoardView::mousePressEvent(QMouseEvent *event)
 {
-	auto *item = itemAt(event->pos());
+    auto *item{itemAt(event->pos())};
 
 	if (!item)
 		return;

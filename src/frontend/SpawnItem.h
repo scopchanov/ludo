@@ -15,8 +15,7 @@ public:
 	QColor color() const;
 	void setPawnCount(int n);
 
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *,
-			   QWidget *) override;
+    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override;
 	int type() const override;
 
 private:

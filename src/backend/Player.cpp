@@ -5,8 +5,8 @@ Player::Player(int playerId, QObject *parent) :
 	QObject{parent},
 	m_id{playerId}
 {
-	for (int n = 0; n < 4; n++) {
-		auto *pawn = new Pawn(playerId, this);
+	for (int n{0}; n < 4; n++) {
+        auto *pawn{new Pawn(playerId, this)};
 
 		m_pawns.append(pawn);
 

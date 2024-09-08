@@ -7,7 +7,6 @@
 #include "PlayerItem.h"
 #include <QJsonObject>
 #include <QJsonArray>
-#include <QDebug>
 
 BoardScene::BoardScene(QObject *parent) :
 	QGraphicsScene{parent},
@@ -15,18 +14,16 @@ BoardScene::BoardScene(QObject *parent) :
 	m_currentPlayerId{0},
 	m_canBringPawnIn{false}
 {
-	setSceneRect(0, 0, 760, 760);
-	//	addRect(0, 0, 760, 760);
+    setSceneRect(0, 0, 760, 760);
 
 	m_scoreItem->setPos(380, 380);
-
 
 	createPath();
 	createPlayers();
 	createFields();
 	createHomes();
 
-	auto *player = new PlayerItem();
+    auto *player{new PlayerItem()};
 
 	player->setNumber(0);
 	player->setColor(playerColor(0));
@@ -80,7 +77,7 @@ void BoardScene::setCurrentPlayerId(int currentPlayerId)
 {
 	m_currentPlayerId = currentPlayerId;
 
-	for (auto *player : qAsConst(m_playerItems))
+    for (auto *player : m_playerItems)
 		player->setHighlighted(player->number() == m_currentPlayerId);
 }
 
@@ -91,13 +88,13 @@ void BoardScene::setScore(int value)
 
 void BoardScene::clearHighlight()
 {
-	for (auto *field : qAsConst(m_fieldItems))
+    for (auto *field : m_fieldItems)
 		field->setHighlighted(false);
 }
 
 void BoardScene::updateBoard(const QJsonObject &json)
 {
-	for (auto *field : qAsConst(m_fieldItems))
+    for (auto *field : m_fieldItems)
 		field->setPawnColor(QColor());
 
 	const QJsonArray &pathway{json.value("pathway").toArray()};
@@ -105,13 +102,13 @@ void BoardScene::updateBoard(const QJsonObject &json)
 
 	for (const auto &value : pathway) {
 		const QJsonObject &field{value.toObject()};
-		int n = field.value("number").toInt();
-		int playerId = field.value("player").toInt();
+        int n{field.value("number").toInt()};
+        int playerId{field.value("player").toInt()};
 
 		m_fieldItems.at(n)->setPawnColor(m_spawnItems.at(playerId)->color());
 	}
 
-	for (int n = 0; n < m_homeItems.count(); n++)
+    for (int n{0}; n < m_homeItems.count(); n++)
 		m_homeItems.at(n)->updateItem(homes.at(n).toArray());
 }
 
@@ -119,7 +116,7 @@ void BoardScene::enableBringIn(bool canBringIn)
 {
 	m_canBringPawnIn = canBringIn;
 
-	for (auto *arrow : qAsConst(m_arrowItems))
+    for (auto *arrow : std::as_const(m_arrowItems))
 		arrow->setHighlighted(m_canBringPawnIn
 							  && arrow->number() == m_currentPlayerId);
 }
@@ -147,8 +144,8 @@ void BoardScene::createPath()
 
 void BoardScene::createPlayers()
 {
-	for (int n = 0; n < 4; n++) {
-		auto *player = new SpawnItem(n, playerColor(n));
+    for (int n{0}; n < 4; n++) {
+        auto *player{new SpawnItem(n, playerColor(n))};
 
 		player->setPos(630*(n / 2) + 65, -630*(n / 2 != n % 2) + 695);
 
@@ -156,7 +153,7 @@ void BoardScene::createPlayers()
 
 		m_spawnItems.append(player);
 
-		auto *arrow = new ArrowItem();
+        auto *arrow{new ArrowItem()};
 
 		arrow->setNumber(n);
 		arrow->setColor(player->color());
@@ -185,9 +182,9 @@ void BoardScene::createPlayers()
 
 void BoardScene::createHomes()
 {
-	for (int n = 0; n < 4; n++) {
-		auto *home = new HomeItem(m_spawnItems.at(n)->color());
-		double pi = 3.1415;
+    for (int n{0}; n < 4; n++) {
+        auto *home{new HomeItem(m_spawnItems.at(n)->color())};
+        double pi{3.1415};
 
 		home->setPos(175*round(sin((4 - n)*pi/2)) + 380,
 					 175*round(cos((4 - n)*pi/2)) + 380);
@@ -202,13 +199,13 @@ void BoardScene::createHomes()
 void BoardScene::createFields()
 {
 	const QList<int> &directions{2, 3, 2, 1, 2, 1, 0, 1, 0, 3, 0, 3};
-	int x = 310;
-	int y = 730;
-	int k = -1;
+    int x{310};
+    int y{730};
+    int k{-1};
 
-	for (int n = 0; n < 40; n++) {
-		auto *field = new FieldItem();
-		int mod10 = n % 10;
+    for (int n{0}; n < 40; n++) {
+        auto *field{new FieldItem()};
+        int mod10{n % 10};
 
 		field->setNumber(n);
 		field->setPos(x, y);
@@ -223,7 +220,7 @@ void BoardScene::createFields()
 		if (!(mod10 % 4))
 			k++;
 
-		int direction = directions.at(k);
+        int direction{directions.at(k)};
 
 		x = direction == 1 ? x + 70 : direction == 3 ? x - 70 : x;
 		y = direction == 0 ? y + 70 : direction == 2 ? y - 70 : y;

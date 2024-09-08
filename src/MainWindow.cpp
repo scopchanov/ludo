@@ -1,7 +1,5 @@
 #include "MainWindow.h"
 #include "backend/Game.h"
-#include "backend/Player.h"
-#include "frontend/ScoreItem.h"
 #include "frontend/BoardView.h"
 #include "frontend/BoardScene.h"
 #include <QJsonObject>
@@ -15,8 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	m_boardView{new BoardView(this)},
 	m_btnRollDice{new QPushButton(tr("&Roll Dice"), this)}
 {
-	auto *widget = new QWidget(this);
-	auto *layoutMain = new QHBoxLayout(widget);
+    auto *widget{new QWidget(this)};
+    auto *layoutMain{new QHBoxLayout(widget)};
 
 	m_btnRollDice->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
@@ -28,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	resize(1200, 1000);
 
 	connect(m_game, &Game::diceRolled, this, &MainWindow::onDiceRolled);
-	connect(m_game, &Game::bringInChanged, m_boardView->board(), &BoardScene::enableBringIn);
+    connect(m_game, &Game::bringInChanged, m_boardView->board(), &BoardScene::enableBringIn);
 	connect(m_game, &Game::possibleMoves, this, &MainWindow::showPossibleMoves);
 	connect(m_game, &Game::pawnCountChanged, m_boardView->board(), &BoardScene::changePawnCount);
 	connect(m_game, &Game::nextTurn, this, &MainWindow::onNextTurn);
