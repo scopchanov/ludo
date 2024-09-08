@@ -11,7 +11,7 @@ Game::Game(QObject *parent) :
 	m_currentPlayerId{0}
 {
 	for (int n{0}; n < 4; n++) {
-		auto *player = new Player(n, this);
+        auto *player{new Player(n, this)};
 
 		m_players.append(player);
 
