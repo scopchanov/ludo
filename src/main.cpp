@@ -1,7 +1,7 @@
 /**
 MIT License
 
-Copyright (c) 2022 Michael Scopchanov
+Copyright (c) 2022-2024 Michael Scopchanov
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 	QApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 	QApplication a(argc, argv);
 	QFontDatabase::addApplicationFont(":/bin/fonts/roboto/Roboto-Regular.ttf");
-	QGuiApplication::setFont(QFont("Roboto", 11));
+    QGuiApplication::setFont(QFont("Roboto", 14));
 	MainWindow w;
 
 	w.show();

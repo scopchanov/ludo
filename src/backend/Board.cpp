@@ -20,7 +20,7 @@ QJsonObject Board::boardLayout() const
 	QJsonArray pathway;
 	QJsonArray homes;
 
-	for (int n{0}; n < m_pathway->fieldCount(); n++) {
+    for (int n{0}; n < m_pathway->fieldCount(); n++) {
 		auto *pawn = m_pathway->field(n)->pawn();
 
 		if (pawn)
@@ -30,11 +30,11 @@ QJsonObject Board::boardLayout() const
 
 	json["pathway"] = pathway;
 
-	for (int m = 0; m < 4; m++) {
+    for (size_t m{0}; m < 4; m++) {
 		QJsonArray home;
 
-		for (int n{0}; n < 4; n++) {
-			auto *pawn = m_homes.at(m)->field(n)->pawn();
+        for (int n{0}; n < 4; n++) {
+            auto *pawn{m_homes.at(m)->field(n)->pawn()};
 
 			if (pawn)
 				home.append(QJsonObject{{"number", n},
@@ -51,7 +51,7 @@ QJsonObject Board::boardLayout() const
 
 bool Board::checkBringIn(int playerId) const
 {
-	auto *pawn = m_pathway->field(toPathwayCoordinates(0, playerId))->pawn();
+    auto *pawn{m_pathway->field(toPathwayCoordinates(0, playerId))->pawn()};
 
 	return !pawn || pawn->playerId() != playerId;
 }
@@ -59,10 +59,10 @@ bool Board::checkBringIn(int playerId) const
 QList<int> Board::findPossibleMoves(int score, int playerId) const
 {
 	QList<int> moves;
-	int pathwayFieldCnt = m_pathway->fieldCount();
+    int pathwayFieldCnt{m_pathway->fieldCount()};
 
-	for (int fieldNum = 0; fieldNum < pathwayFieldCnt; fieldNum++) {
-		auto *pawn = m_pathway->field(fieldNum)->pawn();
+    for (size_t fieldNum{0}; fieldNum < pathwayFieldCnt; fieldNum++) {
+        auto *pawn{m_pathway->field(fieldNum)->pawn()};
 
 		if (pawn && pawn->playerId() == playerId
 			&& (pawn->traveledDistance() + score < pathwayFieldCnt
@@ -79,15 +79,15 @@ bool Board::bringPawnIn(Pawn *pawn)
 	if (!pawn)
 		return false;
 
-	int playerId = pawn->playerId();
+    int playerId{pawn->playerId()};
 
 	return m_pathway->bringPawnIn(pawn, toPathwayCoordinates(0, playerId));
 }
 
 bool Board::movePawn(int playerId, int fieldNumber, int score)
 {
-	auto *pawn = m_pathway->field(fieldNumber)->pawn();
-	int pathwayFieldCnt = m_pathway->fieldCount();
+    auto *pawn{m_pathway->field(fieldNumber)->pawn()};
+    int pathwayFieldCnt{m_pathway->fieldCount()};
 
 	if (pawn && pawn->playerId() == playerId
 		&& (pawn->traveledDistance() + score < pathwayFieldCnt)) {
@@ -103,12 +103,12 @@ bool Board::movePawn(int playerId, int fieldNumber, int score)
 
 bool Board::takePawnOut(int fieldNumber, int score)
 {
-	auto *pawn = m_pathway->takePawnOut(fieldNumber);
+    auto *pawn{m_pathway->takePawnOut(fieldNumber)};
 
 	if (!pawn)
 		return false;
 
-	auto *home = m_homes.at(pawn->playerId());
+    auto *home{m_homes.at(pawn->playerId())};
 
 	if (!home->bringPawnIn(pawn, pawn->traveledDistance() - 40 + score))
 		return false;
@@ -123,7 +123,7 @@ void Board::reset()
 {
 	m_pathway->reset();
 
-	for (auto *home : qAsConst(m_homes))
+    for (auto *home : m_homes)
 		home->reset();
 }
 
@@ -132,7 +132,7 @@ bool Board::isBringOutPossible(Pawn *pawn, int score) const
 	if (!pawn)
 		return false;
 
-	int fieldNum = pawn->traveledDistance() + score - m_pathway->fieldCount();
+    int fieldNum{pawn->traveledDistance() + score - m_pathway->fieldCount()};
 
 	if (fieldNum > 3)
 		return false;
@@ -142,13 +142,13 @@ bool Board::isBringOutPossible(Pawn *pawn, int score) const
 
 bool Board::isMovePossible(int playerId, int srcFieldNum, int score) const
 {
-	int pathwayFieldCnt = m_pathway->fieldCount();
-	int dstFieldNum = srcFieldNum + score;
+    int pathwayFieldCnt{m_pathway->fieldCount()};
+    int dstFieldNum{srcFieldNum + score};
 
 	if (dstFieldNum >= pathwayFieldCnt)
 		dstFieldNum -= pathwayFieldCnt;
 
-	auto *pawn = m_pathway->field(dstFieldNum)->pawn();
+    auto *pawn{m_pathway->field(dstFieldNum)->pawn()};
 
 	return !pawn || pawn->playerId() != playerId;
 }

@@ -6,7 +6,7 @@
 class QLabel;
 class QPushButton;
 class Game;
-class BoardView;
+class BoardScene;
 class ScoreItem;
 
 class MainWindow : public QMainWindow
@@ -17,7 +17,7 @@ public:
 
 private:
 	Game *m_game;
-	BoardView *m_boardView;
+    BoardScene *m_board;
 	QPushButton *m_btnRollDice;
 	ScoreItem *m_scoreDisplay;
 

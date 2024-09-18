@@ -19,6 +19,7 @@ public:
 	bool canBringIn() const;
 	int currentPlayerId() const;
 	void setCurrentPlayerId(int currentPlayerId);
+    void setCurrentPlayerText(const QString &str);
 
 	void setScore(int value);
 
@@ -32,9 +33,10 @@ public slots:
 
 private:
 	void createPath();
-	void createPlayers();
+	void createIslands();
 	void createHomes();
 	void createFields();
+    void createPlayers();
 	int playerColor(int playerId) const;
 
 	QList<FieldItem *> m_fieldItems;

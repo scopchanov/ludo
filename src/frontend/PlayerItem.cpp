@@ -4,11 +4,14 @@
 PlayerItem::PlayerItem(QGraphicsItem *parent) :
 	QGraphicsEllipseItem{parent},
 	m_number{0},
-	m_highlighted{false}
+    m_highlighted{false},
+    m_label{new QGraphicsTextItem(this)}
 {
 	setRect(-70, -70, 140, 140);
 	setPen(QPen(QBrush(0x313131), 3));
 	setBrush(QBrush(Qt::white));
+
+    m_label->setPos(-60, 75);
 }
 
 int PlayerItem::number() const
@@ -16,9 +19,9 @@ int PlayerItem::number() const
 	return m_number;
 }
 
-void PlayerItem::setNumber(int number)
+void PlayerItem::setNumber(int n)
 {
-	m_number = number;
+    m_number = n;
 }
 
 const QColor &PlayerItem::color() const
@@ -26,10 +29,20 @@ const QColor &PlayerItem::color() const
 	return brush().color();
 }
 
-void PlayerItem::setColor(const QColor &color)
+void PlayerItem::setColor(const QColor &c)
 {
-	setBrush(QBrush(color));
+    setBrush(QBrush(c));
 	update();
+}
+
+QString PlayerItem::text() const
+{
+    return m_label->toPlainText();
+}
+
+void PlayerItem::setText(const QString &str)
+{
+    m_label->setPlainText(str);
 }
 
 bool PlayerItem::isHighlighted() const
@@ -37,10 +50,15 @@ bool PlayerItem::isHighlighted() const
 	return m_highlighted;
 }
 
-void PlayerItem::setHighlighted(bool highlighted)
+void PlayerItem::setHighlighted(bool value)
 {
-	m_highlighted = highlighted;
+    m_highlighted = value;
 	update();
+}
+
+void PlayerItem::clear()
+{
+    m_label->setPlainText("");
 }
 
 void PlayerItem::paint(QPainter *painter,

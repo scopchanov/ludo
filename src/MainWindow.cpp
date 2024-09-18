@@ -10,57 +10,64 @@
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	m_game{new Game(this)},
-	m_boardView{new BoardView(this)},
+    m_board{nullptr},
 	m_btnRollDice{new QPushButton(tr("&Roll Dice"), this)}
 {
     auto *widget{new QWidget(this)};
-    auto *layoutMain{new QHBoxLayout(widget)};
+    auto *layoutMain{new QVBoxLayout(widget)};
+    auto *boardView{new BoardView(this)};
 
-	m_btnRollDice->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    m_board = boardView->board();
 
-	layoutMain->addWidget(m_boardView);
+    m_btnRollDice->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_btnRollDice->setMinimumHeight(100);
+
+    layoutMain->addWidget(boardView);
 	layoutMain->addWidget(m_btnRollDice);
 	layoutMain->setContentsMargins(0, 0, 0, 0);
+    layoutMain->setSpacing(0);
 
 	setCentralWidget(widget);
-	resize(1200, 1000);
+    resize(600, 700);
 
 	connect(m_game, &Game::diceRolled, this, &MainWindow::onDiceRolled);
-    connect(m_game, &Game::bringInChanged, m_boardView->board(), &BoardScene::enableBringIn);
+    connect(m_game, &Game::bringInChanged, m_board, &BoardScene::enableBringIn);
 	connect(m_game, &Game::possibleMoves, this, &MainWindow::showPossibleMoves);
-	connect(m_game, &Game::pawnCountChanged, m_boardView->board(), &BoardScene::changePawnCount);
+    connect(m_game, &Game::pawnCountChanged, m_board, &BoardScene::changePawnCount);
 	connect(m_game, &Game::nextTurn, this, &MainWindow::onNextTurn);
 	connect(m_game, &Game::playerWon, this, &MainWindow::onPlayerWon);
 	connect(m_game, &Game::gameOver, this, &MainWindow::onGameOver);
 
 	connect(m_btnRollDice, &QPushButton::clicked, this, &MainWindow::onRollDice);
-	connect(m_boardView, &BoardView::bringPawnIn, m_game, &Game::bringPawnIn);
-	connect(m_boardView, &BoardView::movePawn, m_game, &Game::movePawn);
+    connect(boardView, &BoardView::bringPawnIn, m_game, &Game::bringPawnIn);
+    connect(boardView, &BoardView::movePawn, m_game, &Game::movePawn);
 }
 
 void MainWindow::onDiceRolled(int score)
 {
-	m_boardView->board()->setScore(score);
+    m_board->setScore(score);
 }
 
 void MainWindow::showPossibleMoves(const QList<int> &moves)
 {
-	if (m_boardView->board()->canBringIn() || !moves.isEmpty()) {
-		m_boardView->board()->highlightFields(moves);
+    if (m_board->canBringIn() || !moves.isEmpty()) {
+        m_board->highlightFields(moves);
 	} else {
-		QMessageBox::warning(this, "Ludo", "You have no valid moves.");
+        m_board->setCurrentPlayerText(tr("Can't move."));
+        // QMessageBox::warning(this, "Ludo", "You have no valid moves.");
 		m_game->advance();
 	}
 }
 
 void MainWindow::onNextTurn(int currentPlayerId)
 {
+    // m_messageView->clear();
 	m_btnRollDice->setEnabled(true);
-	m_boardView->board()->enableBringIn(false);
-	m_boardView->board()->setScore(0);
-	m_boardView->board()->setCurrentPlayerId(currentPlayerId);
-	m_boardView->board()->clearHighlight();
-	m_boardView->board()->updateBoard(m_game->boardLayout());
+    m_board->enableBringIn(false);
+    // m_board->setScore(0);
+    m_board->setCurrentPlayerId(currentPlayerId);
+    m_board->clearHighlight();
+    m_board->updateBoard(m_game->boardLayout());
 }
 
 void MainWindow::onRollDice()
