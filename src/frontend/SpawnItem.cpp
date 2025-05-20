@@ -4,18 +4,18 @@
 
 SpawnItem::SpawnItem(int playerId, const QColor &color, QGraphicsItem *parent) :
 	QGraphicsRectItem{parent},
-	m_playerId{playerId}
+	_playerId{playerId}
 {
 	for (int n{0}; n < 4; n++) {
         auto *field{new FieldItem(this)};
 
-		field->setNumber(n);
-		field->setPos(70*(n / 2) - 35, 70*(n % 2) - 35);
+        field->setNumber(n);
+        field->setPos(n % 2 ? 105 : 35, n < 2 ? 35 : -35);//175 - 70*n);
 		field->setFlags(ItemStacksBehindParent);
 		field->setColor(color);
 		field->setPawnColor(color);
 
-		m_fields.append(field);
+		_fields.append(field);
 	}
 
 	setRect(-70, -70, 140, 140);
@@ -23,19 +23,19 @@ SpawnItem::SpawnItem(int playerId, const QColor &color, QGraphicsItem *parent) :
 
 int SpawnItem::playerId() const
 {
-	return m_playerId;
+	return _playerId;
 }
 
 QColor SpawnItem::color() const
 {
-	return m_fields.first()->color();
+	return _fields.first()->color();
 }
 
 void SpawnItem::setPawnCount(int n)
 {
-    for (auto *field : m_fields)
-		field->setPawnColor(m_fields.indexOf(field) < n
-							? m_fields.first()->color()
+    for (auto *field : _fields)
+		field->setPawnColor(_fields.indexOf(field) < n
+							? _fields.first()->color()
 							: QColor());
 }
 

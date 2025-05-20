@@ -3,8 +3,8 @@
 
 FieldItem::FieldItem(QGraphicsItem *parent) :
 	QGraphicsEllipseItem(parent),
-	m_number{0},
-	m_highlighted{false}
+	_number{0},
+	_highlighted{false}
 {
 	setRect(-30, -30, 60, 60);
 	setPen(QPen(QBrush(0x313131), 4));
@@ -13,22 +13,22 @@ FieldItem::FieldItem(QGraphicsItem *parent) :
 
 int FieldItem::number() const
 {
-	return m_number;
+	return _number;
 }
 
 void FieldItem::setNumber(int n)
 {
-	m_number = n;
+	_number = n;
 }
 
 bool FieldItem::isHighlighted() const
 {
-	return m_highlighted;
+	return _highlighted;
 }
 
 void FieldItem::setHighlighted(bool value)
 {
-	m_highlighted = value;
+	_highlighted = value;
 	update();
 }
 
@@ -45,7 +45,7 @@ void FieldItem::setColor(const QColor &color)
 
 void FieldItem::setPawnColor(const QColor &color)
 {
-	m_pawnColor = color;
+	_pawnColor = color;
 	update();
 }
 
@@ -64,10 +64,10 @@ void FieldItem::paint(QPainter *painter,
 	painter->setBrush(brush());
 	painter->drawEllipse(rect());
 
-	if (m_pawnColor.isValid()) {
-		painter->setPen(m_highlighted ? QPen(QBrush(0xF57C00), 5)
+	if (_pawnColor.isValid()) {
+		painter->setPen(_highlighted ? QPen(QBrush(0xF57C00), 5)
 									  : QPen(QBrush(0x424242), 3));
-		painter->setBrush(m_pawnColor.lighter(130));
+		painter->setBrush(_pawnColor.lighter(130));
 		painter->drawEllipse(rect().adjusted(10, 10, -10, -10));
 	}
 

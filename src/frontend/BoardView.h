@@ -23,7 +23,7 @@ private:
 	void fieldClicked(FieldItem *field);
 	void arrowClicked(ArrowItem *arrow);
 
-	BoardScene *m_board;
+	BoardScene *_board;
 
 signals:
 	void bringPawnIn();

@@ -7,18 +7,18 @@
 
 BoardView::BoardView(QWidget *parent) :
     QGraphicsView{parent},
-    m_board(new BoardScene(this))
+    _board(new BoardScene(this))
 {
     setBackgroundBrush(QBrush(0x757575));
     setFrameStyle(QFrame::NoFrame);
     setAlignment(Qt::AlignCenter);
-    setScene(m_board);
+    setScene(_board);
     setMinimumSize(300, 300);
 }
 
 BoardScene *BoardView::board() const
 {
-    return m_board;
+    return _board;
 }
 
 void BoardView::mousePressEvent(QMouseEvent *event)
@@ -55,12 +55,12 @@ void BoardView::fieldClicked(FieldItem *field)
 
 void BoardView::arrowClicked(ArrowItem *arrow)
 {
-    if (!m_board->canBringIn())
+    if (!_board->canBringIn())
         return;
 
     if (!arrow->isHighlighted())
         return;
 
-    m_board->enableBringIn(false);
+    _board->enableBringIn(false);
     emit bringPawnIn();
 }

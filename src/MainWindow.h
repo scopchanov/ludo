@@ -5,9 +5,9 @@
 
 class QLabel;
 class QPushButton;
-class Game;
 class BoardScene;
 class ScoreItem;
+class Game;
 
 class MainWindow : public QMainWindow
 {
@@ -16,10 +16,10 @@ public:
 	MainWindow(QWidget *parent = nullptr);
 
 private:
-	Game *m_game;
-    BoardScene *m_board;
-	QPushButton *m_btnRollDice;
-	ScoreItem *m_scoreDisplay;
+	Game *_game;
+	BoardScene *_board;
+	QPushButton *_btnRollDice;
+	ScoreItem *_scoreDisplay;
 
 private slots:
 	void onDiceRolled(int score);

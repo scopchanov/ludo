@@ -19,8 +19,8 @@ public:
 	int type() const override;
 
 private:
-	int m_playerId;
-	QList<FieldItem *> m_fields;
+	int _playerId;
+	QList<FieldItem *> _fields;
 };
 
 #endif // SPAWNITEM_H

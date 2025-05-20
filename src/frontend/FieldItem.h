@@ -22,9 +22,9 @@ public:
 	int type() const override;
 
 private:
-	int m_number;
-	bool m_highlighted;
-	QColor m_pawnColor;
+	int _number;
+	bool _highlighted;
+	QColor _pawnColor;
 };
 
 #endif // FIELDITEM_H

@@ -3,15 +3,15 @@
 
 ArrowItem::ArrowItem(QGraphicsItem *parent) :
 	QGraphicsPathItem{parent},
-	m_number{0},
-	m_highlighted{false}
+	_number{0},
+	_highlighted{false}
 {
 	QPainterPath p;
 
 	p.addPolygon(QVector<QPointF>{
-					 QPoint(-25, -10), QPoint(5, -10), QPoint(5, -20),
+                     QPoint(-20, -10), QPoint(5, -10), QPoint(5, -20),
 					 QPoint(30, 0), QPoint(5, 20), QPoint(5, 10),
-					 QPoint(-25, 10), QPoint(-25, -10)
+                     QPoint(-20, 10), QPoint(-20, -10)
 				 });
 
 	setPath(p);
@@ -21,12 +21,12 @@ ArrowItem::ArrowItem(QGraphicsItem *parent) :
 
 int ArrowItem::number() const
 {
-	return m_number;
+	return _number;
 }
 
 void ArrowItem::setNumber(int number)
 {
-	m_number = number;
+	_number = number;
 }
 
 const QColor &ArrowItem::color() const
@@ -42,12 +42,12 @@ void ArrowItem::setColor(const QColor &color)
 
 bool ArrowItem::isHighlighted() const
 {
-	return m_highlighted;
+	return _highlighted;
 }
 
 void ArrowItem::setHighlighted(bool highlighted)
 {
-	m_highlighted = highlighted;
+	_highlighted = highlighted;
 	update();
 }
 
@@ -57,7 +57,7 @@ void ArrowItem::paint(QPainter *painter,
 {
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing);
-	painter->setPen(m_highlighted ? QPen(QBrush(0xF57C00), 5) : pen());
+	painter->setPen(_highlighted ? QPen(QBrush(0xF57C00), 5) : pen());
 	painter->setBrush(brush());
 	painter->drawPath(path());
 	painter->restore();

@@ -1,6 +1,6 @@
 QT += widgets
 
-CONFIG += c++20
+CONFIG += c++23
 
 SOURCES += \
     backend/Pathway.cpp \

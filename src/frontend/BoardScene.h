@@ -24,6 +24,7 @@ public:
 	void setScore(int value);
 
 	void clearHighlight();
+    void clearPlayersText();
 	void updateBoard(const QJsonObject &json);
 
 public slots:
@@ -39,14 +40,14 @@ private:
     void createPlayers();
 	int playerColor(int playerId) const;
 
-	QList<FieldItem *> m_fieldItems;
-	QList<SpawnItem *> m_spawnItems;
-	QList<ArrowItem *> m_arrowItems;
-	QList<PlayerItem *> m_playerItems;
-	QList<HomeItem *> m_homeItems;
-	ScoreItem *m_scoreItem;
-	int m_currentPlayerId;
-	bool m_canBringPawnIn;
+	QList<FieldItem *> _fieldItems;
+	QList<SpawnItem *> _spawnItems;
+	QList<ArrowItem *> _arrowItems;
+	QList<PlayerItem *> _playerItems;
+	QList<HomeItem *> _homeItems;
+	ScoreItem *_scoreItem;
+	int _currentPlayerId;
+	bool _canBringPawnIn;
 };
 
 #endif // BOARDSCENE_H

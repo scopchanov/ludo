@@ -13,7 +13,7 @@ public:
 	void updateItem(const QJsonArray &fields);
 
 private:
-	QList<FieldItem *> m_fieldItems;
+	QList<FieldItem *> _fieldItems;
 };
 
 #endif // HOMEITEM_H

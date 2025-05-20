@@ -13,20 +13,20 @@ HomeItem::HomeItem(const QColor &color, QGraphicsItem *parent) :
 		field->setColor(color);
 		field->setPos(0, 105 - 70*n);
 
-		m_fieldItems.append(field);
+		_fieldItems.append(field);
 	}
 }
 
 void HomeItem::updateItem(const QJsonArray &fields)
 {
-    for (auto *field : m_fieldItems)
+    for (auto *field : _fieldItems)
 		field->setPawnColor(QColor());
 
 	for (const auto &value : fields) {
 		const QJsonObject &field{value.toObject()};
-		const QColor &color{m_fieldItems.first()->color()};
+		const QColor &color{_fieldItems.first()->color()};
         int fieldNumber{field.value("number").toInt()};
 
-		m_fieldItems.at(fieldNumber)->setPawnColor(color);
+		_fieldItems.at(fieldNumber)->setPawnColor(color);
 	}
 }

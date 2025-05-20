@@ -20,8 +20,8 @@ public:
 	int type() const override;
 
 private:
-	int m_number;
-	bool m_highlighted;
+	int _number;
+	bool _highlighted;
 };
 
 #endif // ARROWITEM_H

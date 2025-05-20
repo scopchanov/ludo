@@ -10,9 +10,9 @@
 
 BoardScene::BoardScene(QObject *parent) :
     QGraphicsScene{parent},
-    m_scoreItem{new ScoreItem()},
-    m_currentPlayerId{0},
-    m_canBringPawnIn{false}
+    _scoreItem{new ScoreItem()},
+    _currentPlayerId{0},
+    _canBringPawnIn{false}
 {
     setSceneRect(-50, -50, 860, 860);
 
@@ -22,50 +22,56 @@ BoardScene::BoardScene(QObject *parent) :
     createHomes();
     createPlayers();
 
-    m_scoreItem->setPos(380, 380);
+    _scoreItem->setPos(380, 380);
 
-    addItem(m_scoreItem);
+    addItem(_scoreItem);
 }
 
 bool BoardScene::canBringIn() const
 {
-    return m_canBringPawnIn;
+    return _canBringPawnIn;
 }
 
 int BoardScene::currentPlayerId() const
 {
-    return m_currentPlayerId;
+    return _currentPlayerId;
 }
 
 void BoardScene::setCurrentPlayerId(int currentPlayerId)
 {
-    m_currentPlayerId = currentPlayerId;
+    _currentPlayerId = currentPlayerId;
 
-    m_playerItems.at(m_currentPlayerId)->clear();
+    _playerItems.at(_currentPlayerId)->clearText();
 
-    for (auto *player : m_playerItems)
-        player->setHighlighted(player->number() == m_currentPlayerId);
+    for (auto *player : _playerItems)
+        player->setHighlighted(player->number() == _currentPlayerId);
 }
 
 void BoardScene::setCurrentPlayerText(const QString &str)
 {
-    m_playerItems.at(m_currentPlayerId)->setText(str);
+    _playerItems.at(_currentPlayerId)->setText(str);
 }
 
 void BoardScene::setScore(int value)
 {
-    m_scoreItem->setScore(value);
+    _scoreItem->setScore(value);
 }
 
 void BoardScene::clearHighlight()
 {
-    for (auto *field : m_fieldItems)
+    for (auto *field : _fieldItems)
         field->setHighlighted(false);
+}
+
+void BoardScene::clearPlayersText()
+{
+    for (auto *player : _playerItems)
+        player->clearText();
 }
 
 void BoardScene::updateBoard(const QJsonObject &json)
 {
-    for (auto *field : m_fieldItems)
+    for (auto *field : _fieldItems)
         field->setPawnColor(QColor());
 
     const QJsonArray &pathway{json.value("pathway").toArray()};
@@ -76,31 +82,34 @@ void BoardScene::updateBoard(const QJsonObject &json)
         int n{field.value("number").toInt()};
         int playerId{field.value("player").toInt()};
 
-        m_fieldItems.at(n)->setPawnColor(m_spawnItems.at(playerId)->color());
+        _fieldItems.at(n)->setPawnColor(_spawnItems.at(playerId)->color());
     }
 
-    for (int n{0}; n < m_homeItems.count(); n++)
-        m_homeItems.at(n)->updateItem(homes.at(n).toArray());
+    for (int n{0}; n < _homeItems.count(); n++)
+        _homeItems.at(n)->updateItem(homes.at(n).toArray());
 }
 
 void BoardScene::enableBringIn(bool canBringIn)
 {
-    m_canBringPawnIn = canBringIn;
+    _canBringPawnIn = canBringIn;
 
-    for (auto *arrow : std::as_const(m_arrowItems))
-        arrow->setHighlighted(m_canBringPawnIn
-                              && arrow->number() == m_currentPlayerId);
+    for (auto *arrow : _arrowItems) {
+        bool en{_canBringPawnIn && arrow->number() == _currentPlayerId};
+
+        arrow->setHighlighted(en);
+        arrow->setVisible(en);
+    }
 }
 
 void BoardScene::highlightFields(const QList<int> &moves)
 {
     for (const auto &move : moves)
-        m_fieldItems.at(move)->setHighlighted(true);
+        _fieldItems.at(move)->setHighlighted(true);
 }
 
 void BoardScene::changePawnCount(int playerId, int pawnCount)
 {
-    m_spawnItems.at(playerId)->setPawnCount(pawnCount);
+    _spawnItems.at(playerId)->setPawnCount(pawnCount);
 }
 
 void BoardScene::createPath()
@@ -119,42 +128,44 @@ void BoardScene::createIslands()
         auto *island{new SpawnItem(n, playerColor(n))};
 
         island->setPos(630*(n / 2) + 65, -630*(n / 2 != n % 2) + 695);
+        island->setRotation(90*n);
 
         addItem(island);
 
-        m_spawnItems.append(island);
+        _spawnItems.append(island);
 
         auto *arrow{new ArrowItem()};
 
         arrow->setNumber(n);
         arrow->setColor(island->color());
         arrow->setRotation(90*n);
+        arrow->setVisible(false);
 
         switch (n) {
         case 0:
-            arrow->setPos(205, 730);
+            arrow->setPos(235, 730);
             break;
         case 1:
-            arrow->setPos(30, 205);
+            arrow->setPos(30, 235);
             break;
         case 2:
-            arrow->setPos(555, 30);
+            arrow->setPos(525, 30);
             break;
         case 3:
-            arrow->setPos(730, 555);
+            arrow->setPos(730, 525);
             break;
         }
 
         addItem(arrow);
 
-        m_arrowItems.append(arrow);
+        _arrowItems.append(arrow);
     }
 }
 
 void BoardScene::createHomes()
 {
     for (int n{0}; n < 4; n++) {
-        auto *home{new HomeItem(m_spawnItems.at(n)->color())};
+        auto *home{new HomeItem(_spawnItems.at(n)->color())};
         double pi{3.1415};
 
         home->setPos(175*round(sin((4 - n)*pi/2)) + 380,
@@ -163,7 +174,7 @@ void BoardScene::createHomes()
 
         addItem(home);
 
-        m_homeItems.append(home);
+        _homeItems.append(home);
     }
 }
 
@@ -182,11 +193,11 @@ void BoardScene::createFields()
         field->setPos(x, y);
 
         if (!mod10)
-            field->setColor(m_spawnItems.at(n / 10)->color());
+            field->setColor(_spawnItems.at(n / 10)->color());
 
         addItem(field);
 
-        m_fieldItems.append(field);
+        _fieldItems.append(field);
 
         if (!(mod10 % 4))
             k++;
@@ -210,20 +221,20 @@ void BoardScene::createPlayers()
             player->setHighlighted(true);
 
         addItem(player);
-        m_playerItems.append(player);
+        _playerItems.append(player);
 
         switch (n) {
         case 0:
-            player->setPos(190, 570);
+            player->setPos(205, 555);
             break;
         case 1:
-            player->setPos(190, 190);
+            player->setPos(205, 205);
             break;
         case 2:
-            player->setPos(570, 190);
+            player->setPos(555, 205);
             break;
         case 3:
-            player->setPos(570, 570);
+            player->setPos(555, 555);
             break;
         }
     }

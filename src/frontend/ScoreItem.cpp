@@ -3,19 +3,19 @@
 
 ScoreItem::ScoreItem(QGraphicsItem *parent) :
 	QGraphicsRectItem{parent},
-	m_score{0}
+	_score{0}
 {
 	setRect(-30, -30, 60, 60);
 }
 
 int ScoreItem::score() const
 {
-	return m_score;
+	return _score;
 }
 
 void ScoreItem::setScore(int value)
 {
-	m_score = value;
+	_score = value;
 	update();
 }
 
@@ -23,7 +23,7 @@ void ScoreItem::paint(QPainter *painter,
 					  const QStyleOptionGraphicsItem */*option*/,
 					  QWidget */*widget*/)
 {
-	if (m_score)
+	if (_score)
 		painter->drawText(rect(), Qt::AlignCenter | Qt::TextSingleLine,
-						  QString::number(m_score));
+						  QString::number(_score));
 }

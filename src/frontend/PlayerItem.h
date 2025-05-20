@@ -17,14 +17,14 @@ public:
 	bool isHighlighted() const;
     void setHighlighted(bool value);
 
-    void clear();
+    void clearText();
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *,
 			   QWidget *) override;
 
 private:
-	int m_number;
-	bool m_highlighted;
-    QGraphicsTextItem *m_label;
+	int _number;
+	bool _highlighted;
+	QGraphicsTextItem *_label;
 };
 
 #endif // PLAYERITEM_H

@@ -14,7 +14,7 @@ public:
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override;
 
 private:
-	int m_score;
+	int _score;
 };
 
 #endif // SCOREITEM_H
