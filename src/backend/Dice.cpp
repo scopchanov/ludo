@@ -3,17 +3,17 @@
 
 Dice::Dice(QObject *parent) :
 	QObject{parent},
-	m_score{0}
+	_score{0}
 {
 
 }
 
 int Dice::score() const
 {
-	return m_score;
+	return _score;
 }
 
 void Dice::roll()
 {
-	m_score = QRandomGenerator::global()->bounded(1, 7);
+	_score = QRandomGenerator::global()->bounded(1, 7);
 }

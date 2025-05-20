@@ -4,33 +4,34 @@
 
 Pathway::Pathway(int fieldCount, QObject *parent) :
 	QObject{parent},
-	m_pawnsCount{0}
+	_pawnsCount{0}
 {
 	for (int n{0}; n < fieldCount; n++)
-		m_fields.append(new Field(this));
+		_fields.append(new Field(this));
 }
 
 Field *Pathway::field(int n) const
 {
-	return isFieldIndexValid(n) ? m_fields.at(n) : nullptr;
+	return isFieldIndexValid(n) ? _fields.at(n) : nullptr;
 }
 
 int Pathway::fieldCount() const
 {
-	return m_fields.count();
+	return _fields.count();
 }
 
 bool Pathway::isFull() const
 {
-	return m_pawnsCount >= m_fields.count();
+	return _pawnsCount >= _fields.count();
 }
 
 bool Pathway::bringPawnIn(Pawn *pawn, int fieldNumber)
 {
     bool success{!isFull() && pawn && isFieldIndexValid(fieldNumber)
-        && occupyField(m_fields.at(fieldNumber), pawn)};
+        && occupyField(_fields.at(fieldNumber), pawn)};
 
-	m_pawnsCount += success;
+	if (success)
+		_pawnsCount++;
 
 	return success;
 }
@@ -45,10 +46,10 @@ bool Pathway::movePawn(int fieldNumber, int fieldCount)
     auto *pawn{field->pawn()};
     int dstFieldNumber{fieldNumber + fieldCount};
 
-	if (dstFieldNumber >= m_fields.count())
-		dstFieldNumber -= m_fields.count();
+	if (dstFieldNumber >= _fields.count())
+		dstFieldNumber -= _fields.count();
 
-	if (!occupyField(m_fields.at(dstFieldNumber), pawn))
+	if (!occupyField(_fields.at(dstFieldNumber), pawn))
 		return false;
 
 	pawn->increaseTraveledDistance(fieldCount);
@@ -63,8 +64,8 @@ Pawn *Pathway::takePawnOut(int fieldNumber)
     auto *pawn{field && field->pawn() ? field->pawn() : nullptr};
 
 	if (pawn) {
-		m_fields.at(fieldNumber)->setPawn(nullptr);
-		m_pawnsCount--;
+		_fields.at(fieldNumber)->setPawn(nullptr);
+		_pawnsCount--;
 	}
 
 	return pawn;
@@ -72,16 +73,16 @@ Pawn *Pathway::takePawnOut(int fieldNumber)
 
 void Pathway::reset()
 {
-    for (auto *field : m_fields)
+	for (auto *field : std::as_const(_fields))
 		if (field->pawn())
 			field->pawn()->deleteLater();
 
-	m_pawnsCount = 0;
+	_pawnsCount = 0;
 }
 
 bool Pathway::isFieldIndexValid(int fieldNumber) const
 {
-	return fieldNumber >= 0 && fieldNumber < m_fields.count();
+	return fieldNumber >= 0 && fieldNumber < _fields.count();
 }
 
 bool Pathway::occupyField(Field *field, Pawn *pawn)

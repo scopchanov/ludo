@@ -16,8 +16,8 @@ public:
 	void increaseTraveledDistance(int fieldCount);
 
 private:
-	int m_playerId;
-	int m_traveledDistance;
+	int _playerId;
+	int _traveledDistance;
 
 signals:
 	void busted();

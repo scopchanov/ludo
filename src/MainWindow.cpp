@@ -86,5 +86,5 @@ void MainWindow::onPlayerWon(int playerId)
 void MainWindow::onGameOver()
 {
 	QMessageBox::information(this, "Ludo", "Game over.");
-//	m_game->reset();
+	_game->reset();
 }

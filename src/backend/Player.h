@@ -17,8 +17,8 @@ public:
 	void reset();
 
 private:
-	int m_id;
-	QList<Pawn *> m_pawns;
+	int _id;
+	QList<Pawn *> _pawns;
 
 private slots:
 	void onPawnBusted();

@@ -2,30 +2,30 @@
 
 Pawn::Pawn(int playerId, QObject *parent) :
 	QObject{parent},
-	m_playerId(playerId),
-	m_traveledDistance{0}
+	_playerId(playerId),
+	_traveledDistance{0}
 {
 
 }
 
 int Pawn::playerId() const
 {
-	return m_playerId;
+	return _playerId;
 }
 
 int Pawn::traveledDistance() const
 {
-	return m_traveledDistance;
+	return _traveledDistance;
 }
 
 void Pawn::increaseTraveledDistance(int fieldCount)
 {
-	m_traveledDistance += fieldCount;
+	_traveledDistance += fieldCount;
 }
 
 void Pawn::bust()
 {
-	m_traveledDistance = 0;
+	_traveledDistance = 0;
 
 	emit busted();
 }

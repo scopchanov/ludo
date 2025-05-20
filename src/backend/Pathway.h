@@ -25,8 +25,8 @@ private:
 	bool isFieldIndexValid(int fieldNumber) const;
 	bool occupyField(Field *field, Pawn *pawn);
 
-	int m_pawnsCount;
-	QList<Field *> m_fields;
+	int _pawnsCount;
+	QList<Field *> _fields;
 };
 
 #endif // PATHWAY_H

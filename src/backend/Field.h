@@ -15,7 +15,7 @@ public:
 	void setPawn(Pawn *pawn);
 
 private:
-	Pawn *m_pawn;
+	Pawn *_pawn;
 };
 
 #endif // FIELD_H

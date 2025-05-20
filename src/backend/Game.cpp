@@ -6,71 +6,71 @@
 
 Game::Game(QObject *parent) :
 	QObject{parent},
-	m_board{new Board(this)},
-	m_dice{new Dice(this)},
-	m_currentPlayerId{0}
+	_board{new Board(this)},
+	_dice{new Dice(this)},
+	_currentPlayerId{0}
 {
 	for (int n{0}; n < 4; n++) {
         auto *player{new Player(n, this)};
 
-		m_players.append(player);
+		_players.append(player);
 
 		connect(player, &Player::pawnsCountChanged,
 				this, &Game::onPawnsCountChanged);
 	}
 
-	connect(m_board, &Board::playerEscaped, this, &Game::onPlayerEscaped);
+	connect(_board, &Board::playerEscaped, this, &Game::onPlayerEscaped);
 }
 
 QJsonObject Game::boardLayout() const
 {
-	return m_board->boardLayout();
+	return _board->boardLayout();
 }
 
 void Game::rollDice()
 {
-	m_dice->roll();
+	_dice->roll();
 
-	emit diceRolled(m_dice->score());
-	emit bringInChanged(m_dice->score() == 6
-						&& m_players.at(m_currentPlayerId)->pawnsCount()
-						&& m_board->checkBringIn(m_currentPlayerId));
-	emit possibleMoves(m_board->findPossibleMoves(m_dice->score(),
-												  m_currentPlayerId));
+	emit diceRolled(_dice->score());
+	emit bringInChanged(_dice->score() == 6
+						&& _players.at(_currentPlayerId)->pawnsCount()
+						&& _board->checkBringIn(_currentPlayerId));
+	emit possibleMoves(_board->findPossibleMoves(_dice->score(),
+												  _currentPlayerId));
 }
 
 void Game::bringPawnIn()
 {
-	if (m_board->bringPawnIn(m_players.at(m_currentPlayerId)->takePawn()))
+	if (_board->bringPawnIn(_players.at(_currentPlayerId)->takePawn()))
 		advance();
 }
 
 void Game::movePawn(int srcField)
 {
-	if (m_board->movePawn(m_currentPlayerId, srcField, m_dice->score()))
+	if (_board->movePawn(_currentPlayerId, srcField, _dice->score()))
 		advance();
 }
 
 void Game::advance()
 {
-	if (m_dice->score() != 6)
+	if (_dice->score() != 6)
 		switchToNextPlayer();
 
-	emit nextTurn(m_currentPlayerId);
+	emit nextTurn(_currentPlayerId);
 }
 
 void Game::reset()
 {
-	m_board->reset();
-	m_escapedPlayers.clear();
+	_board->reset();
+	_escapedPlayers.clear();
 }
 
 void Game::switchToNextPlayer()
 {
-	if (++m_currentPlayerId == m_players.count())
-		m_currentPlayerId = 0;
+	if (++_currentPlayerId == _players.count())
+		_currentPlayerId = 0;
 
-	if (m_escapedPlayers.contains(m_players.at(m_currentPlayerId)))
+	if (_escapedPlayers.contains(_players.at(_currentPlayerId)))
 		switchToNextPlayer();
 }
 
@@ -83,6 +83,6 @@ void Game::onPawnsCountChanged()
 
 void Game::onPlayerEscaped(int playerId)
 {
-	m_escapedPlayers.append(m_players.at(playerId));
-	m_escapedPlayers.count() == 3 ? emit gameOver() : emit playerWon(playerId);
+	_escapedPlayers.append(_players.at(playerId));
+	_escapedPlayers.count() == 3 ? emit gameOver() : emit playerWon(playerId);
 }

@@ -2,17 +2,17 @@
 
 Field::Field(QObject *parent) :
 	QObject(parent),
-	m_pawn{nullptr}
+	_pawn{nullptr}
 {
 
 }
 
 Pawn *Field::pawn() const
 {
-	return m_pawn;
+	return _pawn;
 }
 
 void Field::setPawn(Pawn *pawn)
 {
-	m_pawn = pawn;
+	_pawn = pawn;
 }

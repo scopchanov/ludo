@@ -31,11 +31,11 @@ public:
 private:
 	void switchToNextPlayer();
 
-	Board *m_board;
-	Dice *m_dice;
-	int m_currentPlayerId;
-	QList<Player *> m_players;
-	QList<Player *> m_escapedPlayers;
+	Board *_board;
+	Dice *_dice;
+	int _currentPlayerId;
+	QList<Player *> _players;
+	QList<Player *> _escapedPlayers;
 
 private slots:
 	void onPawnsCountChanged();

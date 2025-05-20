@@ -3,12 +3,12 @@
 
 Player::Player(int playerId, QObject *parent) :
 	QObject{parent},
-	m_id{playerId}
+	_id{playerId}
 {
 	for (int n{0}; n < 4; n++) {
         auto *pawn{new Pawn(playerId, this)};
 
-		m_pawns.append(pawn);
+		_pawns.append(pawn);
 
 		connect(pawn, &Pawn::busted, this, &Player::onPawnBusted);
 	}
@@ -16,20 +16,20 @@ Player::Player(int playerId, QObject *parent) :
 
 int Player::id() const
 {
-	return m_id;
+	return _id;
 }
 
 int Player::pawnsCount() const
 {
-	return m_pawns.count();
+	return _pawns.count();
 }
 
 Pawn *Player::takePawn()
 {
-	if (m_pawns.isEmpty())
+	if (_pawns.isEmpty())
 		return nullptr;
 
-	auto *pawn = m_pawns.takeLast();
+	auto *pawn = _pawns.takeLast();
 
 	emit pawnsCountChanged();
 
@@ -44,7 +44,7 @@ void Player::reset()
 void Player::onPawnBusted()
 {
 	qDebug("saram rasam");
-	m_pawns.append(static_cast<Pawn *>(sender()));
+	_pawns.append(static_cast<Pawn *>(sender()));
 
 	emit pawnsCountChanged();
 }

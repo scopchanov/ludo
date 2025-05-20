@@ -26,8 +26,8 @@ private:
 	bool isMovePossible(int playerId, int srcFieldNum, int score) const;
 	int toPathwayCoordinates(int fieldNumber, int playerId) const;
 
-	Pathway *m_pathway;
-	QList<Pathway *> m_homes;
+	Pathway *_pathway;
+	QList<Pathway *> _homes;
 
 signals:
 	void playerEscaped(int playerId);

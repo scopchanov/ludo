@@ -13,7 +13,7 @@ public:
 	void roll();
 
 private:
-	int m_score;
+	int _score;
 };
 
 #endif // DICE_H
