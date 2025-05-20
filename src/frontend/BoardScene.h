@@ -3,7 +3,7 @@
 
 #include <QGraphicsScene>
 
-class ScoreItem;
+class DiceItem;
 class FieldItem;
 class SpawnItem;
 class ArrowItem;
@@ -45,7 +45,7 @@ private:
 	QList<ArrowItem *> _arrowItems;
 	QList<PlayerItem *> _playerItems;
 	QList<HomeItem *> _homeItems;
-	ScoreItem *_scoreItem;
+	DiceItem *_scoreItem;
 	int _currentPlayerId;
 	bool _canBringPawnIn;
 };

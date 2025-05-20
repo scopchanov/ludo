@@ -1,5 +1,5 @@
 #include "BoardScene.h"
-#include "ScoreItem.h"
+#include "DiceItem.h"
 #include "FieldItem.h"
 #include "SpawnItem.h"
 #include "ArrowItem.h"
@@ -10,7 +10,7 @@
 
 BoardScene::BoardScene(QObject *parent) :
     QGraphicsScene{parent},
-    _scoreItem{new ScoreItem()},
+    _scoreItem{new DiceItem()},
     _currentPlayerId{0},
     _canBringPawnIn{false}
 {

@@ -9,7 +9,7 @@ BoardView::BoardView(QWidget *parent) :
     QGraphicsView{parent},
     _board(new BoardScene(this))
 {
-    setBackgroundBrush(QBrush(0x757575));
+	setBackgroundBrush(QBrush(0x78909C));
     setFrameStyle(QFrame::NoFrame);
     setAlignment(Qt::AlignCenter);
     setScene(_board);

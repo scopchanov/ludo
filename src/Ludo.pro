@@ -8,6 +8,7 @@ SOURCES += \
     frontend/ArrowItem.cpp \
     frontend/BoardScene.cpp \
     frontend/BoardView.cpp \
+    frontend/DiceItem.cpp \
     frontend/FieldItem.cpp \
     frontend/HomeItem.cpp \
     frontend/PlayerItem.cpp \
@@ -16,7 +17,6 @@ SOURCES += \
     backend/Field.cpp \
     backend/Game.cpp \
     backend/Pawn.cpp \
-    frontend/ScoreItem.cpp \
     frontend/SpawnItem.cpp \
     main.cpp \
     MainWindow.cpp
@@ -27,6 +27,7 @@ HEADERS += \
     frontend/ArrowItem.h \
     frontend/BoardScene.h \
     frontend/BoardView.h \
+    frontend/DiceItem.h \
     frontend/FieldItem.h \
     frontend/HomeItem.h \
     frontend/PlayerItem.h \
@@ -36,7 +37,6 @@ HEADERS += \
     backend/Game.h \
     backend/Pawn.h \
     MainWindow.h \
-    frontend/ScoreItem.h \
     frontend/SpawnItem.h
 
 # Default rules for deployment.

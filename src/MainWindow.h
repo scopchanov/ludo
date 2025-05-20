@@ -6,7 +6,7 @@
 class QLabel;
 class QPushButton;
 class BoardScene;
-class ScoreItem;
+class DiceItem;
 class Game;
 
 class MainWindow : public QMainWindow
@@ -19,7 +19,7 @@ private:
 	Game *_game;
 	BoardScene *_board;
 	QPushButton *_btnRollDice;
-	ScoreItem *_scoreDisplay;
+	DiceItem *_scoreDisplay;
 
 private slots:
 	void onDiceRolled(int score);
