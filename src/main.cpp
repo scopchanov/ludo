@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
 {
 	QApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 	QApplication a(argc, argv);
-	QFontDatabase::addApplicationFont(":/bin/fonts/roboto/Roboto-Regular.ttf");
-    QGuiApplication::setFont(QFont("Roboto", 14));
+	QFontDatabase::addApplicationFont(":/bin/fonts/neucha/neucha-regular.ttf");
+	QGuiApplication::setFont(QFont("Neucha", 14));
 	MainWindow w;
 
 	w.show();
