@@ -22,6 +22,7 @@ SOFTWARE.
 */
 
 #include "ArrowItem.h"
+#include "UiGlobals.h"
 #include <QPainter>
 
 ArrowItem::ArrowItem(QGraphicsItem *parent) :
@@ -88,5 +89,5 @@ void ArrowItem::paint(QPainter *painter,
 
 int ArrowItem::type() const
 {
-	return QGraphicsItem::UserType + 2;
+	return IT_Arrow;
 }

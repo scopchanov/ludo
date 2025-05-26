@@ -37,7 +37,7 @@ public:
 
 	QJsonObject boardLayout() const;
 	bool checkBringIn(int playerId) const;
-	QList<int> findPossibleMoves(int score, int playerId) const;
+	QList<int> findPossibleMoves(int playerId, int score) const;
 
 	bool bringPawnIn(Pawn *pawn);
 	bool movePawn(int playerId, int fieldNumber, int score);
@@ -48,6 +48,7 @@ private:
 	bool isBringOutPossible(Pawn *pawn, int score) const;
 	bool isMovePossible(int playerId, int srcFieldNum, int score) const;
 	int toPathwayCoordinates(int fieldNumber, int playerId) const;
+	int wrappedIndex(int index, int length);
 
 	Pathway *_pathway;
 	QList<Pathway *> _homes;

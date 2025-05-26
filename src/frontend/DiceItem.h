@@ -35,6 +35,7 @@ public:
 	void setScore(int value);
 
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *) override;
+	int type() const override;
 
 private:
 	void drawOne(QPainter *painter);

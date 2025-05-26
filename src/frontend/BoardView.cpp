@@ -25,23 +25,16 @@ SOFTWARE.
 #include "BoardScene.h"
 #include "ArrowItem.h"
 #include "FieldItem.h"
+#include "frontend/UiGlobals.h"
 #include <QMouseEvent>
-#include <QDebug>
 
 BoardView::BoardView(QWidget *parent) :
-    QGraphicsView{parent},
-    _board(new BoardScene(this))
+	QGraphicsView{parent}
 {
-	setBackgroundBrush(QBrush(0x78909C));
+	setBackgroundBrush(QBrush(0xFFE0B2));
     setFrameStyle(QFrame::NoFrame);
     setAlignment(Qt::AlignCenter);
-    setScene(_board);
     setMinimumSize(300, 300);
-}
-
-BoardScene *BoardView::board() const
-{
-    return _board;
 }
 
 void BoardView::mousePressEvent(QMouseEvent *event)
@@ -52,10 +45,10 @@ void BoardView::mousePressEvent(QMouseEvent *event)
         return;
 
     switch (item->type()) {
-    case 65536:
+	case IT_Field:
         fieldClicked(static_cast<FieldItem *>(item));
         break;
-    case 65538:
+	case IT_Arrow:
         arrowClicked(static_cast<ArrowItem *>(item));
         break;
     default:
@@ -78,12 +71,11 @@ void BoardView::fieldClicked(FieldItem *field)
 
 void BoardView::arrowClicked(ArrowItem *arrow)
 {
-    if (!_board->canBringIn())
+	auto *board{static_cast<BoardScene *>(scene())};
+
+	if (!arrow->isHighlighted() || !board->canBringIn())
         return;
 
-    if (!arrow->isHighlighted())
-        return;
-
-    _board->enableBringIn(false);
+	board->enableBringIn(false);
     emit bringPawnIn();
 }

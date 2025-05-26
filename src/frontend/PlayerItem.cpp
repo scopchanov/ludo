@@ -22,6 +22,7 @@ SOFTWARE.
 */
 
 #include "PlayerItem.h"
+#include "UiGlobals.h"
 #include <QPainter>
 
 PlayerItem::PlayerItem(QGraphicsItem *parent) :
@@ -30,7 +31,7 @@ PlayerItem::PlayerItem(QGraphicsItem *parent) :
     _highlighted{false},
     _label{new QGraphicsTextItem(this)}
 {
-    setRect(-65, -65, 130, 130);
+	setRect(-55, -55, 110, 110);
 	setPen(QPen(QBrush(0x313131), 3));
 	setBrush(QBrush(Qt::white));
 
@@ -94,4 +95,9 @@ void PlayerItem::paint(QPainter *painter,
 	painter->setBrush(brush());
 	painter->drawEllipse(rect());
 	painter->restore();
+}
+
+int PlayerItem::type() const
+{
+	return IT_Player;
 }

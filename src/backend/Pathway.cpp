@@ -33,9 +33,11 @@ Pathway::Pathway(int fieldCount, QObject *parent) :
 		_fields.append(new Field(this));
 }
 
-Field *Pathway::field(int n) const
+Pawn *Pathway::pawnAt(int fieldNumber)
 {
-	return isFieldIndexValid(n) ? _fields.at(n) : nullptr;
+	return isFieldIndexValid(fieldNumber)
+			   ? _fields.at(fieldNumber)->pawn()
+			   : nullptr;
 }
 
 int Pathway::fieldCount() const
@@ -61,7 +63,7 @@ bool Pathway::bringPawnIn(Pawn *pawn, int fieldNumber)
 
 bool Pathway::movePawn(int fieldNumber, int fieldCount)
 {
-    auto *field{Pathway::field(fieldNumber)};
+	auto *field{Pathway::field(fieldNumber)};
 
 	if (!field || !field->pawn())
 		return false;
@@ -103,6 +105,11 @@ void Pathway::reset()
 	_pawnsCount = 0;
 }
 
+Field *Pathway::field(int n) const
+{
+	return isFieldIndexValid(n) ? _fields.at(n) : nullptr;
+}
+
 bool Pathway::isFieldIndexValid(int fieldNumber) const
 {
 	return fieldNumber >= 0 && fieldNumber < _fields.count();
@@ -110,7 +117,7 @@ bool Pathway::isFieldIndexValid(int fieldNumber) const
 
 bool Pathway::occupyField(Field *field, Pawn *pawn)
 {
-    auto *existingPawn{field->pawn()};
+	auto *existingPawn{field->pawn()};
 
 	if (existingPawn) {
 		if (existingPawn->playerId() == pawn->playerId())

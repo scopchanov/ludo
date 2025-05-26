@@ -21,36 +21,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef PATHWAY_H
-#define PATHWAY_H
+#include "GameMenu.h"
+#include "MenuButton.h"
+#include <QBoxLayout>
 
-#include <QObject>
-
-class Field;
-class Pawn;
-
-class Pathway : public QObject
+GameMenu::GameMenu(QWidget *parent) :
+	QWidget{parent},
+	_btnNew{new MenuButton(tr("New game"), this)},
+	_btnLoad{new MenuButton(tr("Load game"), this)},
+	_btnExit{new MenuButton(tr("Exit"), this)}
 {
-	Q_OBJECT
-public:
-	explicit Pathway(int fieldCount, QObject *parent = nullptr);
+	auto *layoutMain{new QVBoxLayout(this)};
 
-	Pawn *pawnAt(int fieldNumber);
-	int fieldCount() const;
-	bool isFull() const;
+	layoutMain->addWidget(_btnNew);
+	layoutMain->addWidget(_btnLoad);
+	layoutMain->addWidget(_btnExit);
+	layoutMain->setContentsMargins(0, 0, 0, 0);
+	layoutMain->setAlignment(Qt::AlignCenter);
 
-	bool bringPawnIn(Pawn *pawn, int fieldNumber);
-	bool movePawn(int fieldNumber, int fieldCount);
-	Pawn *takePawnOut(int fieldNumber);
-	void reset();
-
-private:
-	Field *field(int n) const;
-	bool isFieldIndexValid(int fieldNumber) const;
-	bool occupyField(Field *field, Pawn *pawn);
-
-	int _pawnsCount;
-	QList<Field *> _fields;
-};
-
-#endif // PATHWAY_H
+	connect(_btnNew, &MenuButton::clicked, this, &GameMenu::newGame);
+	connect(_btnLoad, &MenuButton::clicked, this, &GameMenu::loadGame);
+}

@@ -41,7 +41,6 @@ public:
 	const QColor &color() const;
 	void setColor(const QColor &color);
 	void setPawnColor(const QColor &color);
-
 	int type() const override;
 
 private:

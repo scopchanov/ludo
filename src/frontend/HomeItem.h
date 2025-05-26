@@ -34,6 +34,7 @@ public:
 	explicit HomeItem(const QColor &color, QGraphicsItem *parent = nullptr);
 
 	void updateItem(const QJsonArray &fields);
+	int type() const override;
 
 private:
 	QList<FieldItem *> _fieldItems;

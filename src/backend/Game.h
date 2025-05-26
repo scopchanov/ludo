@@ -53,6 +53,7 @@ public:
 
 private:
 	void switchToNextPlayer();
+	bool canBringIn() const;
 
 	Board *_board;
 	Dice *_dice;

@@ -36,8 +36,6 @@ class BoardView : public QGraphicsView
 public:
 	explicit BoardView(QWidget *parent = nullptr);
 
-	BoardScene *board() const;
-
 protected:
 	void mousePressEvent(QMouseEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
@@ -45,8 +43,6 @@ protected:
 private:
 	void fieldClicked(FieldItem *field);
 	void arrowClicked(ArrowItem *arrow);
-
-	BoardScene *_board;
 
 signals:
 	void bringPawnIn();

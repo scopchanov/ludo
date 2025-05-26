@@ -22,6 +22,7 @@ SOFTWARE.
 */
 
 #include "DiceItem.h"
+#include "UiGlobals.h"
 #include <QStyleOptionGraphicsItem>
 #include <QPainter>
 
@@ -82,6 +83,11 @@ void DiceItem::paint(QPainter *painter,
 	painter->restore();
 }
 
+int DiceItem::type() const
+{
+	return IT_Dice;
+}
+
 void DiceItem::drawOne(QPainter *painter)
 {
 	drawDot(painter, rect().topLeft() + QPointF(30, 30));
@@ -132,3 +138,5 @@ void DiceItem::drawDot(QPainter *painter, const QPointF &p)
 	painter->setBrush(QBrush(0x313131));
 	painter->drawEllipse(p, 4, 4);
 }
+
+

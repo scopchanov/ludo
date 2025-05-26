@@ -43,6 +43,7 @@ public:
     void clearText();
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *,
 			   QWidget *) override;
+	int type() const override;
 
 private:
 	int _number;

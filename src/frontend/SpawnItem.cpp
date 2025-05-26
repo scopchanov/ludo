@@ -23,6 +23,7 @@ SOFTWARE.
 
 #include "SpawnItem.h"
 #include "FieldItem.h"
+#include "UiGlobals.h"
 #include <QPainter>
 
 SpawnItem::SpawnItem(int playerId, const QColor &color, QGraphicsItem *parent) :
@@ -71,5 +72,5 @@ void SpawnItem::paint(QPainter */*painter*/,
 
 int SpawnItem::type() const
 {
-	return QGraphicsItem::UserType + 1;
+	return IT_Spawn;
 }

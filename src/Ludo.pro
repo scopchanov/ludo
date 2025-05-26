@@ -24,6 +24,9 @@ QT += widgets
 CONFIG += c++23
 
 SOURCES += \
+    GameMenu.cpp \
+    GameWidget.cpp \
+    MenuButton.cpp \
     backend/Pathway.cpp \
     backend/Player.cpp \
     frontend/ArrowItem.cpp \
@@ -43,6 +46,9 @@ SOURCES += \
     MainWindow.cpp
 
 HEADERS += \
+    GameMenu.h \
+    GameWidget.h \
+    MenuButton.h \
     backend/Pathway.h \
     backend/Player.h \
     frontend/ArrowItem.h \
@@ -58,7 +64,8 @@ HEADERS += \
     backend/Game.h \
     backend/Pawn.h \
     MainWindow.h \
-    frontend/SpawnItem.h
+    frontend/SpawnItem.h \
+    frontend/UiGlobals.h
 
 RESOURCES += \
         resources.qrc

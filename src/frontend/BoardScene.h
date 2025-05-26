@@ -68,7 +68,7 @@ private:
 	QList<ArrowItem *> _arrowItems;
 	QList<PlayerItem *> _playerItems;
 	QList<HomeItem *> _homeItems;
-	DiceItem *_scoreItem;
+	DiceItem *_diceItem;
 	int _currentPlayerId;
 	bool _canBringPawnIn;
 };

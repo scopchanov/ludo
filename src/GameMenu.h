@@ -21,36 +21,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef PATHWAY_H
-#define PATHWAY_H
+#ifndef GAMEMENU_H
+#define GAMEMENU_H
 
-#include <QObject>
+#include <QWidget>
 
-class Field;
-class Pawn;
+class QPushButton;
 
-class Pathway : public QObject
+class GameMenu : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit Pathway(int fieldCount, QObject *parent = nullptr);
-
-	Pawn *pawnAt(int fieldNumber);
-	int fieldCount() const;
-	bool isFull() const;
-
-	bool bringPawnIn(Pawn *pawn, int fieldNumber);
-	bool movePawn(int fieldNumber, int fieldCount);
-	Pawn *takePawnOut(int fieldNumber);
-	void reset();
+	explicit GameMenu(QWidget *parent = nullptr);
 
 private:
-	Field *field(int n) const;
-	bool isFieldIndexValid(int fieldNumber) const;
-	bool occupyField(Field *field, Pawn *pawn);
+	QPushButton *_btnNew;
+	QPushButton *_btnLoad;
+	QPushButton *_btnExit;
 
-	int _pawnsCount;
-	QList<Field *> _fields;
+signals:
+	void newGame();
+	void loadGame();
 };
 
-#endif // PATHWAY_H
+#endif // GAMEMENU_H

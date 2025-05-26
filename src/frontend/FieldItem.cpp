@@ -22,6 +22,7 @@ SOFTWARE.
 */
 
 #include "FieldItem.h"
+#include "UiGlobals.h"
 #include <QPainter>
 
 FieldItem::FieldItem(QGraphicsItem *parent) :
@@ -74,7 +75,7 @@ void FieldItem::setPawnColor(const QColor &color)
 
 int FieldItem::type() const
 {
-	return QGraphicsItem::UserType;
+	return IT_Field;
 }
 
 void FieldItem::paint(QPainter *painter,

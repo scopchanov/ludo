@@ -24,31 +24,22 @@ SOFTWARE.
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+#include <QWidget>
 
-class QLabel;
-class QPushButton;
-class BoardScene;
-class DiceItem;
-class Game;
+class GameMenu;
+class GameWidget;
 
-class MainWindow : public QMainWindow
+class MainWindow : public QWidget
 {
 	Q_OBJECT
 public:
 	MainWindow(QWidget *parent = nullptr);
 
 private:
-	Game *_game;
-	BoardScene *_board;
-	QPushButton *_btnRollDice;
-	DiceItem *_scoreDisplay;
+	GameMenu *_gameMenu;
+	GameWidget *_gameWidget;
 
 private slots:
-	void onDiceRolled(int score);
-	void showPossibleMoves(const QList<int> &moves);
-	void onNextTurn(int currentPlayerId);
-	void onRollDice();
 	void onPlayerWon(int playerId);
 	void onGameOver();
 };

@@ -33,8 +33,8 @@ Game::Game(QObject *parent) :
 	_dice{new Dice(this)},
 	_currentPlayerId{0}
 {
-	for (int n{0}; n < 4; n++) {
-        auto *player{new Player(n, this)};
+	for (int id{0}; id < 4; id++) {
+		auto *player{new Player(id, this)};
 
 		_players.append(player);
 
@@ -55,11 +55,8 @@ void Game::rollDice()
 	_dice->roll();
 
 	emit diceRolled(_dice->score());
-	emit bringInChanged(_dice->score() == 6
-						&& _players.at(_currentPlayerId)->pawnsCount()
-						&& _board->checkBringIn(_currentPlayerId));
-	emit possibleMoves(_board->findPossibleMoves(_dice->score(),
-												  _currentPlayerId));
+	emit bringInChanged(canBringIn());
+	emit possibleMoves(_board->findPossibleMoves(_currentPlayerId, _dice->score()));
 }
 
 void Game::bringPawnIn()
@@ -86,6 +83,12 @@ void Game::reset()
 {
 	_board->reset();
 	_escapedPlayers.clear();
+	_currentPlayerId = 0;
+
+	for (auto *player : std::as_const(_players))
+		player->reset();
+
+	emit nextTurn(_currentPlayerId);
 }
 
 void Game::switchToNextPlayer()
@@ -95,6 +98,13 @@ void Game::switchToNextPlayer()
 
 	if (_escapedPlayers.contains(_players.at(_currentPlayerId)))
 		switchToNextPlayer();
+}
+
+bool Game::canBringIn() const
+{
+	return _dice->score() == 6
+		   && _players.at(_currentPlayerId)->pawnsCount()
+		   && _board->checkBringIn(_currentPlayerId);
 }
 
 void Game::onPawnsCountChanged()

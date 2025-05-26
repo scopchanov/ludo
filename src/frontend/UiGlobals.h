@@ -21,36 +21,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef PATHWAY_H
-#define PATHWAY_H
+#ifndef UIGLOBALS_H
+#define UIGLOBALS_H
 
-#include <QObject>
+#include <QGraphicsItem>
 
-class Field;
-class Pawn;
+enum ItemType : int {
+	IT_Arrow = QGraphicsItem::UserType,
+	IT_Dice,
+	IT_Field,
+	IT_Home,
+	IT_Player,
+	IT_Spawn
 
-class Pathway : public QObject
-{
-	Q_OBJECT
-public:
-	explicit Pathway(int fieldCount, QObject *parent = nullptr);
-
-	Pawn *pawnAt(int fieldNumber);
-	int fieldCount() const;
-	bool isFull() const;
-
-	bool bringPawnIn(Pawn *pawn, int fieldNumber);
-	bool movePawn(int fieldNumber, int fieldCount);
-	Pawn *takePawnOut(int fieldNumber);
-	void reset();
-
-private:
-	Field *field(int n) const;
-	bool isFieldIndexValid(int fieldNumber) const;
-	bool occupyField(Field *field, Pawn *pawn);
-
-	int _pawnsCount;
-	QList<Field *> _fields;
 };
 
-#endif // PATHWAY_H
+#endif // UIGLOBALS_H

@@ -21,36 +21,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef PATHWAY_H
-#define PATHWAY_H
+#ifndef GAMEWIDGET_H
+#define GAMEWIDGET_H
 
-#include <QObject>
+#include <QWidget>
 
-class Field;
-class Pawn;
+class QPushButton;
+class BoardScene;
+class DiceItem;
+class Game;
 
-class Pathway : public QObject
+class GameWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit Pathway(int fieldCount, QObject *parent = nullptr);
-
-	Pawn *pawnAt(int fieldNumber);
-	int fieldCount() const;
-	bool isFull() const;
-
-	bool bringPawnIn(Pawn *pawn, int fieldNumber);
-	bool movePawn(int fieldNumber, int fieldCount);
-	Pawn *takePawnOut(int fieldNumber);
-	void reset();
+	explicit GameWidget(QWidget *parent = nullptr);
 
 private:
-	Field *field(int n) const;
-	bool isFieldIndexValid(int fieldNumber) const;
-	bool occupyField(Field *field, Pawn *pawn);
+	Game *_game;
+	BoardScene *_board;
+	QPushButton *_btnRollDice;
+	DiceItem *_scoreDisplay;
 
-	int _pawnsCount;
-	QList<Field *> _fields;
+private slots:
+	void onDiceRolled(int score);
+	void showPossibleMoves(const QList<int> &moves);
+	void onNextTurn(int currentPlayerId);
+	void onRollDice();
+	void onPlayerWon(int playerId);
+	void onGameOver();
 };
 
-#endif // PATHWAY_H
+#endif // GAMEWIDGET_H

@@ -23,6 +23,7 @@ SOFTWARE.
 
 #include "HomeItem.h"
 #include "FieldItem.h"
+#include "UiGlobals.h"
 #include <QJsonObject>
 #include <QJsonArray>
 
@@ -52,4 +53,9 @@ void HomeItem::updateItem(const QJsonArray &fields)
 
 		_fieldItems.at(fieldNumber)->setPawnColor(color);
 	}
+}
+
+int HomeItem::type() const
+{
+	return IT_Home;
 }
