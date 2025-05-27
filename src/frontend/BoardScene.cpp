@@ -97,12 +97,12 @@ void BoardScene::updateBoard(const QJsonObject &json)
 	for (auto *field : std::as_const(_fieldItems))
 		field->setPawnColor(QColor());
 
-	const QJsonArray &pathway{json.value("pathway").toArray()};
+	const QJsonArray &track{json.value("track").toArray()};
 	const QJsonArray &homes{json.value("homes").toArray()};
 
-	for (const auto &value : pathway) {
+	for (const auto &value : track) {
 		const QJsonObject &field{value.toObject()};
-		int n{field.value("number").toInt()};
+		int n{field.value("index").toInt()};
 		int playerId{field.value("player").toInt()};
 
 		_fieldItems.at(n)->setPawnColor(_spawnItems.at(playerId)->color());

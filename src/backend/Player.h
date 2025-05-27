@@ -35,6 +35,7 @@ public:
 	explicit Player(int playerId, QObject *parent = nullptr);
 
 	int id() const;
+	Pawn *pawn(int n) const;
 	int pawnsCount() const;
 	Pawn *takePawn();
 	void reset();

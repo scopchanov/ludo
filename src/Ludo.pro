@@ -27,6 +27,7 @@ SOURCES += \
     GameMenu.cpp \
     GameWidget.cpp \
     MenuButton.cpp \
+    backend/Move.cpp \
     backend/Path.cpp \
     backend/Player.cpp \
     backend/Tile.cpp \
@@ -49,6 +50,7 @@ HEADERS += \
     GameMenu.h \
     GameWidget.h \
     MenuButton.h \
+    backend/Move.h \
     backend/Path.h \
     backend/Player.h \
     backend/Tile.h \

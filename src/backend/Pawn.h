@@ -26,6 +26,8 @@ SOFTWARE.
 
 #include <QObject>
 
+class Tile;
+
 class Pawn : public QObject
 {
 	Q_OBJECT
@@ -33,10 +35,10 @@ public:
 	explicit Pawn(int playerId, QObject *parent = nullptr);
 
 	int playerId() const;
-	void bust();
-
+	bool canOccupy(Tile *tile) const;
 	int trip() const;
 	void addTrip(int steps);
+	void bust();
 
 private:
 	int _playerId;

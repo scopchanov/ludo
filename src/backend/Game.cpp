@@ -54,9 +54,15 @@ void Game::rollDice()
 {
 	_dice->roll();
 
+	QList<int> moves{_board->findPossibleMoves(_currentPlayerId, _dice->score())};
+	bool canBringPawnIn{canBringIn()};
+
 	emit diceRolled(_dice->score());
-	emit bringInChanged(canBringIn());
-	emit possibleMoves(_board->findPossibleMoves(_currentPlayerId, _dice->score()));
+	emit bringInChanged(canBringPawnIn);
+	emit possibleMoves(moves);
+
+	if (!canBringPawnIn && moves.isEmpty())
+		advance();
 }
 
 void Game::bringPawnIn()
@@ -65,18 +71,10 @@ void Game::bringPawnIn()
 		advance();
 }
 
-void Game::movePawn(int srcTile)
+void Game::movePawn(int srcTileIndex)
 {
-	if (_board->movePawn(_currentPlayerId, srcTile, _dice->score()))
+	if (_board->movePawn(_currentPlayerId, srcTileIndex, _dice->score()))
 		advance();
-}
-
-void Game::advance()
-{
-	if (_dice->score() != 6)
-		switchToNextPlayer();
-
-	emit nextTurn(_currentPlayerId);
 }
 
 void Game::reset()
@@ -87,6 +85,14 @@ void Game::reset()
 
 	for (auto *player : std::as_const(_players))
 		player->reset();
+
+	emit nextTurn(_currentPlayerId);
+}
+
+void Game::advance()
+{
+	if (_dice->score() != 6)
+		switchToNextPlayer();
 
 	emit nextTurn(_currentPlayerId);
 }
@@ -104,7 +110,7 @@ bool Game::canBringIn() const
 {
 	return _dice->score() == 6
 		   && _players.at(_currentPlayerId)->pawnsCount()
-		   && _board->canBringIn(_currentPlayerId);
+		   && _board->canBringIn(_players.at(_currentPlayerId)->pawn(0));
 }
 
 void Game::onPawnsCountChanged()

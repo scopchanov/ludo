@@ -74,13 +74,10 @@ void GameWidget::onDiceRolled(int score)
 
 void GameWidget::showPossibleMoves(const QList<int> &moves)
 {
-	if (_board->canBringIn() || !moves.isEmpty()) {
+	if (_board->canBringIn() || !moves.isEmpty())
 		_board->highlightFields(moves);
-	} else {
+	else
 		_board->setCurrentPlayerText(tr("Can't move."));
-		// QMessageBox::warning(this, "Ludo", "You have no valid moves.");
-		_game->advance();
-	}
 }
 
 void GameWidget::onNextTurn(int currentPlayerId)

@@ -42,6 +42,14 @@ int Player::id() const
 	return _id;
 }
 
+Pawn *Player::pawn(int n) const
+{
+	if (_pawns.isEmpty())
+		return nullptr;
+
+	return n >= 0 && n < _pawns.count() ? _pawns.at(n) : nullptr;
+}
+
 int Player::pawnsCount() const
 {
 	return _pawns.count();

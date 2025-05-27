@@ -33,6 +33,11 @@ Path::Path(int tileCount, QObject *parent) :
 		_tiles.append(new Tile(this));
 }
 
+Tile *Path::tile(int n) const
+{
+	return isValidTile(n) ? _tiles.at(n) : nullptr;
+}
+
 Pawn *Path::pawnAt(int tileNumber)
 {
 	return isValidTile(tileNumber) ? _tiles.at(tileNumber)->pawn() : nullptr;
@@ -106,11 +111,6 @@ bool Path::occupyTile(Tile *tile, Pawn *pawn)
 	tile->setPawn(pawn);
 
 	return true;
-}
-
-Tile *Path::tile(int n) const
-{
-	return isValidTile(n) ? _tiles.at(n) : nullptr;
 }
 
 int Path::wrappedIndex(int n) const

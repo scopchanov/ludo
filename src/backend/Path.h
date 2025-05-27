@@ -35,6 +35,7 @@ class Path : public QObject
 public:
 	explicit Path(int tileCount, QObject *parent = nullptr);
 
+	Tile *tile(int n) const;
 	Pawn *pawnAt(int tileNumber);
 	int tileCount() const;
 	bool isFull() const;
@@ -46,7 +47,6 @@ public:
 
 private:
 	bool occupyTile(Tile *tile, Pawn *pawn);
-	Tile *tile(int n) const;
 	int wrappedIndex(int n) const;
 	bool isValidTile(int n) const;
 

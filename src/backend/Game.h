@@ -47,11 +47,11 @@ public:
 
 	void rollDice();
 	void bringPawnIn();
-	void movePawn(int srcTile);
-	void advance();
+	void movePawn(int srcTileIndex);
 	void reset();
 
 private:
+	void advance();
 	void switchToNextPlayer();
 	bool canBringIn() const;
 

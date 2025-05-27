@@ -28,6 +28,7 @@ SOFTWARE.
 
 class Path;
 class Pawn;
+class Tile;
 
 class Board : public QObject
 {
@@ -36,27 +37,31 @@ public:
 	explicit Board(QObject *parent = nullptr);
 
 	QJsonObject boardLayout() const;
-	QList<int> findPossibleMoves(int playerId, int score) const;
-	bool canBringIn(int playerId) const;
+	bool canBringIn(Pawn *pawn) const;
+	QList<int> findPossibleMoves(int playerId, int score);
 
 	bool bringPawnIn(Pawn *pawn);
 	bool movePawn(int playerId, int srcTileNumber, int steps);
-	bool takePawnOut(int tileNumber, int score);
+	bool takePawnOut(int tileIndex, int score);
 	void reset();
 
 private:
 	bool canMove(int playerId, int srcTileNumber, int steps) const;
 	bool canBringOut(Pawn *pawn, int score) const;
-	int entryTile(int playerId) const;
-	int wrappedIndex(int index) const;
-	bool exceedsTrackLength(Pawn *pawn, int steps) const;
-	bool canPlay(Pawn *pawn, int steps, int tileNumber) const;
+	// bool canPlay(Pawn *pawn, int steps) const;
+	// bool exceedsTrackLength(Pawn *pawn, int steps) const;
+	// Tile *trackTile(Pawn *pawn, int steps) const;
+	// Tile *homeTile(Pawn *pawn, int steps) const;
+	int entryTileIndex(int playerId) const;
+	// int wrappedIndex(int index) const;
 
 	Path *_track;
-	QList<Path *> _homes;
+	QList<Path *> _homeAreas;
 
 signals:
 	void playerEscaped(int playerId);
+
+	friend class Move;
 };
 
 #endif // BOARD_H

@@ -22,6 +22,7 @@ SOFTWARE.
 */
 
 #include "Pawn.h"
+#include "Tile.h"
 
 Pawn::Pawn(int playerId, QObject *parent) :
 	QObject{parent},
@@ -34,6 +35,11 @@ Pawn::Pawn(int playerId, QObject *parent) :
 int Pawn::playerId() const
 {
 	return _playerId;
+}
+
+bool Pawn::canOccupy(Tile *tile) const
+{
+	return tile && (!tile->pawn() || tile->pawn()->playerId() != _playerId);
 }
 
 int Pawn::trip() const
