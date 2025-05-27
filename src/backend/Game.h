@@ -47,7 +47,7 @@ public:
 
 	void rollDice();
 	void bringPawnIn();
-	void movePawn(int srcField);
+	void movePawn(int srcTile);
 	void advance();
 	void reset();
 

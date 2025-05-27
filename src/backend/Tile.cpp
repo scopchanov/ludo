@@ -21,36 +21,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef PATHWAY_H
-#define PATHWAY_H
+#include "Tile.h"
+#include "Pawn.h"
 
-#include <QObject>
-
-class Field;
-class Pawn;
-
-class Pathway : public QObject
+Tile::Tile(QObject *parent) :
+	QObject(parent),
+	_pawn{nullptr}
 {
-	Q_OBJECT
-public:
-	explicit Pathway(int fieldCount, QObject *parent = nullptr);
 
-	Pawn *pawnAt(int fieldNumber);
-	int fieldCount() const;
-	bool isFull() const;
+}
 
-	bool bringPawnIn(Pawn *pawn, int fieldNumber);
-	bool movePawn(int fieldNumber, int fieldCount);
-	Pawn *takePawnOut(int fieldNumber);
-	void reset();
+Pawn *Tile::pawn() const
+{
+	return _pawn;
+}
 
-private:
-	Field *field(int n) const;
-	bool isFieldIndexValid(int fieldNumber) const;
-	bool occupyField(Field *field, Pawn *pawn);
+void Tile::setPawn(Pawn *pawn)
+{
+	_pawn = pawn;
+}
 
-	int _pawnsCount;
-	QList<Field *> _fields;
-};
+Pawn *Tile::takePawn()
+{
+	auto *pawn{_pawn};
 
-#endif // PATHWAY_H
+	setPawn(nullptr);
+
+	return pawn;
+}
+
+void Tile::reset()
+{
+	if (_pawn)
+		_pawn->bust();
+
+	setPawn(nullptr);
+}

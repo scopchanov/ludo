@@ -22,8 +22,8 @@ SOFTWARE.
 */
 
 #include "Board.h"
-#include "Pathway.h"
-#include "Field.h"
+#include "Path.h"
+#include "Tile.h"
 #include "Pawn.h"
 #include <QJsonObject>
 #include <QJsonArray>
@@ -34,10 +34,10 @@ SOFTWARE.
 
 Board::Board(QObject *parent) :
 	QObject{parent},
-	_pathway{new Pathway(CIRCULAR_LENGHT, this)}
+	_track{new Path(CIRCULAR_LENGHT, this)}
 {
 	for (int n{0}; n < 4; n++)
-		_homes.append(new Pathway(HOME_LENGTH, this));
+		_homes.append(new Path(HOME_LENGTH, this));
 }
 
 QJsonObject Board::boardLayout() const
@@ -46,8 +46,8 @@ QJsonObject Board::boardLayout() const
 	QJsonArray pathway;
 	QJsonArray homes;
 
-    for (int n{0}; n < _pathway->fieldCount(); n++) {
-		auto *pawn{_pathway->pawnAt(n)};
+	for (int n{0}; n < _track->tileCount(); n++) {
+		auto *pawn{_track->pawnAt(n)};
 
 		if (pawn)
 			pathway.append(QJsonObject{{"number", n},
@@ -56,10 +56,10 @@ QJsonObject Board::boardLayout() const
 
 	json["pathway"] = pathway;
 
-    for (size_t m{0}; m < 4; m++) {
+	for (size_t m{0}; m < 4; m++) {
 		QJsonArray home;
 
-        for (int n{0}; n < 4; n++) {
+		for (int n{0}; n < 4; n++) {
 			auto *pawn{_homes.at(m)->pawnAt(n)};
 
 			if (pawn)
@@ -75,29 +75,25 @@ QJsonObject Board::boardLayout() const
 	return json;
 }
 
-bool Board::checkBringIn(int playerId) const
-{
-	auto *pawn{_pathway->pawnAt(toPathwayCoordinates(0, playerId))};
-
-	return !pawn || pawn->playerId() != playerId;
-}
-
 QList<int> Board::findPossibleMoves(int playerId, int score) const
 {
 	QList<int> moves;
-    int pathwayFieldCnt{_pathway->fieldCount()};
 
-	for (int fieldNum{0}; fieldNum < pathwayFieldCnt; fieldNum++) {
-		auto *pawn{_pathway->pawnAt(fieldNum)};
+	for (int n{0}; n < _track->tileCount(); n++) {
+		auto *pawn{_track->pawnAt(n)};
 
-		if (pawn && pawn->playerId() == playerId
-			&& (pawn->traveledDistance() + score < pathwayFieldCnt
-				? isMovePossible(playerId, fieldNum, score)
-				: isBringOutPossible(pawn, score)))
-			moves.append(fieldNum);
+		if (pawn && pawn->playerId() == playerId && canPlay(pawn, score, n))
+			moves.append(n);
 	}
 
 	return moves;
+}
+
+bool Board::canBringIn(int playerId) const
+{
+	auto *pawn{_track->pawnAt(entryTile(playerId))};
+
+	return !pawn || pawn->playerId() != playerId;
 }
 
 bool Board::bringPawnIn(Pawn *pawn)
@@ -105,38 +101,35 @@ bool Board::bringPawnIn(Pawn *pawn)
 	if (!pawn)
 		return false;
 
-    int playerId{pawn->playerId()};
-
-	return _pathway->bringPawnIn(pawn, toPathwayCoordinates(0, playerId));
+	return _track->bringPawnIn(pawn, entryTile(pawn->playerId()));
 }
 
-bool Board::movePawn(int playerId, int fieldNumber, int score)
+bool Board::movePawn(int playerId, int srcTileNumber, int steps)
 {
-	auto *pawn{_pathway->pawnAt(fieldNumber)};
-    int pathwayFieldCnt{_pathway->fieldCount()};
+	auto *pawn{_track->pawnAt(srcTileNumber)};
 
-	if (pawn && pawn->playerId() == playerId
-		&& (pawn->traveledDistance() + score < pathwayFieldCnt)) {
-		if (isMovePossible(playerId, fieldNumber, score))
-			return _pathway->movePawn(fieldNumber, score);
-	} else {
-		if (isBringOutPossible(pawn, score))
-			return takePawnOut(fieldNumber, score);
-	}
+	if (!pawn || pawn->playerId() != playerId)
+		return false;
+
+	if(exceedsTrackLength(pawn, steps) && canBringOut(pawn, steps))
+		return takePawnOut(srcTileNumber, steps);
+
+	if (canMove(playerId, srcTileNumber, steps))
+		return _track->movePawn(srcTileNumber, steps);
 
 	return false;
 }
 
-bool Board::takePawnOut(int fieldNumber, int score)
+bool Board::takePawnOut(int tileNumber, int score)
 {
-    auto *pawn{_pathway->takePawnOut(fieldNumber)};
+	auto *pawn{_track->takePawn(tileNumber)};
 
 	if (!pawn)
 		return false;
 
-    auto *home{_homes.at(pawn->playerId())};
+	auto *home{_homes.at(pawn->playerId())};
 
-	if (!home->bringPawnIn(pawn, pawn->traveledDistance() - 40 + score))
+	if (!home->bringPawnIn(pawn, pawn->trip() - 40 + score))
 		return false;
 
 	if (home->isFull())
@@ -147,18 +140,25 @@ bool Board::takePawnOut(int fieldNumber, int score)
 
 void Board::reset()
 {
-	_pathway->reset();
+	_track->reset();
 
 	for (auto *home : std::as_const(_homes))
 		home->reset();
 }
 
-bool Board::isBringOutPossible(Pawn *pawn, int score) const
+bool Board::canMove(int playerId, int srcTileNumber, int steps) const
+{
+	auto *pawn{_track->pawnAt(wrappedIndex(srcTileNumber + steps))};
+
+	return !pawn || pawn->playerId() != playerId;
+}
+
+bool Board::canBringOut(Pawn *pawn, int score) const
 {
 	if (!pawn)
 		return false;
 
-    int fieldNum{pawn->traveledDistance() + score - _pathway->fieldCount()};
+	int fieldNum{pawn->trip() + score - _track->tileCount()};
 
 	if (fieldNum > 3)
 		return false;
@@ -166,25 +166,24 @@ bool Board::isBringOutPossible(Pawn *pawn, int score) const
 	return !_homes.at(pawn->playerId())->pawnAt(fieldNum);
 }
 
-bool Board::isMovePossible(int playerId, int srcFieldNum, int score) const
+int Board::entryTile(int playerId) const
 {
-    int pathwayFieldCnt{_pathway->fieldCount()};
-    int dstFieldNum{srcFieldNum + score};
-
-	if (dstFieldNum >= pathwayFieldCnt)
-		dstFieldNum -= pathwayFieldCnt;
-
-	auto *pawn{_pathway->pawnAt(dstFieldNum)};
-
-	return !pawn || pawn->playerId() != playerId;
+	return playerId*PLAYER_OFFSET;
 }
 
-int Board::toPathwayCoordinates(int fieldNumber, int playerId) const
+int Board::wrappedIndex(int index) const
 {
-	return PLAYER_OFFSET*playerId + fieldNumber;
+	return index % _track->tileCount();
 }
 
-int Board::wrappedIndex(int index, int length)
+bool Board::exceedsTrackLength(Pawn *pawn, int steps) const
 {
-	return index % length;
+	return pawn->trip() + steps > _track->tileCount();
+}
+
+bool Board::canPlay(Pawn *pawn, int steps, int tileNumber) const
+{
+	return exceedsTrackLength(pawn, steps)
+			? canBringOut(pawn, steps)
+			: canMove(pawn->playerId(), tileNumber, steps);
 }

@@ -35,12 +35,12 @@ public:
 	int playerId() const;
 	void bust();
 
-	int traveledDistance() const;
-	void increaseTraveledDistance(int fieldCount);
+	int trip() const;
+	void addTrip(int steps);
 
 private:
 	int _playerId;
-	int _traveledDistance;
+	int _trip;
 
 signals:
 	void busted();

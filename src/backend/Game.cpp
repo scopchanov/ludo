@@ -65,9 +65,9 @@ void Game::bringPawnIn()
 		advance();
 }
 
-void Game::movePawn(int srcField)
+void Game::movePawn(int srcTile)
 {
-	if (_board->movePawn(_currentPlayerId, srcField, _dice->score()))
+	if (_board->movePawn(_currentPlayerId, srcTile, _dice->score()))
 		advance();
 }
 
@@ -104,7 +104,7 @@ bool Game::canBringIn() const
 {
 	return _dice->score() == 6
 		   && _players.at(_currentPlayerId)->pawnsCount()
-		   && _board->checkBringIn(_currentPlayerId);
+		   && _board->canBringIn(_currentPlayerId);
 }
 
 void Game::onPawnsCountChanged()

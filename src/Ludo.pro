@@ -27,8 +27,9 @@ SOURCES += \
     GameMenu.cpp \
     GameWidget.cpp \
     MenuButton.cpp \
-    backend/Pathway.cpp \
+    backend/Path.cpp \
     backend/Player.cpp \
+    backend/Tile.cpp \
     frontend/ArrowItem.cpp \
     frontend/BoardScene.cpp \
     frontend/BoardView.cpp \
@@ -38,7 +39,6 @@ SOURCES += \
     frontend/PlayerItem.cpp \
     backend/Board.cpp \
     backend/Dice.cpp \
-    backend/Field.cpp \
     backend/Game.cpp \
     backend/Pawn.cpp \
     frontend/SpawnItem.cpp \
@@ -49,8 +49,9 @@ HEADERS += \
     GameMenu.h \
     GameWidget.h \
     MenuButton.h \
-    backend/Pathway.h \
+    backend/Path.h \
     backend/Player.h \
+    backend/Tile.h \
     frontend/ArrowItem.h \
     frontend/BoardScene.h \
     frontend/BoardView.h \
@@ -60,7 +61,6 @@ HEADERS += \
     frontend/PlayerItem.h \
     backend/Board.h \
     backend/Dice.h \
-    backend/Field.h \
     backend/Game.h \
     backend/Pawn.h \
     MainWindow.h \

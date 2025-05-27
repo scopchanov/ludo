@@ -21,24 +21,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef FIELD_H
-#define FIELD_H
+#ifndef PATH_H
+#define PATH_H
 
 #include <QObject>
 
+class Tile;
 class Pawn;
 
-class Field : public QObject
+class Path : public QObject
 {
 	Q_OBJECT
 public:
-	explicit Field(QObject *parent = nullptr);
+	explicit Path(int tileCount, QObject *parent = nullptr);
 
-	Pawn *pawn() const;
-	void setPawn(Pawn *pawn);
+	Pawn *pawnAt(int tileNumber);
+	int tileCount() const;
+	bool isFull() const;
+
+	bool bringPawnIn(Pawn *pawn, int tileNumber);
+	bool movePawn(int srcTileNumber, int steps);
+	Pawn *takePawn(int tileNumber);
+	void reset();
 
 private:
-	Pawn *_pawn;
+	bool occupyTile(Tile *tile, Pawn *pawn);
+	Tile *tile(int n) const;
+	int wrappedIndex(int n) const;
+	bool isValidTile(int n) const;
+
+	int _pawnsCount;
+	QList<Tile *> _tiles;
 };
 
-#endif // FIELD_H
+#endif // PATH_H

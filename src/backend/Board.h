@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include <QObject>
 
-class Pathway;
+class Path;
 class Pawn;
 
 class Board : public QObject
@@ -36,22 +36,24 @@ public:
 	explicit Board(QObject *parent = nullptr);
 
 	QJsonObject boardLayout() const;
-	bool checkBringIn(int playerId) const;
 	QList<int> findPossibleMoves(int playerId, int score) const;
+	bool canBringIn(int playerId) const;
 
 	bool bringPawnIn(Pawn *pawn);
-	bool movePawn(int playerId, int fieldNumber, int score);
-	bool takePawnOut(int fieldNumber, int score);
+	bool movePawn(int playerId, int srcTileNumber, int steps);
+	bool takePawnOut(int tileNumber, int score);
 	void reset();
 
 private:
-	bool isBringOutPossible(Pawn *pawn, int score) const;
-	bool isMovePossible(int playerId, int srcFieldNum, int score) const;
-	int toPathwayCoordinates(int fieldNumber, int playerId) const;
-	int wrappedIndex(int index, int length);
+	bool canMove(int playerId, int srcTileNumber, int steps) const;
+	bool canBringOut(Pawn *pawn, int score) const;
+	int entryTile(int playerId) const;
+	int wrappedIndex(int index) const;
+	bool exceedsTrackLength(Pawn *pawn, int steps) const;
+	bool canPlay(Pawn *pawn, int steps, int tileNumber) const;
 
-	Pathway *_pathway;
-	QList<Pathway *> _homes;
+	Path *_track;
+	QList<Path *> _homes;
 
 signals:
 	void playerEscaped(int playerId);

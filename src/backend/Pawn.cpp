@@ -26,7 +26,7 @@ SOFTWARE.
 Pawn::Pawn(int playerId, QObject *parent) :
 	QObject{parent},
 	_playerId(playerId),
-	_traveledDistance{0}
+	_trip{0}
 {
 
 }
@@ -36,19 +36,19 @@ int Pawn::playerId() const
 	return _playerId;
 }
 
-int Pawn::traveledDistance() const
+int Pawn::trip() const
 {
-	return _traveledDistance;
+	return _trip;
 }
 
-void Pawn::increaseTraveledDistance(int fieldCount)
+void Pawn::addTrip(int steps)
 {
-	_traveledDistance += fieldCount;
+	_trip += steps;
 }
 
 void Pawn::bust()
 {
-	_traveledDistance = 0;
+	_trip = 0;
 
 	emit busted();
 }

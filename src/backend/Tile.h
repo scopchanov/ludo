@@ -21,21 +21,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Field.h"
+#ifndef TILE_H
+#define TILE_H
 
-Field::Field(QObject *parent) :
-	QObject(parent),
-	_pawn{nullptr}
+#include <QObject>
+
+class Pawn;
+
+class Tile : public QObject
 {
+	Q_OBJECT
+public:
+	explicit Tile(QObject *parent = nullptr);
 
-}
+	Pawn *pawn() const;
+	void setPawn(Pawn *pawn);
+	Pawn *takePawn();
+	void reset();
 
-Pawn *Field::pawn() const
-{
-	return _pawn;
-}
+private:
+	Pawn *_pawn;
+};
 
-void Field::setPawn(Pawn *pawn)
-{
-	_pawn = pawn;
-}
+#endif // TILE_H
