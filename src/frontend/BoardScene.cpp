@@ -98,7 +98,7 @@ void BoardScene::updateBoard(const QJsonObject &json)
 		field->setPawnColor(QColor());
 
 	const QJsonArray &track{json.value("track").toArray()};
-	const QJsonArray &homes{json.value("homes").toArray()};
+	const QJsonArray &homeAreas{json.value("homeAreas").toArray()};
 
 	for (const auto &value : track) {
 		const QJsonObject &field{value.toObject()};
@@ -109,7 +109,7 @@ void BoardScene::updateBoard(const QJsonObject &json)
 	}
 
 	for (int n{0}; n < _homeItems.count(); n++)
-		_homeItems.at(n)->updateItem(homes.at(n).toArray());
+		_homeItems.at(n)->updateItem(homeAreas.at(n).toArray());
 }
 
 void BoardScene::enableBringIn(bool canBringIn)

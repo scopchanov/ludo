@@ -36,24 +36,19 @@ class Board : public QObject
 public:
 	explicit Board(QObject *parent = nullptr);
 
-	QJsonObject boardLayout() const;
+	QJsonObject state() const;
+	void setState(const QJsonObject &json);
+
 	bool canBringIn(Pawn *pawn) const;
 	QList<int> findPossibleMoves(int playerId, int score);
 
 	bool bringPawnIn(Pawn *pawn);
-	bool movePawn(int playerId, int srcTileNumber, int steps);
+	bool movePawn(int playerId, int srcTileIndex, int steps);
 	bool takePawnOut(int tileIndex, int score);
 	void reset();
 
 private:
-	bool canMove(int playerId, int srcTileNumber, int steps) const;
-	bool canBringOut(Pawn *pawn, int score) const;
-	// bool canPlay(Pawn *pawn, int steps) const;
-	// bool exceedsTrackLength(Pawn *pawn, int steps) const;
-	// Tile *trackTile(Pawn *pawn, int steps) const;
-	// Tile *homeTile(Pawn *pawn, int steps) const;
 	int entryTileIndex(int playerId) const;
-	// int wrappedIndex(int index) const;
 
 	Path *_track;
 	QList<Path *> _homeAreas;

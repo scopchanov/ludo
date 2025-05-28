@@ -38,9 +38,9 @@ Tile *Path::tile(int n) const
 	return isValidTile(n) ? _tiles.at(n) : nullptr;
 }
 
-Pawn *Path::pawnAt(int tileNumber)
+Pawn *Path::pawnAt(int tileIndex) const
 {
-	return isValidTile(tileNumber) ? _tiles.at(tileNumber)->pawn() : nullptr;
+	return isValidTile(tileIndex) ? _tiles.at(tileIndex)->pawn() : nullptr;
 }
 
 int Path::tileCount() const
@@ -53,10 +53,10 @@ bool Path::isFull() const
 	return _pawnsCount >= _tiles.count();
 }
 
-bool Path::bringPawnIn(Pawn *pawn, int tileNumber)
+bool Path::bringPawnIn(Pawn *pawn, int tileIndex)
 {
-	bool canBringIn{pawn && isValidTile(tileNumber) && !isFull()
-		&& occupyTile(_tiles.at(tileNumber), pawn)};
+	bool canBringIn{pawn && isValidTile(tileIndex) && !isFull()
+		&& occupyTile(_tiles.at(tileIndex), pawn)};
 
 	if (canBringIn)
 		_pawnsCount++;
@@ -64,12 +64,12 @@ bool Path::bringPawnIn(Pawn *pawn, int tileNumber)
 	return canBringIn;
 }
 
-bool Path::movePawn(int srcTileNumber, int steps)
+bool Path::movePawn(int srcTileIndex, int steps)
 {
-	auto *srcTile{tile(srcTileNumber)};
+	auto *srcTile{tile(srcTileIndex)};
 	auto *pawn{srcTile ? srcTile->pawn() : nullptr};
 
-	if (!pawn || !occupyTile(_tiles.at(wrappedIndex(srcTileNumber + steps)), pawn))
+	if (!pawn || !occupyTile(_tiles.at(wrappedIndex(srcTileIndex + steps)), pawn))
 		return false;
 
 	pawn->addTrip(steps);
@@ -78,9 +78,9 @@ bool Path::movePawn(int srcTileNumber, int steps)
 	return true;
 }
 
-Pawn *Path::takePawn(int tileNumber)
+Pawn *Path::takePawn(int tileIndex)
 {
-	auto *srcTile{tile(tileNumber)};
+	auto *srcTile{tile(tileIndex)};
 	auto *pawn{srcTile ? srcTile->takePawn() : nullptr};
 
 	if (pawn)

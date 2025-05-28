@@ -27,23 +27,17 @@ SOFTWARE.
 #include <QObject>
 
 class Board;
-class Player;
 class Dice;
+class Player;
 
 class Game : public QObject
 {
 	Q_OBJECT
 public:
-	enum PlayerType : int {
-		PT_Blue = 0,
-		PT_Yellow,
-		PT_Green,
-		PT_Red
-	};
-
 	explicit Game(QObject *parent = nullptr);
 
-	QJsonObject boardLayout() const;
+	QJsonObject state() const;
+	void setState(const QJsonObject &json);
 
 	void rollDice();
 	void bringPawnIn();
@@ -59,7 +53,7 @@ private:
 	Dice *_dice;
 	int _currentPlayerId;
 	QList<Player *> _players;
-	QList<Player *> _escapedPlayers;
+	QList<Player *> _winners;
 
 private slots:
 	void onPawnsCountChanged();

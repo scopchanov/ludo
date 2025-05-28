@@ -58,8 +58,8 @@ GameWidget::GameWidget(QWidget *parent) :
 	connect(_game, &Game::possibleMoves, this, &GameWidget::showPossibleMoves);
 	connect(_game, &Game::pawnCountChanged, _board, &BoardScene::changePawnCount);
 	connect(_game, &Game::nextTurn, this, &GameWidget::onNextTurn);
-	connect(_game, &Game::playerWon, this, &GameWidget::onPlayerWon);
-	connect(_game, &Game::gameOver, this, &GameWidget::onGameOver);
+	connect(_game, &Game::playerWon, this, &GameWidget::playerWon);
+	connect(_game, &Game::gameOver, this, &GameWidget::gameOver);
 
 	connect(_btnRollDice, &QPushButton::clicked, this, &GameWidget::onRollDice);
 	connect(boardView, &BoardView::bringPawnIn, _game, &Game::bringPawnIn);
@@ -88,22 +88,11 @@ void GameWidget::onNextTurn(int currentPlayerId)
 	// m_board->setScore(0);
 	_board->setCurrentPlayerId(currentPlayerId);
 	_board->clearHighlight();
-	_board->updateBoard(_game->boardLayout());
+	_board->updateBoard(_game->state());
 }
 
 void GameWidget::onRollDice()
 {
 	_btnRollDice->setEnabled(false);
 	_game->rollDice();
-}
-
-void GameWidget::onPlayerWon(int playerId)
-{
-	// playerWon(playerId);
-}
-
-void GameWidget::onGameOver()
-{
-	// QMessageBox::information(this, "Ludo", "Game over.");
-	// _game->reset();
 }

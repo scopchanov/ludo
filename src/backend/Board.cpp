@@ -23,7 +23,6 @@ SOFTWARE.
 
 #include "Board.h"
 #include "Path.h"
-#include "Tile.h"
 #include "Pawn.h"
 #include "Move.h"
 #include <QJsonObject>
@@ -41,11 +40,10 @@ Board::Board(QObject *parent) :
 		_homeAreas.append(new Path(HOME_LENGTH, this));
 }
 
-QJsonObject Board::boardLayout() const
+QJsonObject Board::state() const
 {
-	QJsonObject json;
 	QJsonArray track;
-	QJsonArray homes;
+	QJsonArray homeAreas;
 
 	for (int n{0}; n < _track->tileCount(); n++) {
 		auto *pawn{_track->pawnAt(n)};
@@ -54,8 +52,6 @@ QJsonObject Board::boardLayout() const
 			track.append(QJsonObject{{"index", n},
 									 {"player", pawn->playerId()}});
 	}
-
-	json["track"] = track;
 
 	for (size_t m{0}; m < 4; m++) {
 		QJsonArray home;
@@ -68,12 +64,15 @@ QJsonObject Board::boardLayout() const
 										{"player", pawn->playerId()}});
 		}
 
-		homes.append(home);
+		homeAreas.append(home);
 	}
 
-	json["homes"] = homes;
+	return QJsonObject{{"track", track}, {"homeAreas", homeAreas}};
+}
 
-	return json;
+void Board::setState(const QJsonObject &json)
+{
+
 }
 
 bool Board::canBringIn(Pawn *pawn) const
@@ -107,9 +106,9 @@ bool Board::bringPawnIn(Pawn *pawn)
 	return _track->bringPawnIn(pawn, entryTileIndex(pawn->playerId()));
 }
 
-bool Board::movePawn(int playerId, int srcTileNumber, int steps)
+bool Board::movePawn(int playerId, int srcTileIndex, int steps)
 {
-	auto *pawn{_track->pawnAt(srcTileNumber)};
+	auto *pawn{_track->pawnAt(srcTileIndex)};
 
 	if (!pawn || pawn->playerId() != playerId)
 		return false;
@@ -145,63 +144,7 @@ void Board::reset()
 		home->reset();
 }
 
-bool Board::canMove(int playerId, int srcTileNumber, int steps) const
-{
-	// auto *pawn{_track->pawnAt(wrappedIndex(srcTileNumber + steps))};
-
-	// return !pawn || pawn->playerId() != playerId;
-
-	return false;
-}
-
-bool Board::canBringOut(Pawn *pawn, int score) const
-{
-	// if (!pawn)
-	// 	return false;
-
-	// int fieldNum{pawn->trip() + score - _track->tileCount()};
-
-	// if (fieldNum > 3)
-	// 	return false;
-
-	// return !_homeAreas.at(pawn->playerId())->pawnAt(fieldNum);
-
-	return false;
-}
-
-// bool Board::canPlay(Pawn *pawn, int steps) const
-// {
-// 	return pawn->canOccupy(exceedsTrackLength(pawn, steps)
-// 							   ? homeTile(pawn, steps)
-// 							   : trackTile(pawn, steps));
-// }
-
-// bool Board::exceedsTrackLength(Pawn *pawn, int steps) const
-// {
-// 	return pawn->trip() + steps > _track->tileCount();
-// }
-
-// Tile *Board::trackTile(Pawn *pawn, int steps) const
-// {
-// 	int playerId{pawn->playerId()};
-// 	int tileIndex{wrappedIndex(entryTile(playerId) + pawn->trip() + steps)};
-
-// 	return _track->tile(tileIndex);
-// }
-
-// Tile *Board::homeTile(Pawn *pawn, int steps) const
-// {
-// 	int tileIndex{wrappedIndex(pawn->trip() + steps)};
-
-// 	return _homeAreas.at(pawn->playerId())->tile(tileIndex);
-// }
-
 int Board::entryTileIndex(int playerId) const
 {
 	return playerId*PLAYER_OFFSET;
 }
-
-// int Board::wrappedIndex(int index) const
-// {
-// 	return index % _track->tileCount();
-// }

@@ -45,9 +45,14 @@ Game::Game(QObject *parent) :
 	connect(_board, &Board::playerEscaped, this, &Game::onPlayerEscaped);
 }
 
-QJsonObject Game::boardLayout() const
+QJsonObject Game::state() const
 {
-	return _board->boardLayout();
+	return _board->state();
+}
+
+void Game::setState(const QJsonObject &json)
+{
+
 }
 
 void Game::rollDice()
@@ -80,7 +85,7 @@ void Game::movePawn(int srcTileIndex)
 void Game::reset()
 {
 	_board->reset();
-	_escapedPlayers.clear();
+	_winners.clear();
 	_currentPlayerId = 0;
 
 	for (auto *player : std::as_const(_players))
@@ -99,10 +104,10 @@ void Game::advance()
 
 void Game::switchToNextPlayer()
 {
-	if (++_currentPlayerId == _players.count())
-		_currentPlayerId = 0;
+	_currentPlayerId++;
+	_currentPlayerId %= _players.count();
 
-	if (_escapedPlayers.contains(_players.at(_currentPlayerId)))
+	if (_winners.contains(_players.at(_currentPlayerId)))
 		switchToNextPlayer();
 }
 
@@ -122,6 +127,6 @@ void Game::onPawnsCountChanged()
 
 void Game::onPlayerEscaped(int playerId)
 {
-	_escapedPlayers.append(_players.at(playerId));
-	_escapedPlayers.count() == 3 ? emit gameOver() : emit playerWon(playerId);
+	_winners.append(_players.at(playerId));
+	_winners.count() == 3 ? emit gameOver() : emit playerWon(playerId);
 }

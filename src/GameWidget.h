@@ -48,8 +48,10 @@ private slots:
 	void showPossibleMoves(const QList<int> &moves);
 	void onNextTurn(int currentPlayerId);
 	void onRollDice();
-	void onPlayerWon(int playerId);
-	void onGameOver();
+
+signals:
+	void playerWon(int playerId);
+	void gameOver();
 };
 
 #endif // GAMEWIDGET_H

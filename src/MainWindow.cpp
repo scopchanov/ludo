@@ -40,8 +40,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	layoutMain->addWidget(_gameMenu);
 
     resize(600, 700);
-}
 
+	connect(_gameWidget, &GameWidget::playerWon, this, &MainWindow::onPlayerWon);
+	connect(_gameWidget, &GameWidget::gameOver, this, &MainWindow::onGameOver);
+}
 
 void MainWindow::onPlayerWon(int playerId)
 {
@@ -52,5 +54,5 @@ void MainWindow::onPlayerWon(int playerId)
 void MainWindow::onGameOver()
 {
 	QMessageBox::information(this, "Ludo", "Game over.");
-	// _game->reset();
+	static_cast<QStackedLayout *>(layout())->setCurrentIndex(0);
 }

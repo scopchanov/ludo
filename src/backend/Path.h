@@ -36,13 +36,13 @@ public:
 	explicit Path(int tileCount, QObject *parent = nullptr);
 
 	Tile *tile(int n) const;
-	Pawn *pawnAt(int tileNumber);
+	Pawn *pawnAt(int tileIndex) const;
 	int tileCount() const;
 	bool isFull() const;
 
-	bool bringPawnIn(Pawn *pawn, int tileNumber);
-	bool movePawn(int srcTileNumber, int steps);
-	Pawn *takePawn(int tileNumber);
+	bool bringPawnIn(Pawn *pawn, int tileIndex);
+	bool movePawn(int srcTileIndex, int steps);
+	Pawn *takePawn(int tileIndex);
 	void reset();
 
 private:
