@@ -21,35 +21,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef MOVE_H
-#define MOVE_H
+#ifndef MOVEACTION_H
+#define MOVEACTION_H
 
-#include <QObject>
+#include "AbstractGameAction.h"
 
 class Board;
-class Pawn;
 class Tile;
 
-class Move : public QObject
+class MoveAction : public AbstractGameAction
 {
-	Q_OBJECT
 public:
-	explicit Move(Pawn *pawn, int steps, Board *parent = nullptr);
+	explicit MoveAction(Board *board, int playerId, int srcTileIndex, int steps);
 
-	bool isPossible() const;
-	bool make();
+	bool isPossible() const override;
+	bool trigger() override;
 
 private:
+	bool canMove() const;
+	bool canEscape() const;
+
 	void movePawn();
 	void takePawnOut();
 	bool exceedsTrackLength() const;
-	Tile *trackTile() const;
-	Tile *homeTile() const;
-	int wrappedIndex(int index) const;
 
-	Board *_board;
-	Pawn *_pawn;
+	int _playerId;
+	int _srcTileIndex;
 	int _steps;
 };
 
-#endif // MOVE_H
+#endif // MOVEACTION_H

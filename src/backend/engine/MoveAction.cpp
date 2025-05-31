@@ -21,27 +21,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Move.h"
-#include "Path.h"
-#include "Tile.h"
-#include "Pawn.h"
+#include "MoveAction.h"
 #include "Board.h"
+#include "Path.h"
 
-Move::Move(Pawn *pawn, int steps, Board *parent) :
-	QObject{parent},
-	_board{parent},
-	_pawn{pawn},
+MoveAction::MoveAction(Board *board, int playerId, int srcTileIndex, int steps) :
+	AbstractGameAction{board},
+	_playerId{playerId},
+	_srcTileIndex{srcTileIndex},
 	_steps{steps}
 {
 
 }
 
-bool Move::isPossible() const
+bool MoveAction::isPossible() const
 {
-	return _pawn->canOccupy(exceedsTrackLength() ? homeTile() : trackTile());
+	return exceedsTrackLength() ? canEscape() : canMove();
 }
 
-bool Move::make()
+bool MoveAction::trigger()
 {
 	if (!isPossible())
 		return false;
@@ -54,40 +52,31 @@ bool Move::make()
 	return true;
 }
 
-void Move::movePawn()
+bool MoveAction::canMove() const
 {
-	int playerId{_pawn->playerId()};
-	int index{wrappedIndex(_board->entryTileIndex(playerId) + _pawn->trip())};
-
-	_board->_track->movePawn(index, _steps);
+	return board()->_track->canMove(_playerId, _srcTileIndex, _steps);
 }
 
-void Move::takePawnOut()
+bool MoveAction::canEscape() const
 {
-
+    // TODO: Implement me
+	return false;//board()->_homeAreas.at(_playerId)->canBringPawnIn();
 }
 
-bool Move::exceedsTrackLength() const
+void MoveAction::movePawn()
 {
-	return _pawn->trip() + _steps > _board->_track->tileCount();
+	board()->_track->movePawn(_playerId, _srcTileIndex, _steps);
 }
 
-Tile *Move::trackTile() const
+void MoveAction::takePawnOut()
 {
-	int playerId{_pawn->playerId()};
-	int tileIndex{wrappedIndex(_board->entryTileIndex(playerId) + _pawn->trip() + _steps)};
-
-	return _board->_track->tile(tileIndex);
+    // TODO: Implement me
 }
 
-Tile *Move::homeTile() const
+bool MoveAction::exceedsTrackLength() const
 {
-	int tileIndex{wrappedIndex(_pawn->trip() + _steps)};
+	int entryTileIndex{board()->entryTileIndex(_playerId)};
+	int trip{board()->_track->distance(entryTileIndex, _srcTileIndex)};
 
-	return _board->_homeAreas.at(_pawn->playerId())->tile(tileIndex);
-}
-
-int Move::wrappedIndex(int index) const
-{
-	return index % _board->_track->tileCount();
+	return trip + _steps >= board()->_track->tileCount();
 }
