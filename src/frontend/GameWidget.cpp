@@ -27,6 +27,7 @@ SOFTWARE.
 #include "frontend/BoardView.h"
 #include "frontend/BoardScene.h"
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QBoxLayout>
 #include <QPushButton>
 
@@ -102,6 +103,7 @@ void GameWidget::onStateChanged()
 	const QJsonObject &json{_game->state()};
 
     _board->updateBoard(json.value("board").toObject());
+	_board->updateWinners(json.value("winners").toArray());
 
 	FileManager::saveFile(_filename, json);
 }

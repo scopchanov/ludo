@@ -102,6 +102,12 @@ void BoardScene::updateBoard(const QJsonObject &json)
 		_baseItems.at(n)->setPawnCount(baseAreas.at(n).toInt());
 }
 
+void BoardScene::updateWinners(const QJsonArray &winners)
+{
+	for (int n{0}; n < winners.count(); n++)
+		_playerItems.at(winners.at(n).toInt())->setPlace(n + 1);
+}
+
 void BoardScene::updateArrows(bool canBringIn)
 {
 	for (auto *arrow : std::as_const(_arrowItems))

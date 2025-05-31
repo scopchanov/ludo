@@ -37,6 +37,7 @@ public:
     void setColor(const QColor &c);
     QString text() const;
     void setText(const QString &str);
+	void setPlace(int place);
 	bool isHighlighted() const;
     void setHighlighted(bool value);
 
@@ -49,6 +50,7 @@ private:
 	int _number;
 	bool _highlighted;
 	QGraphicsTextItem *_label;
+	QGraphicsTextItem *_place;
 };
 
 #endif // PLAYERITEM_H

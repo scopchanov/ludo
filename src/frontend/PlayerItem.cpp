@@ -29,13 +29,15 @@ PlayerItem::PlayerItem(QGraphicsItem *parent) :
 	QGraphicsEllipseItem{parent},
 	_number{0},
 	_highlighted{false},
-	_label{new QGraphicsTextItem(this)}
+	_label{new QGraphicsTextItem(this)},
+	_place{new QGraphicsTextItem(this)}
 {
 	setRect(-55, -55, 110, 110);
 	setPen(QPen(QBrush(0x313131), 3));
 	setBrush(QBrush(Qt::white));
 
 	_label->setPos(-60, 75);
+	_place->setPos(0, 0);
 }
 
 int PlayerItem::number() const
@@ -67,6 +69,11 @@ QString PlayerItem::text() const
 void PlayerItem::setText(const QString &str)
 {
 	_label->setPlainText(str);
+}
+
+void PlayerItem::setPlace(int place)
+{
+	_place->setPlainText(QString::number(place));
 }
 
 bool PlayerItem::isHighlighted() const

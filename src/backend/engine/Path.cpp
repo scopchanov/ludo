@@ -86,6 +86,9 @@ bool Path::bringPawnIn(int player, int tileIndex)
 
 	_pawnCount++;
 
+	if (isFullyOccupied())
+		emit pathFull();
+
 	return true;
 }
 

@@ -24,7 +24,6 @@ SOFTWARE.
 #include "MoveAction.h"
 #include "../Board.h"
 #include "../Path.h"
-#include <QDebug>
 
 MoveAction::MoveAction(Board *board, int player, int srcTileIndex, int steps) :
 	AbstractGameAction{board, player},
@@ -36,11 +35,10 @@ MoveAction::MoveAction(Board *board, int player, int srcTileIndex, int steps) :
 
 bool MoveAction::isPossible() const
 {
-	return board()->track()->isTileOccupiedBy(player(), _srcTileIndex)
-		? exceedsTrackLength()
-			  ? canEscape()
-			  : canMove()
-		: false;
+	if (!board()->track()->isTileOccupiedBy(player(), _srcTileIndex))
+		return false;
+
+	return exceedsTrackLength() ? canEscape() : canMove();
 }
 
 bool MoveAction::trigger()
@@ -65,8 +63,6 @@ void MoveAction::escapePawn()
 {
 	int tileIndex{destinationTileIndex() % board()->track()->tileCount()};
 
-	qDebug() << tileIndex;
-
 	board()->track()->removePlayerAt(_srcTileIndex);
 	board()->homeArea(player())->bringPawnIn(player(), tileIndex);
 }
@@ -85,8 +81,6 @@ bool MoveAction::canEscape() const
 
 bool MoveAction::exceedsTrackLength() const
 {
-	qDebug() << destinationTileIndex();
-
 	return destinationTileIndex() > board()->track()->tileCount() - 1;
 }
 

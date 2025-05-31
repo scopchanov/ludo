@@ -65,6 +65,7 @@ private:
 
 signals:
 	void pawnBusted(int player);
+	void pathFull();
 };
 
 #endif // PATH_H

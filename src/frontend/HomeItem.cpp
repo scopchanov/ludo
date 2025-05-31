@@ -31,27 +31,27 @@ HomeItem::HomeItem(const QColor &color, QGraphicsItem *parent) :
 	QGraphicsRectItem{parent}
 {
     for (int n{0}; n < 4; n++) {
-        auto *field{new TileItem(this)};
+		auto *tile{new TileItem(this)};
 
-		field->setNumber(n);
-		field->setColor(color);
-		field->setPos(0, 105 - 70*n);
+		tile->setNumber(n);
+		tile->setColor(color);
+		tile->setPos(0, 105 - 70*n);
 
-		_fieldItems.append(field);
+		_tileItems.append(tile);
 	}
 }
 
-void HomeItem::updateItem(const QJsonArray &fields)
+void HomeItem::updateItem(const QJsonArray &json)
 {
-	for (auto *field : std::as_const(_fieldItems))
-		field->setPawnColor(QColor());
+	for (auto *tile : std::as_const(_tileItems))
+		tile->setPawnColor(QColor());
 
-	for (const auto &value : fields) {
-		const QJsonObject &field{value.toObject()};
-		const QColor &color{_fieldItems.first()->color()};
-        int fieldNumber{field.value("number").toInt()};
+	for (const auto &value : json) {
+		const QJsonObject &tileSettings{value.toObject()};
+		const QColor &color{_tileItems.first()->color()};
+		int tileIndex{tileSettings.value("index").toInt()};
 
-		_fieldItems.at(fieldNumber)->setPawnColor(color);
+		_tileItems.at(tileIndex)->setPawnColor(color);
 	}
 }
 

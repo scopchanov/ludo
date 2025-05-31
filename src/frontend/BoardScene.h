@@ -47,6 +47,7 @@ public:
 	void clearHighlight();
     void clearPlayersText();
 	void updateBoard(const QJsonObject &json);
+	void updateWinners(const QJsonArray &winners);
 
 public slots:
 	void updateArrows(bool canBringIn);

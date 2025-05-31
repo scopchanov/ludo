@@ -41,6 +41,7 @@ class GamePrivate
 	void switchToNextPlayer();
 	QList<int> findPossibleMoves();
 	bool rolledSix() const;
+	bool isGameOver() const;
 
 	Game *parent;
 	Dice *dice;

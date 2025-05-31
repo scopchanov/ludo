@@ -33,11 +33,11 @@ class HomeItem : public QGraphicsRectItem
 public:
 	explicit HomeItem(const QColor &color, QGraphicsItem *parent = nullptr);
 
-	void updateItem(const QJsonArray &fields);
+	void updateItem(const QJsonArray &json);
 	int type() const override;
 
 private:
-	QList<TileItem *> _fieldItems;
+	QList<TileItem *> _tileItems;
 };
 
 #endif // HOMEITEM_H

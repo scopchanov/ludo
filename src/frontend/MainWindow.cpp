@@ -77,7 +77,7 @@ void MainWindow::onLoadGame()
 
 void MainWindow::onPlayerWon(int player)
 {
-	QMessageBox::information(this, "Ludo", tr("Player %1 wins.").arg(player));
+	QMessageBox::information(this, "Ludo", tr("Player %1 escaped.").arg(player));
 }
 
 void MainWindow::onGameOver()

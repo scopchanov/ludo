@@ -35,8 +35,12 @@ Board::Board(QObject *parent) :
 	_track{new Path(PLAYER_COUNT*PLAYER_OFFSET, this)}
 {
 	for (int n{0}; n < PLAYER_COUNT; n++) {
+		auto *homeArea{new Path(PAWNS_PRO_PLAYER, this)};
+
 		_baseAreas.append(new Base(this));
-		_homeAreas.append(new Path(PAWNS_PRO_PLAYER, this));
+		_homeAreas.append(homeArea);
+
+		connect(homeArea, &Path::pathFull, this, &Board::onHomeFull);
 	}
 
 	connect(_track, &Path::pawnBusted, this, &Board::onPawnBusted);
@@ -87,4 +91,9 @@ bool Board::isValidPlayer(int player) const
 void Board::onPawnBusted(int player)
 {
 	_baseAreas.at(player)->addPawn();
+}
+
+void Board::onHomeFull()
+{
+	emit playerEscaped(_homeAreas.indexOf(sender()));
 }

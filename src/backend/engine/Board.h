@@ -54,6 +54,7 @@ private:
 
 private slots:
 	void onPawnBusted(int player);
+	void onHomeFull();
 
 signals:
 	void playerEscaped(int player);

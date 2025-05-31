@@ -46,17 +46,28 @@ Game::~Game()
 
 QJsonObject Game::state() const
 {
+	QJsonArray winners;
+
+	for (auto winner : std::as_const(_ptr->winners))
+		winners.append(winner);
+
 	return QJsonObject{{"currentPlayer", _ptr->currentplayer},
 					   {"score", _ptr->dice->score()},
-					   {"board", BoardSerializer::toJson(_ptr->board)}};
+					   {"board", BoardSerializer::toJson(_ptr->board)},
+					   {"winners", winners}};
 }
 
 void Game::setState(const QJsonObject &json)
 {
+	const QJsonArray &winners{json.value("winners").toArray()};
+
 	BoardSerializer::fromJson(_ptr->board, json.value("board").toObject());
 
 	_ptr->currentplayer = json.value("currentPlayer").toInt();
 	_ptr->dice->setScore(json.value("score").toInt());
+
+	for (auto winner : winners)
+		_ptr->winners.append(winner.toInt());
 
 	emit stateChanged();
 	_ptr->advance();
@@ -81,6 +92,9 @@ QList<int> Game::possibleMoves()
 
 void Game::rollDice()
 {
+	if (_ptr->isGameOver())
+		return;
+
 	_ptr->dice->roll();
 
 	emit diceRolled(_ptr->dice->score());
@@ -130,7 +144,7 @@ void Game::onPlayerEscaped(int player)
 	_ptr->winners.append(player);
 	emit playerEscaped(player);
 
-	if (_ptr->winners.count() == _ptr->playerCount - 1)
+	if (_ptr->isGameOver())
 		emit gameOver();
 }
 
@@ -169,12 +183,15 @@ QList<int> GamePrivate::findPossibleMoves()
 		if (MoveAction(board, currentplayer, tileIndex, dice->score()).isPossible())
 			moves.append(tileIndex);
 
-	qDebug() << moves;
-
 	return moves;
 }
 
 bool GamePrivate::rolledSix() const
 {
 	return dice->score() == 6;
+}
+
+bool GamePrivate::isGameOver() const
+{
+	return winners.count() == playerCount - 1;
 }
