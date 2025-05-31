@@ -41,31 +41,29 @@ public:
 	QJsonObject state() const;
 	void setState(const QJsonObject &json);
 
-	bool canBringIn(int playerId) const;
-	QList<int> findPossibleMoves(int playerId, int score);
+	bool canBringIn(int player) const;
+	QList<int> findPossibleMoves(int player, int score);
 
-	bool bringPawnIn(int playerId);
-	bool movePawn(int playerId, int srcTileIndex, int steps);
+	bool bringPawnIn(int player);
+	bool movePawn(int player, int srcTileIndex, int steps);
 	bool takePawnOut(int tileIndex, int score);
 
 	void init();
-	void reset();
+	void clear();
 
 private:
-	int entryTileIndex(int playerId) const;
+	int entryTileIndex(int player) const;
 	QList<QJsonObject> toObjects(const QJsonArray &array);
 
 	Path *_track;
 	QList<Base *> _baseAreas;
 	QList<Path *> _homeAreas;
-	QList<QList<Pawn *>> _pawns;
 
 private slots:
-	void onPawnReset();
-    void onPawnBusted(Pawn *pawn);
+	void onPawnBusted(int player);
 
 signals:
-	void playerEscaped(int playerId);
+	void playerEscaped(int player);
 
 	friend class MoveAction;
 };

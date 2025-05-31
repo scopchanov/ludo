@@ -45,7 +45,7 @@ private:
 private slots:
 	void onNewGame();
 	void onLoadGame();
-	void onPlayerWon(int playerId);
+	void onPlayerWon(int player);
 	void onGameOver();
 };
 #endif // MAINWINDOW_H

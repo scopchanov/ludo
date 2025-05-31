@@ -32,7 +32,6 @@ SOURCES += \
     backend/engine/Game.cpp \
     backend/engine/MoveAction.cpp \
     backend/engine/Path.cpp \
-    backend/engine/Pawn.cpp \
     backend/engine/Tile.cpp \
     frontend/ArrowItem.cpp \
     frontend/BaseItem.cpp \
@@ -57,7 +56,6 @@ HEADERS += \
     backend/engine/Game.h \
     backend/engine/MoveAction.h \
     backend/engine/Path.h \
-    backend/engine/Pawn.h \
     backend/engine/Tile.h \
     frontend/ArrowItem.h \
     frontend/BaseItem.h \

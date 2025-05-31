@@ -32,7 +32,7 @@ class Tile;
 class MoveAction : public AbstractGameAction
 {
 public:
-	explicit MoveAction(Board *board, int playerId, int srcTileIndex, int steps);
+	explicit MoveAction(Board *board, int player, int srcTileIndex, int steps);
 
 	bool isPossible() const override;
 	bool trigger() override;
@@ -45,7 +45,7 @@ private:
 	void takePawnOut();
 	bool exceedsTrackLength() const;
 
-	int _playerId;
+	int _player;
 	int _srcTileIndex;
 	int _steps;
 };

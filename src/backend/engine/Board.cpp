@@ -25,7 +25,6 @@ SOFTWARE.
 #include "Base.h"
 #include "MoveAction.h"
 #include "Path.h"
-#include "Pawn.h"
 #include <QJsonArray>
 #include <QJsonObject>
 
@@ -40,45 +39,47 @@ Board::Board(QObject *parent) :
 	_track{new Path(TRACK_LENGHT, this)}
 {
 	for (int n{0}; n < PLAYERS_COUNT; n++) {
-		_pawns.append({PAWNS_PRO_PLAYER, new Pawn(n, this)});
 		_homeAreas.append(new Path(HOME_LENGTH, this));
 		_baseAreas.append(new Base(this));
-
-        for (auto *pawn : _pawns.at(n))
-            connect(pawn, &Pawn::gotReset, this, &Board::onPawnReset);
 	}
 
-    connect(_track, &Path::pawnBusted, this, &Board::onPawnBusted);
+	connect(_track, &Path::pawnBusted, this, &Board::onPawnBusted);
 }
 
 QJsonObject Board::state() const
 {
-	QJsonArray track;
+	QJsonArray baseAreas;
 	QJsonArray homeAreas;
+	QJsonArray track;
 
-	for (int n{0}; n < _track->tileCount(); n++) {
-		auto *pawn{_track->pawnAt(n)};
-
-		if (pawn)
-			track.append(QJsonObject{{"index", n},
-									 {"player", pawn->playerId()}});
-	}
-
-	for (size_t m{0}; m < 4; m++) {
+	for (size_t m{0}; m < PLAYERS_COUNT; m++) {
+		auto *baseArea{_baseAreas.at(m)};
+		auto *homeArea{_homeAreas.at(m)};
 		QJsonArray home;
 
-		for (int n{0}; n < 4; n++) {
-			auto *pawn{_homeAreas.at(m)->pawnAt(n)};
+		for (int tileIndex{0}; tileIndex < homeArea->tileCount(); tileIndex++) {
+			Player player{homeArea->playerAt(tileIndex)};
 
-			if (pawn)
-				home.append(QJsonObject{{"index", n},
-										{"player", pawn->playerId()}});
+			if (player.has_value())
+				home.append(QJsonObject{{"index", tileIndex},
+										{"player", player.value()}});
 		}
 
+		baseAreas.append(baseArea->pawnCount());
 		homeAreas.append(home);
 	}
 
-	return QJsonObject{{"track", track}, {"homeAreas", homeAreas}};
+	for (int tileIndex{0}; tileIndex < _track->tileCount(); tileIndex++) {
+		Player player{_track->playerAt(tileIndex)};
+
+		if (player.has_value())
+			track.append(QJsonObject{{"index", tileIndex},
+									 {"player", player.value()}});
+	}
+
+	return QJsonObject{{"baseAreas", baseAreas},
+					   {"homeAreas", homeAreas},
+					   {"track", track}};
 }
 
 void Board::setState(const QJsonObject &json)
@@ -87,16 +88,13 @@ void Board::setState(const QJsonObject &json)
 
 	for (const auto &value : track) {
 		const QJsonObject &tileSettings{value.toObject()};
-		int playerId{tileSettings.value("player").toInt()};
+		int player{tileSettings.value("player").toInt()};
 		int index{tileSettings.value("index").toInt()};
-		auto *pawn{_pawns[playerId].takeLast()};
 
-		_track->putPawnBackAt(pawn, index);
+		_track->setPlayerAt(player, index);
 	}
 
-	for (auto &playerPawns : _pawns)
-		while (!playerPawns.isEmpty())
-			_baseAreas.at(_pawns.indexOf(playerPawns))->addPawn(playerPawns.takeLast());
+	// TODO: recreate base and home areas
 }
 
 Path *Board::track() const
@@ -104,37 +102,40 @@ Path *Board::track() const
 	return _track;
 }
 
-bool Board::canBringIn(int playerId) const
+bool Board::canBringIn(int player) const
 {
-	auto *pawn{_baseAreas.at(playerId)->pawn()};
+	auto *baseArea{_baseAreas.at(player)};
 
-	return _track->canBringPawnIn(pawn, entryTileIndex(playerId));
+	if (baseArea->isEmpty())
+		return false;
+
+	return _track->canBringPawnIn(player, entryTileIndex(player));
 }
 
-QList<int> Board::findPossibleMoves(int playerId, int score)
+QList<int> Board::findPossibleMoves(int player, int score)
 {
 	QList<int> moves;
 
 	for (int tileIndex{0}; tileIndex < _track->tileCount(); tileIndex++)
-		if (MoveAction(this, playerId, tileIndex, score).isPossible())
+		if (MoveAction(this, player, tileIndex, score).isPossible())
 			moves.append(tileIndex);
 
 	return moves;
 }
 
-bool Board::bringPawnIn(int playerId)
+bool Board::bringPawnIn(int player)
 {
-	auto *pawn{_baseAreas.at(playerId)->takePawn()};
-
-	if (!pawn)
+	if (!canBringIn(player))
 		return false;
 
-	return _track->bringPawnIn(pawn, entryTileIndex(pawn->playerId()));
+	_baseAreas.at(player)->removePawn();
+
+	return _track->bringPawnIn(player, entryTileIndex(player));
 }
 
-bool Board::movePawn(int playerId, int srcTileIndex, int steps)
+bool Board::movePawn(int player, int srcTileIndex, int steps)
 {
-	return _track->movePawn(playerId, srcTileIndex, steps);
+	return _track->movePawn(player, srcTileIndex, steps);
 }
 
 bool Board::takePawnOut(int tileIndex, int score)
@@ -144,13 +145,13 @@ bool Board::takePawnOut(int tileIndex, int score)
 	// if (!pawn)
 	// 	return false;
 
-	// auto *home{_homeAreas.at(pawn->playerId())};
+	// auto *home{_homeAreas.at(pawn->player())};
 
 	// if (!home->bringPawnIn(pawn, wrappedIndex(pawn->trip() + score)))
 	// 	return false;
 
 	// if (home->isFull())
-	// 	emit playerEscaped(pawn->playerId());
+	// 	emit playerEscaped(pawn->player());
 
 	// return true;
 
@@ -159,25 +160,24 @@ bool Board::takePawnOut(int tileIndex, int score)
 
 void Board::init()
 {
-	for (auto &playerPawns : _pawns)
-		for (auto *pawn : playerPawns)
-			_baseAreas.at(pawn->playerId())->addPawn(pawn);
+	for (auto &baseArea : std::as_const(_baseAreas))
+		baseArea->setPawnCount(PAWNS_PRO_PLAYER);
 }
 
-void Board::reset()
+void Board::clear()
 {
-	_track->reset();
+	_track->clear();
 
 	for (auto *base : std::as_const(_baseAreas))
-		base->reset();
+		base->clear();
 
 	for (auto *home : std::as_const(_homeAreas))
-		home->reset();
+		home->clear();
 }
 
-int Board::entryTileIndex(int playerId) const
+int Board::entryTileIndex(int player) const
 {
-	return playerId*PLAYER_OFFSET;
+	return player*PLAYER_OFFSET;
 }
 
 QList<QJsonObject> Board::toObjects(const QJsonArray& array)
@@ -193,14 +193,7 @@ QList<QJsonObject> Board::toObjects(const QJsonArray& array)
 	return jsonObjects;
 }
 
-void Board::onPawnReset()
+void Board::onPawnBusted(int player)
 {
-	auto *pawn{static_cast<Pawn *>(sender())};
-
-	_pawns[pawn->playerId()].append(pawn);
-}
-
-void Board::onPawnBusted(Pawn *pawn)
-{
-	_baseAreas.at(pawn->playerId())->addPawn(pawn);
+	_baseAreas.at(player)->addPawn();
 }

@@ -22,7 +22,6 @@ SOFTWARE.
 */
 
 #include "Path.h"
-#include "Pawn.h"
 #include "Tile.h"
 
 Path::Path(int tileCount, QObject *parent) :
@@ -33,25 +32,25 @@ Path::Path(int tileCount, QObject *parent) :
 		_tiles.append(new Tile(this));
 }
 
-Pawn *Path::pawnAt(int tileIndex) const
+Player Path::playerAt(int tileIndex) const
 {
-	return isValidTile(tileIndex) ? _tiles.at(tileIndex)->pawn() : nullptr;
+	return isValidTile(tileIndex) ? _tiles.at(tileIndex)->player() : Player{};
 }
 
-bool Path::putPawnBackAt(Pawn *pawn, int tileIndex)
+bool Path::setPlayerAt(int player, int tileIndex)
 {
 	if (!isValidTile(tileIndex))
 		return false;
 
-	_tiles.at(tileIndex)->setPawn(pawn);
+	_tiles.at(tileIndex)->occupyBy(player);
 	_pawnCount++;
 
 	return true;
 }
 
-Tile *Path::tile(int n) const
+Tile *Path::tile(int index) const
 {
-	return isValidTile(n) ? _tiles.at(n) : nullptr;
+	return isValidTile(index) ? _tiles.at(index) : nullptr;
 }
 
 int Path::tileCount() const
@@ -59,18 +58,18 @@ int Path::tileCount() const
 	return _tiles.count();
 }
 
-bool Path::canBringPawnIn(Pawn *pawn, int tileIndex)
+bool Path::canBringPawnIn(int player, int tileIndex)
 {
-	return pawn && isValidTile(tileIndex) && !isFullyOccupied()
-	&& canOccupy(pawn, _tiles.at(tileIndex));
+	return isValidTile(tileIndex) && !isFullyOccupied()
+	&& canOccupy(player, _tiles.at(tileIndex));
 }
 
-bool Path::canMove(int playerId, int srcTileIndex, int steps) const
+bool Path::canMove(int player, int srcTileIndex, int steps) const
 {
-	auto *pawn{pawnAt(srcTileIndex)};
+	Player occupant{playerAt(srcTileIndex)};
 
-	return pawn && pawn->playerId() == playerId
-		   && canOccupy(pawn, _tiles.at(wrappedIndex(srcTileIndex + steps)));
+	return occupant.has_value() && occupant == player
+		   && canOccupy(player, _tiles.at(wrappedIndex(srcTileIndex + steps)));
 }
 
 int Path::distance(int fromTileIndex, int toTileIndex)
@@ -78,78 +77,77 @@ int Path::distance(int fromTileIndex, int toTileIndex)
 	return (toTileIndex - fromTileIndex + _tiles.count()) % _tiles.count();
 }
 
-bool Path::bringPawnIn(Pawn *pawn, int tileIndex)
+bool Path::bringPawnIn(int player, int tileIndex)
 {
-	if (!canBringPawnIn(pawn, tileIndex))
+	if (!canBringPawnIn(player, tileIndex))
 		return false;
 
-	occupy(pawn, _tiles.at(tileIndex));
+	occupy(player, _tiles.at(tileIndex));
 
 	_pawnCount++;
 
 	return true;
 }
 
-bool Path::movePawn(int playerId, int srcTileIndex, int steps)
+bool Path::movePawn(int player, int srcTileIndex, int steps)
 {
-	if (!canMove(playerId, srcTileIndex, steps))
+	if (!canMove(player, srcTileIndex, steps))
 		return false;
 
 	auto *srcTile{tile(srcTileIndex)};
-	auto *pawn{srcTile->pawn()};
 
-	occupy(pawn, _tiles.at(wrappedIndex(srcTileIndex + steps)));
+	occupy(player, _tiles.at(wrappedIndex(srcTileIndex + steps)));
 
-	srcTile->setPawn(nullptr);
+	srcTile->clear();
 
 	return true;
 }
 
-Pawn *Path::takePawn(int tileIndex)
+Player Path::removePlayerAt(int tileIndex)
 {
 	auto *srcTile{tile(tileIndex)};
-	auto *pawn{srcTile ? srcTile->takePawn() : nullptr};
+	Player player{srcTile ? srcTile->removePlayer() : Player{}};
 
-	if (pawn)
+	if (player.has_value())
 		_pawnCount--;
 
-	return pawn;
+	return player;
 }
 
-void Path::reset()
+void Path::clear()
 {
 	for (auto *tile : std::as_const(_tiles))
-		tile->reset();
+		tile->clear();
 
 	_pawnCount = 0;
 }
 
-bool Path::occupy(Pawn *pawn, Tile *tile)
+bool Path::occupy(int player, Tile *tile)
 {
-	auto *existingPawn{tile->pawn()};
+	Player occupant{tile->player()};
 
-	if (existingPawn) {
-		if (existingPawn->playerId() == pawn->playerId())
+	if (occupant.has_value()) {
+		if (player == occupant)
 			return false;
 		else
-            emit pawnBusted(existingPawn);
+			emit pawnBusted(occupant.value());
 	}
 
-	tile->setPawn(pawn);
+	tile->occupyBy(player);
 
 	return true;
 }
 
-bool Path::canOccupy(Pawn *pawn, Tile *tile) const
+bool Path::canOccupy(int player, Tile *tile) const
 {
-	auto *existingPawn{tile->pawn()};
+	Player existingPlayer{tile->player()};
 
-	return existingPawn ? existingPawn->playerId() != pawn->playerId() : true;
+	return existingPlayer.has_value() ? player != existingPlayer : true;
 }
 
 bool Path::isFullyOccupied() const
 {
-	return _pawnCount >= _tiles.count();
+	return _pawnCount == _tiles.count();
 }
 
 int Path::wrappedIndex(int index) const

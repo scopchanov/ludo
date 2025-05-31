@@ -86,7 +86,7 @@ void GameWidget::showActions()
     _board->showMoves(moves);
 
 	if (!canBringIn && moves.isEmpty())
-		_board->setPlayerText(_game->currentPlayerId(), tr("Can't move."));
+		_board->setPlayerText(_game->currentplayer(), tr("Can't move."));
 }
 
 void GameWidget::onDiceRolled(int score)
@@ -106,11 +106,11 @@ void GameWidget::onStateChanged()
 	FileManager::saveFile(_filename, json);
 }
 
-void GameWidget::onNextTurn(int currentPlayerId)
+void GameWidget::onNextTurn(int currentplayer)
 {
 	_btnRollDice->setEnabled(true);
 	_board->updateArrows(false);
-	_board->highlightPlayer(currentPlayerId);
+	_board->highlightPlayer(currentplayer);
 	_board->clearHighlight();
 }
 

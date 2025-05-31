@@ -31,35 +31,35 @@ BoardView::BoardView(QWidget *parent) :
 	QGraphicsView{parent}
 {
 	setBackgroundBrush(QBrush(0xFFE0B2));
-    setFrameStyle(QFrame::NoFrame);
-    setAlignment(Qt::AlignCenter);
-    setMinimumSize(300, 300);
+	setFrameStyle(QFrame::NoFrame);
+	setAlignment(Qt::AlignCenter);
+	setMinimumSize(300, 300);
 }
 
 void BoardView::mousePressEvent(QMouseEvent *event)
 {
-    auto *item{itemAt(event->pos())};
+	auto *item{itemAt(event->pos())};
 
-    if (!item)
-        return;
+	if (!item)
+		return;
 
-    switch (item->type()) {
+	switch (item->type()) {
 	case IT_Tile:
 		tileClicked(static_cast<TileItem *>(item));
-        break;
+		break;
 	case IT_Arrow:
 		emit bringPawnIn();
-        break;
-    default:
-        break;
-    }
+		break;
+	default:
+		break;
+	}
 }
 
 void BoardView::resizeEvent(QResizeEvent *event)
 {
-    fitInView(sceneRect(), Qt::KeepAspectRatio);
+	fitInView(sceneRect(), Qt::KeepAspectRatio);
 
-    QGraphicsView::resizeEvent(event);
+	QGraphicsView::resizeEvent(event);
 }
 
 void BoardView::tileClicked(TileItem *tile)

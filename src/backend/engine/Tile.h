@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include <QObject>
 
-class Pawn;
+using Player = std::optional<int>;
 
 class Tile : public QObject
 {
@@ -34,13 +34,14 @@ class Tile : public QObject
 public:
 	explicit Tile(QObject *parent = nullptr);
 
-	Pawn *pawn() const;
-	void setPawn(Pawn *pawn);
-	Pawn *takePawn();
-	void reset();
+	bool isOccupied() const;
+	Player player() const;
+	void occupyBy(int player);
+	Player removePlayer();
+	void clear();
 
 private:
-	Pawn *_pawn;
+	Player _player;
 };
 
 #endif // TILE_H

@@ -22,38 +22,39 @@ SOFTWARE.
 */
 
 #include "Tile.h"
-#include "Pawn.h"
 
 Tile::Tile(QObject *parent) :
 	QObject(parent),
-	_pawn{nullptr}
+	_player{}
 {
 
 }
 
-Pawn *Tile::pawn() const
+bool Tile::isOccupied() const
 {
-	return _pawn;
+	return _player.has_value();
 }
 
-void Tile::setPawn(Pawn *pawn)
+Player Tile::player() const
 {
-	_pawn = pawn;
+	return _player;
 }
 
-Pawn *Tile::takePawn()
+void Tile::occupyBy(int player)
 {
-	auto *pawn{_pawn};
-
-	setPawn(nullptr);
-
-	return pawn;
+	_player = player;
 }
 
-void Tile::reset()
+Player Tile::removePlayer()
 {
-	if (_pawn)
-		_pawn->reset();
+	Player player{_player};
 
-	setPawn(nullptr);
+	clear();
+
+	return player;
+}
+
+void Tile::clear()
+{
+	_player = {};
 }

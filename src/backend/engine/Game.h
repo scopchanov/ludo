@@ -28,7 +28,6 @@ SOFTWARE.
 
 class Board;
 class Dice;
-class Pawn;
 
 class Game : public QObject
 {
@@ -38,7 +37,7 @@ public:
 
 	QJsonObject state() const;
 	void setState(const QJsonObject &json);
-	int currentPlayerId() const;
+	int currentplayer() const;
 	bool canBringIn() const;
 	QList<int> possibleMoves() const;
 
@@ -54,19 +53,18 @@ private:
 
 	Dice *_dice;
 	Board *_board;
-	QList<Pawn *> _pawns;
 	int _playerCount;
-	int _currentPlayerId;
+	int _currentplayer;
 	QList<int> _winners;
 
 private slots:
-	void onPlayerEscaped(int playerId);
+	void onPlayerEscaped(int player);
 
 signals:
 	void stateChanged();
 	void diceRolled(int score);
-	void nextTurn(int playerId);
-	void playerEscaped(int playerId);
+	void nextTurn(int player);
+	void playerEscaped(int player);
 	void gameOver();
 };
 

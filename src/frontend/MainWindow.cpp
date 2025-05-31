@@ -75,9 +75,9 @@ void MainWindow::onLoadGame()
 	stackedLayout()->setCurrentWidget(_gameWidget);
 }
 
-void MainWindow::onPlayerWon(int playerId)
+void MainWindow::onPlayerWon(int player)
 {
-	QMessageBox::information(this, "Ludo", tr("Player %1 wins.").arg(playerId));
+	QMessageBox::information(this, "Ludo", tr("Player %1 wins.").arg(player));
 }
 
 void MainWindow::onGameOver()

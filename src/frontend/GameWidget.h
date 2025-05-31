@@ -52,11 +52,11 @@ private:
 private slots:
 	void onDiceRolled(int score);
 	void onStateChanged();
-	void onNextTurn(int currentPlayerId);
+	void onNextTurn(int currentplayer);
 	void onRollDice();
 
 signals:
-	void playerWon(int playerId);
+	void playerWon(int player);
 	void gameOver();
 };
 

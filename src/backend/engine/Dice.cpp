@@ -38,7 +38,7 @@ int Dice::score() const
 
 void Dice::setScore(int score)
 {
-    _score = score;
+	_score = score;
 }
 
 void Dice::roll()

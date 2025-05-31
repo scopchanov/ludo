@@ -28,115 +28,115 @@ SOFTWARE.
 #include <QJsonArray>
 
 Game::Game(QObject *parent) :
-    QObject{parent},
-    _dice{new Dice(this)},
-    _board{new Board(this)},
-    _playerCount{4},
-    _currentPlayerId{0}
+	QObject{parent},
+	_dice{new Dice(this)},
+	_board{new Board(this)},
+	_playerCount{4},
+	_currentplayer{0}
 {
-    connect(_board, &Board::playerEscaped, this, &Game::onPlayerEscaped);
+	connect(_board, &Board::playerEscaped, this, &Game::onPlayerEscaped);
 }
 
 QJsonObject Game::state() const
 {
-    return QJsonObject{{"currentPlayer", _currentPlayerId},
-                       {"score", _dice->score()},
-                       {"board", _board->state()}};
+	return QJsonObject{{"currentPlayer", _currentplayer},
+					   {"score", _dice->score()},
+					   {"board", _board->state()}};
 }
 
 void Game::setState(const QJsonObject &json)
 {
-    _currentPlayerId = json.value("currentPlayer").toInt();
-    _dice->setScore(json.value("score").toInt());
-    _board->setState(json.value("board").toObject());
+	_currentplayer = json.value("currentPlayer").toInt();
+	_dice->setScore(json.value("score").toInt());
+	_board->setState(json.value("board").toObject());
 
-    emit stateChanged();
-    advance();
+	emit stateChanged();
+	advance();
 }
 
-int Game::currentPlayerId() const
+int Game::currentplayer() const
 {
-    return _currentPlayerId;
+	return _currentplayer;
 }
 
 bool Game::canBringIn() const
 {
-    return _dice->score() == 6 && _board->canBringIn(_currentPlayerId);
+	return _dice->score() == 6 && _board->canBringIn(_currentplayer);
 }
 
 QList<int> Game::possibleMoves() const
 {
-    return _board->findPossibleMoves(_currentPlayerId, _dice->score());
+	return _board->findPossibleMoves(_currentplayer, _dice->score());
 }
 
 void Game::rollDice()
 {
-    _dice->roll();
+	_dice->roll();
 
-    QList<int> moves{_board->findPossibleMoves(_currentPlayerId, _dice->score())};
-    bool canBringPawnIn{canBringIn()};
+	QList<int> moves{_board->findPossibleMoves(_currentplayer, _dice->score())};
+	bool canBringPawnIn{canBringIn()};
 
-    emit diceRolled(_dice->score());
+	emit diceRolled(_dice->score());
 
-    if (!canBringPawnIn && moves.isEmpty())
-        advance();
+	if (!canBringPawnIn && moves.isEmpty())
+		advance();
 }
 
 void Game::bringPawnIn()
 {
-    if (!_board->bringPawnIn(_currentPlayerId))
-        return;
+	if (!_board->bringPawnIn(_currentplayer))
+		return;
 
-    emit stateChanged();
-    advance();
+	emit stateChanged();
+	advance();
 }
 
 void Game::movePawn(int srcTileIndex)
 {
-    if (!_board->movePawn(_currentPlayerId, srcTileIndex, _dice->score()))
-        return;
+	if (!_board->movePawn(_currentplayer, srcTileIndex, _dice->score()))
+		return;
 
-    emit stateChanged();
-    advance();
+	emit stateChanged();
+	advance();
 }
 
 void Game::init()
 {
-    _board->init();
-    emit stateChanged();
+	_board->init();
+	emit stateChanged();
 }
 
 void Game::reset()
 {
-    _winners.clear();
-    _board->reset();
-    _currentPlayerId = 0;
+	_winners.clear();
+	_board->clear();
+	_currentplayer = 0;
 
-    emit nextTurn(_currentPlayerId);
+	emit nextTurn(_currentplayer);
 }
 
 void Game::advance()
 {
-    if (_dice->score() != 6)
-        switchToNextPlayer();
+	if (_dice->score() != 6)
+		switchToNextPlayer();
 
-    emit nextTurn(_currentPlayerId);
+	emit nextTurn(_currentplayer);
 }
 
 void Game::switchToNextPlayer()
 {
-    _currentPlayerId++;
-    _currentPlayerId %= _playerCount;
+	_currentplayer++;
+	_currentplayer %= _playerCount;
 
-    if (_winners.contains(_currentPlayerId))
-        switchToNextPlayer();
+	if (_winners.contains(_currentplayer))
+		switchToNextPlayer();
 }
 
-void Game::onPlayerEscaped(int playerId)
+void Game::onPlayerEscaped(int player)
 {
-    _winners.append(playerId);
-    emit playerEscaped(playerId);
+	_winners.append(player);
+	emit playerEscaped(player);
 
-    if (_winners.count() == _playerCount - 1)
-        emit gameOver();
+	if (_winners.count() == _playerCount - 1)
+		emit gameOver();
 }

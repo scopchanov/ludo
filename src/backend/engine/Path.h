@@ -27,32 +27,33 @@ SOFTWARE.
 #include <QObject>
 
 class Tile;
-class Pawn;
+
+using Player = std::optional<int>;
 
 class Path : public QObject
 {
 	Q_OBJECT
 public:
 	explicit Path(int tileCount, QObject *parent = nullptr);
+	
+	Player playerAt(int tileIndex) const;
+    bool setPlayerAt(int player, int tileIndex);
 
-	Pawn *pawnAt(int tileIndex) const;
-	bool putPawnBackAt(Pawn *pawn, int tileIndex);
-
-	Tile *tile(int n) const;
+	Tile *tile(int index) const;
 	int tileCount() const;
-	bool canBringPawnIn(Pawn *pawn, int tileIndex);
-	bool canMove(int playerId, int srcTileIndex, int steps) const;
+	bool canBringPawnIn(int player, int tileIndex);
+	bool canMove(int player, int srcTileIndex, int steps) const;
 	
 	int distance(int fromTileIndex, int toTileIndex);
 
-	bool bringPawnIn(Pawn *pawn, int tileIndex);
-	bool movePawn(int playerId, int srcTileIndex, int steps);
-	Pawn *takePawn(int tileIndex);
-	void reset();
+	bool bringPawnIn(int player, int tileIndex);
+	bool movePawn(int player, int srcTileIndex, int steps);
+	Player removePlayerAt(int tileIndex);
+	void clear();
 
 private:
-	bool occupy(Pawn *pawn, Tile *tile);
-	bool canOccupy(Pawn *pawn, Tile *tile) const;
+	bool occupy(int player, Tile *tile);
+	bool canOccupy(int player, Tile *tile) const;
 	bool isFullyOccupied() const;
 	int wrappedIndex(int index) const;
 	bool isValidTile(int index) const;
@@ -61,7 +62,7 @@ private:
 	QList<Tile *> _tiles;
 
 signals:
-    void pawnBusted(Pawn *pawn);
+	void pawnBusted(int player);
 };
 
 #endif // PATH_H

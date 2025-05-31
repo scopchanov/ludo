@@ -22,36 +22,41 @@ SOFTWARE.
 */
 
 #include "Base.h"
-#include "Pawn.h"
 
 Base::Base(QObject *parent) :
-	QObject{parent}
+	QObject{parent},
+	_pawnCount{0}
 {
 
 }
 
-void Base::addPawn(Pawn *pawn)
+void Base::addPawn()
 {
-	_pawns.push(pawn);
+	_pawnCount++;
 }
 
-int Base::pawnsCount() const
+bool Base::isEmpty() const
 {
-	return _pawns.count();
+	return !_pawnCount;
 }
 
-Pawn *Base::pawn() const
+int Base::pawnCount() const
 {
-	return _pawns.isEmpty() ? nullptr : _pawns.top();
+	return _pawnCount;
 }
 
-Pawn *Base::takePawn()
+void Base::setPawnCount(int cnt)
 {
-	return _pawns.isEmpty() ? nullptr : _pawns.pop();
+	_pawnCount = cnt;
 }
 
-void Base::reset()
+void Base::removePawn()
 {
-	while(!_pawns.isEmpty())
-		_pawns.pop()->reset();
+	if (_pawnCount)
+		_pawnCount--;
+}
+
+void Base::clear()
+{
+	_pawnCount = 0;
 }

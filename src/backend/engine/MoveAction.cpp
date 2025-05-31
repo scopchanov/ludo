@@ -25,9 +25,9 @@ SOFTWARE.
 #include "Board.h"
 #include "Path.h"
 
-MoveAction::MoveAction(Board *board, int playerId, int srcTileIndex, int steps) :
+MoveAction::MoveAction(Board *board, int player, int srcTileIndex, int steps) :
 	AbstractGameAction{board},
-	_playerId{playerId},
+	_player{player},
 	_srcTileIndex{srcTileIndex},
 	_steps{steps}
 {
@@ -54,18 +54,18 @@ bool MoveAction::trigger()
 
 bool MoveAction::canMove() const
 {
-	return board()->_track->canMove(_playerId, _srcTileIndex, _steps);
+	return board()->_track->canMove(_player, _srcTileIndex, _steps);
 }
 
 bool MoveAction::canEscape() const
 {
     // TODO: Implement me
-	return false;//board()->_homeAreas.at(_playerId)->canBringPawnIn();
+	return false;//board()->_homeAreas.at(_player)->canBringPawnIn();
 }
 
 void MoveAction::movePawn()
 {
-	board()->_track->movePawn(_playerId, _srcTileIndex, _steps);
+	board()->_track->movePawn(_player, _srcTileIndex, _steps);
 }
 
 void MoveAction::takePawnOut()
@@ -75,7 +75,7 @@ void MoveAction::takePawnOut()
 
 bool MoveAction::exceedsTrackLength() const
 {
-	int entryTileIndex{board()->entryTileIndex(_playerId)};
+	int entryTileIndex{board()->entryTileIndex(_player)};
 	int trip{board()->_track->distance(entryTileIndex, _srcTileIndex)};
 
 	return trip + _steps >= board()->_track->tileCount();

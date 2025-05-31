@@ -25,9 +25,6 @@ SOFTWARE.
 #define BASE_H
 
 #include <QObject>
-#include <QStack>
-
-class Pawn;
 
 class Base : public QObject
 {
@@ -35,14 +32,15 @@ class Base : public QObject
 public:
 	explicit Base(QObject *parent = nullptr);
 
-	void addPawn(Pawn *pawn);
-	int pawnsCount() const;
-	Pawn *pawn() const;
-	Pawn *takePawn();
-	void reset();
+	void addPawn();
+    bool isEmpty() const;
+	int pawnCount() const;
+	void setPawnCount(int cnt);
+    void removePawn();
+	void clear();
 
 private:
-	QStack<Pawn *> _pawns;
+	int _pawnCount;
 };
 
 #endif // BASE_H

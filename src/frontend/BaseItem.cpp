@@ -26,9 +26,9 @@ SOFTWARE.
 #include "UiGlobals.h"
 #include <QPainter>
 
-BaseItem::BaseItem(int playerId, const QColor &color, QGraphicsItem *parent) :
+BaseItem::BaseItem(int player, const QColor &color, QGraphicsItem *parent) :
 	QGraphicsRectItem{parent},
-	_playerId{playerId}
+	_player{player}
 {
 	for (int n{0}; n < 4; n++) {
         auto *field{new TileItem(this)};
@@ -45,9 +45,9 @@ BaseItem::BaseItem(int playerId, const QColor &color, QGraphicsItem *parent) :
 	setRect(-70, -70, 140, 140);
 }
 
-int BaseItem::playerId() const
+int BaseItem::player() const
 {
-	return _playerId;
+	return _player;
 }
 
 QColor BaseItem::color() const

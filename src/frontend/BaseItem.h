@@ -31,10 +31,10 @@ class TileItem;
 class BaseItem : public QGraphicsRectItem
 {
 public:
-	explicit BaseItem(int playerId, const QColor &color,
+	explicit BaseItem(int player, const QColor &color,
 					   QGraphicsItem *parent = nullptr);
 
-	int playerId() const;
+	int player() const;
 	QColor color() const;
 	void setPawnCount(int n);
 
@@ -42,7 +42,7 @@ public:
 	int type() const override;
 
 private:
-	int _playerId;
+	int _player;
 	QList<TileItem *> _fields;
 };
 
