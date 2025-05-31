@@ -48,14 +48,16 @@ bool Path::setPlayerAt(int player, int tileIndex)
 	return true;
 }
 
-Tile *Path::tile(int index) const
-{
-	return isValidTile(index) ? _tiles.at(index) : nullptr;
-}
-
 int Path::tileCount() const
 {
 	return _tiles.count();
+}
+
+bool Path::isTileOccupiedBy(int player, int srcTileIndex) const
+{
+	Player occupant{playerAt(srcTileIndex)};
+
+	return occupant.has_value() && occupant == player;
 }
 
 bool Path::canBringPawnIn(int player, int tileIndex)
@@ -66,10 +68,8 @@ bool Path::canBringPawnIn(int player, int tileIndex)
 
 bool Path::canMove(int player, int srcTileIndex, int steps) const
 {
-	Player occupant{playerAt(srcTileIndex)};
-
-	return occupant.has_value() && occupant == player
-		   && canOccupy(player, _tiles.at(wrappedIndex(srcTileIndex + steps)));
+	return isTileOccupiedBy(player, srcTileIndex)
+	&& canOccupy(player, _tiles.at(wrappedIndex(srcTileIndex + steps)));
 }
 
 int Path::distance(int fromTileIndex, int toTileIndex)
@@ -143,6 +143,11 @@ bool Path::canOccupy(int player, Tile *tile) const
 	Player existingPlayer{tile->player()};
 
 	return existingPlayer.has_value() ? player != existingPlayer : true;
+}
+
+Tile *Path::tile(int index) const
+{
+	return isValidTile(index) ? _tiles.at(index) : nullptr;
 }
 
 bool Path::isFullyOccupied() const

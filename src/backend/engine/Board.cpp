@@ -23,10 +23,8 @@ SOFTWARE.
 
 #include "Board.h"
 #include "Base.h"
-#include "MoveAction.h"
 #include "Path.h"
-#include <QJsonArray>
-#include <QJsonObject>
+#include "actions/MoveAction.h"
 
 #define PLAYER_OFFSET 10
 #define PLAYER_COUNT 4
@@ -59,45 +57,9 @@ Path *Board::track() const
 	return _track;
 }
 
-bool Board::canBringIn(int player) const
-{
-	auto *baseArea{_baseAreas.at(player)};
-
-	if (baseArea->isEmpty())
-		return false;
-
-	return _track->canBringPawnIn(player, entryTileIndex(player));
-}
-
-QList<int> Board::findPossibleMoves(int player, int score)
-{
-	QList<int> moves;
-
-	for (int tileIndex{0}; tileIndex < _track->tileCount(); tileIndex++)
-		if (MoveAction(this, player, tileIndex, score).isPossible())
-			moves.append(tileIndex);
-
-	return moves;
-}
-
 int Board::entryTileIndex(int player) const
 {
 	return player*PLAYER_OFFSET;
-}
-
-bool Board::bringPawnIn(int player)
-{
-	if (!canBringIn(player))
-		return false;
-
-	_baseAreas.at(player)->removePawn();
-
-	return _track->bringPawnIn(player, entryTileIndex(player));
-}
-
-bool Board::movePawn(int player, int srcTileIndex, int steps)
-{
-	return MoveAction(this, player, srcTileIndex, steps).trigger();
 }
 
 void Board::init()
@@ -115,19 +77,6 @@ void Board::clear()
 
 	for (auto *home : std::as_const(_homeAreas))
 		home->clear();
-}
-
-QList<QJsonObject> Board::toObjects(const QJsonArray& array)
-{
-	QList<QJsonObject> jsonObjects;
-
-	jsonObjects.reserve(array.size());
-
-	for (const QJsonValue& value : array)
-		if (value.isObject())
-			jsonObjects.append(value.toObject());
-
-	return jsonObjects;
 }
 
 bool Board::isValidPlayer(int player) const

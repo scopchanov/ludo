@@ -26,36 +26,29 @@ SOFTWARE.
 
 #include <QObject>
 
-class Board;
-class Dice;
+class GamePrivate;
 
 class Game : public QObject
 {
 	Q_OBJECT
 public:
 	explicit Game(QObject *parent = nullptr);
+	~Game();
 
 	QJsonObject state() const;
 	void setState(const QJsonObject &json);
 	int currentplayer() const;
 	bool canBringIn() const;
-	QList<int> possibleMoves() const;
+	QList<int> possibleMoves();
 
-	void init();
-	void reset();
 	void rollDice();
 	void bringPawnIn();
 	void movePawn(int srcTileIndex);
+	void init();
+	void reset();
 
 private:
-	void advance();
-	void switchToNextPlayer();
-
-	Dice *_dice;
-	Board *_board;
-	int _playerCount;
-	int _currentplayer;
-	QList<int> _winners;
+	GamePrivate *_ptr;
 
 private slots:
 	void onPlayerEscaped(int player);

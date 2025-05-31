@@ -21,42 +21,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef BOARD_H
-#define BOARD_H
+#include "AbstractGameAction.h"
 
-#include <QObject>
-
-class Path;
-class Pawn;
-class Base;
-
-class Board : public QObject
+AbstractGameAction::AbstractGameAction(Board *board, int player) :
+	_board{board},
+	_player{player}
 {
-	Q_OBJECT
-public:
-	explicit Board(QObject *parent = nullptr);
 
-	Base *baseArea(int player) const;
-	Path *homeArea(int player) const;
-	Path *track() const;
+}
 
-	int entryTileIndex(int player) const;
+Board *AbstractGameAction::board() const
+{
+	return _board;
+}
 
-	void init();
-	void clear();
-
-private:
-	bool isValidPlayer(int player) const;
-
-	Path *_track;
-	QList<Base *> _baseAreas;
-	QList<Path *> _homeAreas;
-
-private slots:
-	void onPawnBusted(int player);
-
-signals:
-	void playerEscaped(int player);
-};
-
-#endif // BOARD_H
+int AbstractGameAction::player() const
+{
+	return _player;
+}

@@ -21,42 +21,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef BOARD_H
-#define BOARD_H
+#include "BringInAction.h"
+#include "../Board.h"
+#include "../Base.h"
+#include "../Path.h"
 
-#include <QObject>
-
-class Path;
-class Pawn;
-class Base;
-
-class Board : public QObject
+BringInAction::BringInAction(Board *board, int player) :
+	AbstractGameAction{board, player}
 {
-	Q_OBJECT
-public:
-	explicit Board(QObject *parent = nullptr);
 
-	Base *baseArea(int player) const;
-	Path *homeArea(int player) const;
-	Path *track() const;
+}
 
-	int entryTileIndex(int player) const;
+bool BringInAction::isPossible() const
+{
+	return hasPawnsLeft() ? canBringPawnOnTrack() : false;
+}
 
-	void init();
-	void clear();
+bool BringInAction::trigger()
+{
+	if (!isPossible())
+		return false;
 
-private:
-	bool isValidPlayer(int player) const;
+	auto *track{board()->track()};
 
-	Path *_track;
-	QList<Base *> _baseAreas;
-	QList<Path *> _homeAreas;
+	board()->baseArea(player())->removePawn();
 
-private slots:
-	void onPawnBusted(int player);
+	return track->bringPawnIn(player(), board()->entryTileIndex(player()));
+}
 
-signals:
-	void playerEscaped(int player);
-};
+bool BringInAction::hasPawnsLeft() const
+{
+	return !board()->baseArea(player())->isEmpty();
+}
 
-#endif // BOARD_H
+bool BringInAction::canBringPawnOnTrack() const
+{
+	auto *track{board()->track()};
+
+	return track->canBringPawnIn(player(), board()->entryTileIndex(player()));
+}

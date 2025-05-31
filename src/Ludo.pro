@@ -25,15 +25,16 @@ CONFIG += c++23
 
 SOURCES += \
     backend/FileManager.cpp \
-    backend/engine/AbstractGameAction.cpp \
     backend/engine/Base.cpp \
     backend/engine/Board.cpp \
-    backend/engine/BoardSerializer.cpp \
     backend/engine/Dice.cpp \
     backend/engine/Game.cpp \
-    backend/engine/MoveAction.cpp \
     backend/engine/Path.cpp \
     backend/engine/Tile.cpp \
+	backend/engine/actions/AbstractGameAction.cpp \
+	backend/engine/actions/BringInAction.cpp \
+	backend/engine/actions/MoveAction.cpp \
+	backend/engine/utils/BoardSerializer.cpp \
     frontend/ArrowItem.cpp \
     frontend/BaseItem.cpp \
     frontend/BoardScene.cpp \
@@ -50,15 +51,17 @@ SOURCES += \
 
 HEADERS += \
     backend/FileManager.h \
-    backend/engine/AbstractGameAction.h \
     backend/engine/Base.h \
     backend/engine/Board.h \
-    backend/engine/BoardSerializer.h \
     backend/engine/Dice.h \
     backend/engine/Game.h \
-    backend/engine/MoveAction.h \
+	backend/engine/Game_p.h \
     backend/engine/Path.h \
     backend/engine/Tile.h \
+	backend/engine/actions/AbstractGameAction.h \
+	backend/engine/actions/BringInAction.h \
+	backend/engine/actions/MoveAction.h \
+	backend/engine/utils/BoardSerializer.h \
     frontend/ArrowItem.h \
     frontend/BaseItem.h \
     frontend/BoardScene.h \

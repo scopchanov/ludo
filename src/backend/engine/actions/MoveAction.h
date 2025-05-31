@@ -21,42 +21,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef MOVEACTION_H
+#define MOVEACTION_H
 
-#include <QObject>
+#include "AbstractGameAction.h"
 
-class Path;
-class Pawn;
-class Base;
+class Board;
+class Tile;
 
-class Board : public QObject
+class MoveAction : public AbstractGameAction
 {
-	Q_OBJECT
 public:
-	explicit Board(QObject *parent = nullptr);
+	explicit MoveAction(Board *board, int player, int srcTileIndex, int steps);
 
-	Base *baseArea(int player) const;
-	Path *homeArea(int player) const;
-	Path *track() const;
+	bool isPossible() const override;
+	bool trigger() override;
 
-	int entryTileIndex(int player) const;
+private:	
+	void movePawn();
+	void escapePawn();
+	bool canMove() const;
+	bool canEscape() const;
+	bool exceedsTrackLength() const;
+	int destinationTileIndex() const;
 
-	void init();
-	void clear();
-
-private:
-	bool isValidPlayer(int player) const;
-
-	Path *_track;
-	QList<Base *> _baseAreas;
-	QList<Path *> _homeAreas;
-
-private slots:
-	void onPawnBusted(int player);
-
-signals:
-	void playerEscaped(int player);
+	int _srcTileIndex;
+	int _steps;
 };
 
-#endif // BOARD_H
+#endif // MOVEACTION_H

@@ -39,8 +39,9 @@ public:
 	Player playerAt(int tileIndex) const;
     bool setPlayerAt(int player, int tileIndex);
 
-	Tile *tile(int index) const;
 	int tileCount() const;
+	bool isTileOccupiedBy(int player, int srcTileIndex) const;
+
 	bool canBringPawnIn(int player, int tileIndex);
 	bool canMove(int player, int srcTileIndex, int steps) const;
 	
@@ -54,6 +55,7 @@ public:
 private:
 	bool occupy(int player, Tile *tile);
 	bool canOccupy(int player, Tile *tile) const;
+	Tile *tile(int index) const;
 	bool isFullyOccupied() const;
 	int wrappedIndex(int index) const;
 	bool isValidTile(int index) const;

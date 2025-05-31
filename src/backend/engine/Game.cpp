@@ -22,123 +22,159 @@ SOFTWARE.
 */
 
 #include "Game.h"
+#include "Game_p.h"
 #include "Dice.h"
 #include "Board.h"
-#include "BoardSerializer.h"
+#include "Path.h"
+#include "actions/BringInAction.h"
+#include "actions/MoveAction.h"
+#include "utils/BoardSerializer.h"
 #include <QJsonObject>
 #include <QJsonArray>
 
 Game::Game(QObject *parent) :
 	QObject{parent},
-	_dice{new Dice(this)},
-	_board{new Board(this)},
-	_playerCount{4},
-	_currentplayer{0}
+	_ptr{new GamePrivate(this)}
 {
-	connect(_board, &Board::playerEscaped, this, &Game::onPlayerEscaped);
+	connect(_ptr->board, &Board::playerEscaped, this, &Game::onPlayerEscaped);
+}
+
+Game::~Game()
+{
+	delete _ptr;
 }
 
 QJsonObject Game::state() const
 {
-	return QJsonObject{{"currentPlayer", _currentplayer},
-					   {"score", _dice->score()},
-					   {"board", BoardSerializer::toJson(_board)}};
+	return QJsonObject{{"currentPlayer", _ptr->currentplayer},
+					   {"score", _ptr->dice->score()},
+					   {"board", BoardSerializer::toJson(_ptr->board)}};
 }
 
 void Game::setState(const QJsonObject &json)
 {
-	BoardSerializer::fromJson(_board, json.value("board").toObject());
+	BoardSerializer::fromJson(_ptr->board, json.value("board").toObject());
 
-	_currentplayer = json.value("currentPlayer").toInt();
-	_dice->setScore(json.value("score").toInt());
+	_ptr->currentplayer = json.value("currentPlayer").toInt();
+	_ptr->dice->setScore(json.value("score").toInt());
 
 	emit stateChanged();
-	advance();
+	_ptr->advance();
 }
 
 int Game::currentplayer() const
 {
-	return _currentplayer;
+	return _ptr->currentplayer;
 }
 
 bool Game::canBringIn() const
 {
-	return _dice->score() == 6 && _board->canBringIn(_currentplayer);
+	int player{_ptr->currentplayer};
+
+	return _ptr->rolledSix() && BringInAction(_ptr->board, player).isPossible();
 }
 
-QList<int> Game::possibleMoves() const
+QList<int> Game::possibleMoves()
 {
-	return _board->findPossibleMoves(_currentplayer, _dice->score());
+	return _ptr->findPossibleMoves();
 }
 
 void Game::rollDice()
 {
-	_dice->roll();
+	_ptr->dice->roll();
 
-	QList<int> moves{_board->findPossibleMoves(_currentplayer, _dice->score())};
-	bool canBringPawnIn{canBringIn()};
+	emit diceRolled(_ptr->dice->score());
 
-	emit diceRolled(_dice->score());
-
-	if (!canBringPawnIn && moves.isEmpty())
-		advance();
+	if (!canBringIn() && possibleMoves().isEmpty())
+		_ptr->advance();
 }
 
 void Game::bringPawnIn()
 {
-	if (!_board->bringPawnIn(_currentplayer))
+	if (!BringInAction(_ptr->board, _ptr->currentplayer).trigger())
 		return;
 
 	emit stateChanged();
-	advance();
+	_ptr->advance();
 }
 
 void Game::movePawn(int srcTileIndex)
 {
-	if (!_board->movePawn(_currentplayer, srcTileIndex, _dice->score()))
+	int score{_ptr->dice->score()};
+	int player{_ptr->currentplayer};
+
+	if (!MoveAction(_ptr->board, player, srcTileIndex, score).trigger())
 		return;
 
 	emit stateChanged();
-	advance();
+	_ptr->advance();
 }
 
 void Game::init()
 {
-	_board->init();
+	_ptr->board->init();
 	emit stateChanged();
 }
 
 void Game::reset()
 {
-	_winners.clear();
-	_board->clear();
-	_currentplayer = 0;
+	_ptr->winners.clear();
+	_ptr->board->clear();
+	_ptr->currentplayer = 0;
 
-	emit nextTurn(_currentplayer);
-}
-
-void Game::advance()
-{
-	if (_dice->score() != 6)
-		switchToNextPlayer();
-
-	emit nextTurn(_currentplayer);
-}
-
-void Game::switchToNextPlayer()
-{
-	_currentplayer++;
-	_currentplayer %= _playerCount;
-
-	if (_winners.contains(_currentplayer))
-		switchToNextPlayer();
+	emit nextTurn(_ptr->currentplayer);
 }
 
 void Game::onPlayerEscaped(int player)
 {
-	_winners.append(player);
+	_ptr->winners.append(player);
 	emit playerEscaped(player);
 
-	if (_winners.count() == _playerCount - 1)
+	if (_ptr->winners.count() == _ptr->playerCount - 1)
 		emit gameOver();
+}
+
+GamePrivate::GamePrivate(Game *parent) :
+	parent{parent},
+	dice{new Dice(parent)},
+	board{new Board(parent)},
+	playerCount{4},
+	currentplayer{0}
+{
+
+}
+
+void GamePrivate::advance()
+{
+	if (!rolledSix())
+		switchToNextPlayer();
+
+	emit parent->nextTurn(currentplayer);
+}
+
+void GamePrivate::switchToNextPlayer()
+{
+	currentplayer++;
+	currentplayer %= playerCount;
+
+	if (winners.contains(currentplayer))
+		switchToNextPlayer();
+}
+
+QList<int> GamePrivate::findPossibleMoves()
+{
+	QList<int> moves;
+
+	for (int tileIndex{0}; tileIndex < board->track()->tileCount(); tileIndex++)
+		if (MoveAction(board, currentplayer, tileIndex, dice->score()).isPossible())
+			moves.append(tileIndex);
+
+	qDebug() << moves;
+
+	return moves;
+}
+
+bool GamePrivate::rolledSix() const
+{
+	return dice->score() == 6;
 }

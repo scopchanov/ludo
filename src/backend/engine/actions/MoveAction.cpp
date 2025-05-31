@@ -22,12 +22,12 @@ SOFTWARE.
 */
 
 #include "MoveAction.h"
-#include "Board.h"
-#include "Path.h"
+#include "../Board.h"
+#include "../Path.h"
+#include <QDebug>
 
 MoveAction::MoveAction(Board *board, int player, int srcTileIndex, int steps) :
-	AbstractGameAction{board},
-	_player{player},
+	AbstractGameAction{board, player},
 	_srcTileIndex{srcTileIndex},
 	_steps{steps}
 {
@@ -36,7 +36,11 @@ MoveAction::MoveAction(Board *board, int player, int srcTileIndex, int steps) :
 
 bool MoveAction::isPossible() const
 {
-	return exceedsTrackLength() ? canEscape() : canMove();
+	return board()->track()->isTileOccupiedBy(player(), _srcTileIndex)
+		? exceedsTrackLength()
+			  ? canEscape()
+			  : canMove()
+		: false;
 }
 
 bool MoveAction::trigger()
@@ -45,54 +49,50 @@ bool MoveAction::trigger()
 		return false;
 
 	if (exceedsTrackLength())
-		takePawnOut();
+		escapePawn();
 	else
 		movePawn();
 
 	return true;
 }
 
+void MoveAction::movePawn()
+{
+	board()->track()->movePawn(player(), _srcTileIndex, _steps);
+}
+
+void MoveAction::escapePawn()
+{
+	int tileIndex{destinationTileIndex() % board()->track()->tileCount()};
+
+	qDebug() << tileIndex;
+
+	board()->track()->removePlayerAt(_srcTileIndex);
+	board()->homeArea(player())->bringPawnIn(player(), tileIndex);
+}
+
 bool MoveAction::canMove() const
 {
-	return board()->track()->canMove(_player, _srcTileIndex, _steps);
+	return board()->track()->canMove(player(), _srcTileIndex, _steps);
 }
 
 bool MoveAction::canEscape() const
 {
-    // TODO: Implement me
+	int tileIndex{destinationTileIndex() % board()->track()->tileCount()};
 
-	return false;//board()->_homeAreas.at(_player)->canBringPawnIn();
-}
-
-void MoveAction::movePawn()
-{
-	board()->track()->movePawn(_player, _srcTileIndex, _steps);
-}
-
-void MoveAction::takePawnOut()
-{
-    // TODO: Implement me
-
-	// auto *pawn{_track->takePawn(tileIndex)};
-
-	// if (!pawn)
-	// 	return false;
-
-	// auto *home{_homeAreas.at(pawn->player())};
-
-	// if (!home->bringPawnIn(pawn, wrappedIndex(pawn->trip() + score)))
-	// 	return false;
-
-	// if (home->isFull())
-	// 	emit playerEscaped(pawn->player());
-
-	// return true;
+	return board()->homeArea(player())->canBringPawnIn(player(), tileIndex);
 }
 
 bool MoveAction::exceedsTrackLength() const
 {
-	int entryTileIndex{board()->entryTileIndex(_player)};
-	int trip{board()->track()->distance(entryTileIndex, _srcTileIndex)};
+	qDebug() << destinationTileIndex();
 
-	return trip + _steps >= board()->track()->tileCount();
+	return destinationTileIndex() > board()->track()->tileCount() - 1;
+}
+
+int MoveAction::destinationTileIndex() const
+{
+	int entryTileIndex{board()->entryTileIndex(player())};
+
+	return board()->track()->distance(entryTileIndex, _srcTileIndex) + _steps;
 }

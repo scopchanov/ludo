@@ -21,33 +21,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef MOVEACTION_H
-#define MOVEACTION_H
-
-#include "AbstractGameAction.h"
+#ifndef ABSTRACTGAMEACTION_H
+#define ABSTRACTGAMEACTION_H
 
 class Board;
-class Tile;
 
-class MoveAction : public AbstractGameAction
+class AbstractGameAction
 {
 public:
-	explicit MoveAction(Board *board, int player, int srcTileIndex, int steps);
+	explicit AbstractGameAction(Board *board, int player);
 
-	bool isPossible() const override;
-	bool trigger() override;
+	virtual bool isPossible() const = 0;
+	virtual bool trigger() = 0;
+
+protected:
+	Board *board() const;
+	int player() const;
 
 private:
-	bool canMove() const;
-	bool canEscape() const;
-
-	void movePawn();
-	void takePawnOut();
-	bool exceedsTrackLength() const;
-
+	Board *_board;
 	int _player;
-	int _srcTileIndex;
-	int _steps;
 };
 
-#endif // MOVEACTION_H
+#endif // ABSTRACTGAMEACTION_H

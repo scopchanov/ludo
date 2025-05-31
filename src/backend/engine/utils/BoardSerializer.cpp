@@ -22,12 +22,10 @@ SOFTWARE.
 */
 
 #include "BoardSerializer.h"
-#include "Board.h"
-#include "Base.h"
-#include "MoveAction.h"
-#include "Path.h"
+#include "../Base.h"
+#include "../Board.h"
+#include "../Path.h"
 #include <QJsonArray>
-#include <QJsonObject>
 
 #define PLAYERS_COUNT 4
 
@@ -42,7 +40,7 @@ QJsonObject BoardSerializer::toJson(Board *board)
 	QJsonArray homeAreas;
 	QJsonArray track;
 
-	for (size_t player{0}; player < PLAYERS_COUNT; player++) {
+	for (int player{0}; player < PLAYERS_COUNT; player++) {
 		auto *baseArea{board->baseArea(player)};
 		auto *homeArea{board->homeArea(player)};
 		QJsonArray home;
