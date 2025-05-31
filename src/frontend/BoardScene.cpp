@@ -80,12 +80,12 @@ void BoardScene::clearPlayersText()
 
 void BoardScene::updateBoard(const QJsonObject &json)
 {
+	const QJsonArray &baseAreas{json.value("baseAreas").toArray()};
+	const QJsonArray &homeAreas{json.value("homeAreas").toArray()};
+	const QJsonArray &track{json.value("track").toArray()};
+
 	for (auto *tile : std::as_const(_tileItems))
 		tile->setPawnColor(QColor());
-
-	const QJsonArray &track{json.value("track").toArray()};
-	const QJsonArray &homeAreas{json.value("homeAreas").toArray()};
-	QList<int> k{0, 0, 0, 0};
 
 	for (const auto &value : track) {
 		const QJsonObject &jsonTile{value.toObject()};
@@ -93,14 +93,13 @@ void BoardScene::updateBoard(const QJsonObject &json)
 		int playerId{jsonTile.value("player").toInt()};
 
 		_tileItems.at(index)->setPawnColor(_baseItems.at(playerId)->color());
-		k[playerId]++;
 	}
 
 	for (int n{0}; n < _homeItems.count(); n++)
 		_homeItems.at(n)->updateItem(homeAreas.at(n).toArray());
 
-	for (int n{0}; n < k.count(); n++)
-		_baseItems.at(n)->setPawnCount(4 - k.at(n));
+	for (int n{0}; n < _baseItems.count(); n++)
+		_baseItems.at(n)->setPawnCount(baseAreas.at(n).toInt());
 }
 
 void BoardScene::updateArrows(bool canBringIn)

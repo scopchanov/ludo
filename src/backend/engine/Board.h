@@ -52,6 +52,7 @@ public:
 	void clear();
 
 private:
+	void setPathTileState(Path *path, const QJsonObject &json);
 	int entryTileIndex(int player) const;
 	QList<QJsonObject> toObjects(const QJsonArray &array);
 

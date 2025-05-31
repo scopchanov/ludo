@@ -28,18 +28,16 @@ SOFTWARE.
 #include <QJsonArray>
 #include <QJsonObject>
 
-#define TRACK_LENGHT 40
-#define HOME_LENGTH 4
 #define PLAYER_OFFSET 10
 #define PLAYERS_COUNT 4
 #define PAWNS_PRO_PLAYER 4
 
 Board::Board(QObject *parent) :
 	QObject{parent},
-	_track{new Path(TRACK_LENGHT, this)}
+	_track{new Path(PLAYERS_COUNT*PLAYER_OFFSET, this)}
 {
 	for (int n{0}; n < PLAYERS_COUNT; n++) {
-		_homeAreas.append(new Path(HOME_LENGTH, this));
+		_homeAreas.append(new Path(PAWNS_PRO_PLAYER, this));
 		_baseAreas.append(new Base(this));
 	}
 
@@ -84,17 +82,22 @@ QJsonObject Board::state() const
 
 void Board::setState(const QJsonObject &json)
 {
+	const QJsonArray &baseAreas{json.value("baseAreas").toArray()};
+	const QJsonArray &homeAreas{json.value("homeAreas").toArray()};
 	const QJsonArray &track{json.value("track").toArray()};
 
-	for (const auto &value : track) {
-		const QJsonObject &tileSettings{value.toObject()};
-		int player{tileSettings.value("player").toInt()};
-		int index{tileSettings.value("index").toInt()};
+	for (int n{}; n < baseAreas.count(); n++)
+		_baseAreas.at(n)->setPawnCount(baseAreas.at(n).toInt());
 
-		_track->setPlayerAt(player, index);
+	for (int n{0}; n < homeAreas.count(); n++) {
+		const QJsonArray &homeAreaSettings{homeAreas.at(n).toArray()};
+
+		for (const auto &tileSettings : homeAreaSettings)
+			setPathTileState(_homeAreas.at(n), tileSettings.toObject());
 	}
 
-	// TODO: recreate base and home areas
+	for (const auto &tileSettings : track)
+		setPathTileState(_track, tileSettings.toObject());
 }
 
 Path *Board::track() const
@@ -173,6 +176,14 @@ void Board::clear()
 
 	for (auto *home : std::as_const(_homeAreas))
 		home->clear();
+}
+
+void Board::setPathTileState(Path *path, const QJsonObject &json)
+{
+	int player{json.value("player").toInt()};
+	int index{json.value("index").toInt()};
+
+	path->setPlayerAt(player, index);
 }
 
 int Board::entryTileIndex(int player) const
