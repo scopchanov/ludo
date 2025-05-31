@@ -21,24 +21,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef BOARDSERIALIZER_H
-#define BOARDSERIALIZER_H
+#ifndef GAME_P_H
+#define GAME_P_H
 
-#include <QJsonObject>
+#include <QtCore/qglobal.h>
+#include <QList>
 
+class Game;
 class Board;
-class Path;
+class Dice;
 
-class BoardSerializer
+class GamePrivate
 {
-public:
-	explicit BoardSerializer();
+	Q_DISABLE_COPY(GamePrivate)
 
-	static QJsonObject toJson(Board *board);
-	static void fromJson(Board *board, const QJsonObject &json);
+	explicit GamePrivate(Game *parent);
 
-private:
-	static void setPathTileState(Path *path, const QJsonObject &json);
+	void advance();
+	void switchToNextPlayer();
+	QList<int> findPossibleMoves();
+	bool rolledSix() const;
+
+	Game *parent;
+	Dice *dice;
+	Board *board;
+	int playerCount;
+	int currentplayer;
+	QList<int> winners;
+
+	friend class Game;
 };
 
-#endif // BOARDSERIALIZER_H
+#endif // GAME_P_H
