@@ -22,7 +22,7 @@ SOFTWARE.
 */
 
 #include "HomeItem.h"
-#include "FieldItem.h"
+#include "TileItem.h"
 #include "UiGlobals.h"
 #include <QJsonObject>
 #include <QJsonArray>
@@ -31,7 +31,7 @@ HomeItem::HomeItem(const QColor &color, QGraphicsItem *parent) :
 	QGraphicsRectItem{parent}
 {
     for (int n{0}; n < 4; n++) {
-        auto *field{new FieldItem(this)};
+        auto *field{new TileItem(this)};
 
 		field->setNumber(n);
 		field->setColor(color);

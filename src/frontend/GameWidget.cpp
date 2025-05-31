@@ -22,14 +22,13 @@ SOFTWARE.
 */
 
 #include "GameWidget.h"
-#include "MainWindow.h"
-#include "backend/Game.h"
+#include "backend/FileManager.h"
+#include "backend/engine/Game.h"
 #include "frontend/BoardView.h"
 #include "frontend/BoardScene.h"
 #include <QJsonObject>
 #include <QBoxLayout>
 #include <QPushButton>
-#include <QMessageBox>
 
 GameWidget::GameWidget(QWidget *parent) :
 	QWidget{parent},
@@ -54,11 +53,9 @@ GameWidget::GameWidget(QWidget *parent) :
 	resize(600, 700);
 
 	connect(_game, &Game::diceRolled, this, &GameWidget::onDiceRolled);
-	connect(_game, &Game::bringInChanged, _board, &BoardScene::enableBringIn);
-	connect(_game, &Game::possibleMoves, this, &GameWidget::showPossibleMoves);
-	connect(_game, &Game::pawnCountChanged, _board, &BoardScene::changePawnCount);
+	connect(_game, &Game::stateChanged, this, &GameWidget::onStateChanged);
 	connect(_game, &Game::nextTurn, this, &GameWidget::onNextTurn);
-	connect(_game, &Game::playerWon, this, &GameWidget::playerWon);
+	connect(_game, &Game::playerEscaped, this, &GameWidget::playerWon);
 	connect(_game, &Game::gameOver, this, &GameWidget::gameOver);
 
 	connect(_btnRollDice, &QPushButton::clicked, this, &GameWidget::onRollDice);
@@ -66,29 +63,55 @@ GameWidget::GameWidget(QWidget *parent) :
 	connect(boardView, &BoardView::movePawn, _game, &Game::movePawn);
 }
 
+void GameWidget::startNewGame(const QString &filename)
+{
+	_filename = filename;
+	_game->reset();
+	_game->init();
+}
+
+void GameWidget::loadGame(const QString &filename)
+{
+	_filename = filename;
+	_game->reset();
+	_game->setState(FileManager::openFile(filename));
+}
+
+void GameWidget::showActions()
+{
+	const QList<int> &moves{_game->possibleMoves()};
+	bool canBringIn{_game->canBringIn()};
+
+	_board->updateArrows(canBringIn);
+    _board->showMoves(moves);
+
+	if (!canBringIn && moves.isEmpty())
+		_board->setPlayerText(_game->currentPlayerId(), tr("Can't move."));
+}
+
 void GameWidget::onDiceRolled(int score)
 {
 	_board->setScore(score);
 	_board->clearPlayersText();
+
+	showActions();
 }
 
-void GameWidget::showPossibleMoves(const QList<int> &moves)
+void GameWidget::onStateChanged()
 {
-	if (_board->canBringIn() || !moves.isEmpty())
-		_board->highlightFields(moves);
-	else
-		_board->setCurrentPlayerText(tr("Can't move."));
+	const QJsonObject &json{_game->state()};
+
+    _board->updateBoard(json.value("board").toObject());
+
+	FileManager::saveFile(_filename, json);
 }
 
 void GameWidget::onNextTurn(int currentPlayerId)
 {
-	// m_messageView->clear();
 	_btnRollDice->setEnabled(true);
-	_board->enableBringIn(false);
-	// m_board->setScore(0);
-	_board->setCurrentPlayerId(currentPlayerId);
+	_board->updateArrows(false);
+	_board->highlightPlayer(currentPlayerId);
 	_board->clearHighlight();
-	_board->updateBoard(_game->state());
 }
 
 void GameWidget::onRollDice()

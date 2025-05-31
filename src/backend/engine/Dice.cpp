@@ -21,18 +21,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef UIGLOBALS_H
-#define UIGLOBALS_H
+#include "Dice.h"
+#include <QRandomGenerator>
 
-#include <QGraphicsItem>
+Dice::Dice(QObject *parent) :
+	QObject{parent},
+	_score{0}
+{
 
-enum ItemType : int {
-	IT_Arrow = QGraphicsItem::UserType,
-	IT_Base,
-	IT_Dice,
-	IT_Home,
-	IT_Player,
-	IT_Tile
-};
+}
 
-#endif // UIGLOBALS_H
+int Dice::score() const
+{
+	return _score;
+}
+
+void Dice::setScore(int score)
+{
+    _score = score;
+}
+
+void Dice::roll()
+{
+	_score = QRandomGenerator::global()->bounded(1, 7);
+}

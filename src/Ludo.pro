@@ -24,53 +24,57 @@ QT += widgets
 CONFIG += c++23
 
 SOURCES += \
-    GameMenu.cpp \
-    GameWidget.cpp \
-    MenuButton.cpp \
-    backend/Move.cpp \
-    backend/Path.cpp \
-    backend/Player.cpp \
-    backend/Tile.cpp \
+    backend/FileManager.cpp \
+    backend/engine/AbstractGameAction.cpp \
+    backend/engine/Base.cpp \
+    backend/engine/Board.cpp \
+    backend/engine/Dice.cpp \
+    backend/engine/Game.cpp \
+    backend/engine/MoveAction.cpp \
+    backend/engine/Path.cpp \
+    backend/engine/Pawn.cpp \
+    backend/engine/Tile.cpp \
     frontend/ArrowItem.cpp \
+    frontend/BaseItem.cpp \
     frontend/BoardScene.cpp \
     frontend/BoardView.cpp \
     frontend/DiceItem.cpp \
-    frontend/FieldItem.cpp \
+    frontend/GameMenu.cpp \
+    frontend/GameWidget.cpp \
     frontend/HomeItem.cpp \
+    frontend/MenuButton.cpp \
     frontend/PlayerItem.cpp \
-    backend/Board.cpp \
-    backend/Dice.cpp \
-    backend/Game.cpp \
-    backend/Pawn.cpp \
-    frontend/SpawnItem.cpp \
-    main.cpp \
-    MainWindow.cpp
+    frontend/MainWindow.cpp \
+    frontend/TileItem.cpp \
+    main.cpp
 
 HEADERS += \
-    GameMenu.h \
-    GameWidget.h \
-    MenuButton.h \
-    backend/Move.h \
-    backend/Path.h \
-    backend/Player.h \
-    backend/Tile.h \
+    backend/FileManager.h \
+    backend/engine/AbstractGameAction.h \
+    backend/engine/Base.h \
+    backend/engine/Board.h \
+    backend/engine/Dice.h \
+    backend/engine/Game.h \
+    backend/engine/MoveAction.h \
+    backend/engine/Path.h \
+    backend/engine/Pawn.h \
+    backend/engine/Tile.h \
     frontend/ArrowItem.h \
+    frontend/BaseItem.h \
     frontend/BoardScene.h \
     frontend/BoardView.h \
     frontend/DiceItem.h \
-    frontend/FieldItem.h \
+    frontend/GameMenu.h \
+    frontend/GameWidget.h \
     frontend/HomeItem.h \
+    frontend/MenuButton.h \
     frontend/PlayerItem.h \
-    backend/Board.h \
-    backend/Dice.h \
-    backend/Game.h \
-    backend/Pawn.h \
-    MainWindow.h \
-    frontend/SpawnItem.h \
-    frontend/UiGlobals.h
+    frontend/TileItem.h \
+    frontend/UiGlobals.h \
+    frontend/MainWindow.h
 
 RESOURCES += \
-        resources.qrc
+    resources.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

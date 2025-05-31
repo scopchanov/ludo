@@ -21,17 +21,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef SPAWNITEM_H
-#define SPAWNITEM_H
+#ifndef BASEITEM_H
+#define BASEITEM_H
 
 #include <QGraphicsRectItem>
 
-class FieldItem;
+class TileItem;
 
-class SpawnItem : public QGraphicsRectItem
+class BaseItem : public QGraphicsRectItem
 {
 public:
-	explicit SpawnItem(int playerId, const QColor &color,
+	explicit BaseItem(int playerId, const QColor &color,
 					   QGraphicsItem *parent = nullptr);
 
 	int playerId() const;
@@ -43,7 +43,7 @@ public:
 
 private:
 	int _playerId;
-	QList<FieldItem *> _fields;
+	QList<TileItem *> _fields;
 };
 
-#endif // SPAWNITEM_H
+#endif // BASEITEM_H

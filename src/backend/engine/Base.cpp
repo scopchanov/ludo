@@ -21,52 +21,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef GAME_H
-#define GAME_H
+#include "Base.h"
+#include "Pawn.h"
 
-#include <QObject>
-
-class Board;
-class Dice;
-class Player;
-
-class Game : public QObject
+Base::Base(QObject *parent) :
+	QObject{parent}
 {
-	Q_OBJECT
-public:
-	explicit Game(QObject *parent = nullptr);
 
-	QJsonObject state() const;
-	void setState(const QJsonObject &json);
+}
 
-	void rollDice();
-	void bringPawnIn();
-	void movePawn(int srcTileIndex);
-	void reset();
+void Base::addPawn(Pawn *pawn)
+{
+	_pawns.push(pawn);
+}
 
-private:
-	void advance();
-	void switchToNextPlayer();
-	bool canBringIn() const;
+int Base::pawnsCount() const
+{
+	return _pawns.count();
+}
 
-	Board *_board;
-	Dice *_dice;
-	int _currentPlayerId;
-	QList<Player *> _players;
-	QList<Player *> _winners;
+Pawn *Base::pawn() const
+{
+	return _pawns.isEmpty() ? nullptr : _pawns.top();
+}
 
-private slots:
-	void onPawnsCountChanged();
-	void onPlayerEscaped(int playerId);
+Pawn *Base::takePawn()
+{
+	return _pawns.isEmpty() ? nullptr : _pawns.pop();
+}
 
-signals:
-	void diceRolled(int score);
-	void bringInChanged(bool isBringInPossible);
-	void possibleMoves(const QList<int> &moves);
-	void pawnCountChanged(int playerId, int pawnCount);
-	void nextTurn(int currentPlayerId);
-	void playerWon(int playerId);
-	void gameOver();
-};
-
-#endif // GAME_H
+void Base::reset()
+{
+	while(!_pawns.isEmpty())
+		_pawns.pop()->reset();
+}

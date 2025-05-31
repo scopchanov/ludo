@@ -21,38 +21,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "MainWindow.h"
-#include "GameWidget.h"
-#include "GameMenu.h"
-#include <QJsonObject>
-#include <QStackedLayout>
-#include <QPushButton>
-#include <QMessageBox>
+#include "Pawn.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-	QWidget(parent),
-	_gameMenu{new GameMenu(this)},
-	_gameWidget{new GameWidget(this)}
+Pawn::Pawn(int playerId, QObject *parent) :
+	QObject{parent},
+    _playerId(playerId)
 {
-	auto *layoutMain{new QStackedLayout(this)};
 
-	layoutMain->addWidget(_gameWidget);
-	layoutMain->addWidget(_gameMenu);
-
-    resize(600, 700);
-
-	connect(_gameWidget, &GameWidget::playerWon, this, &MainWindow::onPlayerWon);
-	connect(_gameWidget, &GameWidget::gameOver, this, &MainWindow::onGameOver);
 }
 
-void MainWindow::onPlayerWon(int playerId)
+int Pawn::playerId() const
 {
-	QMessageBox::information(this, "Ludo", "Player " + QString::number(playerId)
-							 + " wins.");
+	return _playerId;
 }
 
-void MainWindow::onGameOver()
+void Pawn::reset()
 {
-	QMessageBox::information(this, "Ludo", "Game over.");
-	static_cast<QStackedLayout *>(layout())->setCurrentIndex(0);
+	emit gotReset();
 }

@@ -21,18 +21,53 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef UIGLOBALS_H
-#define UIGLOBALS_H
+#ifndef BOARD_H
+#define BOARD_H
 
-#include <QGraphicsItem>
+#include <QObject>
 
-enum ItemType : int {
-	IT_Arrow = QGraphicsItem::UserType,
-	IT_Base,
-	IT_Dice,
-	IT_Home,
-	IT_Player,
-	IT_Tile
+class Path;
+class Pawn;
+class Base;
+
+class Board : public QObject
+{
+	Q_OBJECT
+public:
+	explicit Board(QObject *parent = nullptr);
+
+	Path *track() const;
+
+	QJsonObject state() const;
+	void setState(const QJsonObject &json);
+
+	bool canBringIn(int playerId) const;
+	QList<int> findPossibleMoves(int playerId, int score);
+
+	bool bringPawnIn(int playerId);
+	bool movePawn(int playerId, int srcTileIndex, int steps);
+	bool takePawnOut(int tileIndex, int score);
+
+	void init();
+	void reset();
+
+private:
+	int entryTileIndex(int playerId) const;
+	QList<QJsonObject> toObjects(const QJsonArray &array);
+
+	Path *_track;
+	QList<Base *> _baseAreas;
+	QList<Path *> _homeAreas;
+	QList<QList<Pawn *>> _pawns;
+
+private slots:
+	void onPawnReset();
+    void onPawnBusted(Pawn *pawn);
+
+signals:
+	void playerEscaped(int playerId);
+
+	friend class MoveAction;
 };
 
-#endif // UIGLOBALS_H
+#endif // BOARD_H

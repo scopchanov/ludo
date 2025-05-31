@@ -21,61 +21,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Player.h"
-#include "Pawn.h"
+#ifndef MENUBUTTON_H
+#define MENUBUTTON_H
 
-Player::Player(int playerId, QObject *parent) :
-	QObject{parent},
-	_id{playerId}
+#include <QPushButton>
+
+class MenuButton : public QPushButton
 {
-	for (int n{0}; n < 4; n++) {
-        auto *pawn{new Pawn(playerId, this)};
+	Q_OBJECT
+public:
+	explicit MenuButton(const QString &text, QWidget *parent = nullptr);
+};
 
-		_pawns.append(pawn);
-
-		connect(pawn, &Pawn::busted, this, &Player::onPawnBusted);
-	}
-}
-
-int Player::id() const
-{
-	return _id;
-}
-
-Pawn *Player::pawn(int n) const
-{
-	if (_pawns.isEmpty())
-		return nullptr;
-
-	return n >= 0 && n < _pawns.count() ? _pawns.at(n) : nullptr;
-}
-
-int Player::pawnsCount() const
-{
-	return _pawns.count();
-}
-
-Pawn *Player::takePawn()
-{
-	if (_pawns.isEmpty())
-		return nullptr;
-
-	auto *pawn = _pawns.takeLast();
-
-	emit pawnsCountChanged();
-
-	return pawn;
-}
-
-void Player::reset()
-{
-
-}
-
-void Player::onPawnBusted()
-{
-	qDebug("saram rasam");
-	_pawns.append(static_cast<Pawn *>(sender()));
-
-	emit pawnsCountChanged();
-}
+#endif // MENUBUTTON_H

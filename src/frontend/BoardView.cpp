@@ -23,8 +23,7 @@ SOFTWARE.
 
 #include "BoardView.h"
 #include "BoardScene.h"
-#include "ArrowItem.h"
-#include "FieldItem.h"
+#include "TileItem.h"
 #include "frontend/UiGlobals.h"
 #include <QMouseEvent>
 
@@ -45,11 +44,11 @@ void BoardView::mousePressEvent(QMouseEvent *event)
         return;
 
     switch (item->type()) {
-	case IT_Field:
-        fieldClicked(static_cast<FieldItem *>(item));
+	case IT_Tile:
+		tileClicked(static_cast<TileItem *>(item));
         break;
 	case IT_Arrow:
-        arrowClicked(static_cast<ArrowItem *>(item));
+		emit bringPawnIn();
         break;
     default:
         break;
@@ -63,19 +62,8 @@ void BoardView::resizeEvent(QResizeEvent *event)
     QGraphicsView::resizeEvent(event);
 }
 
-void BoardView::fieldClicked(FieldItem *field)
+void BoardView::tileClicked(TileItem *tile)
 {
-    if (field->isHighlighted())
-        emit movePawn(field->number());
-}
-
-void BoardView::arrowClicked(ArrowItem *arrow)
-{
-	auto *board{static_cast<BoardScene *>(scene())};
-
-	if (!arrow->isHighlighted() || !board->canBringIn())
-        return;
-
-	board->enableBringIn(false);
-    emit bringPawnIn();
+	if (tile->isHighlighted())
+		emit movePawn(tile->number());
 }

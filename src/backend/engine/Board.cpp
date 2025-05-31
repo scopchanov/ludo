@@ -22,22 +22,33 @@ SOFTWARE.
 */
 
 #include "Board.h"
+#include "Base.h"
+#include "MoveAction.h"
 #include "Path.h"
 #include "Pawn.h"
-#include "Move.h"
-#include <QJsonObject>
 #include <QJsonArray>
+#include <QJsonObject>
 
 #define TRACK_LENGHT 40
 #define HOME_LENGTH 4
 #define PLAYER_OFFSET 10
+#define PLAYERS_COUNT 4
+#define PAWNS_PRO_PLAYER 4
 
 Board::Board(QObject *parent) :
 	QObject{parent},
 	_track{new Path(TRACK_LENGHT, this)}
 {
-	for (int n{0}; n < 4; n++)
+	for (int n{0}; n < PLAYERS_COUNT; n++) {
+		_pawns.append({PAWNS_PRO_PLAYER, new Pawn(n, this)});
 		_homeAreas.append(new Path(HOME_LENGTH, this));
+		_baseAreas.append(new Base(this));
+
+        for (auto *pawn : _pawns.at(n))
+            connect(pawn, &Pawn::gotReset, this, &Board::onPawnReset);
+	}
+
+    connect(_track, &Path::pawnBusted, this, &Board::onPawnBusted);
 }
 
 QJsonObject Board::state() const
@@ -72,34 +83,49 @@ QJsonObject Board::state() const
 
 void Board::setState(const QJsonObject &json)
 {
+	const QJsonArray &track{json.value("track").toArray()};
 
+	for (const auto &value : track) {
+		const QJsonObject &tileSettings{value.toObject()};
+		int playerId{tileSettings.value("player").toInt()};
+		int index{tileSettings.value("index").toInt()};
+		auto *pawn{_pawns[playerId].takeLast()};
+
+		_track->putPawnBackAt(pawn, index);
+	}
+
+	for (auto &playerPawns : _pawns)
+		while (!playerPawns.isEmpty())
+			_baseAreas.at(_pawns.indexOf(playerPawns))->addPawn(playerPawns.takeLast());
 }
 
-bool Board::canBringIn(Pawn *pawn) const
+Path *Board::track() const
 {
-	if (!pawn)
-		return false;
+	return _track;
+}
 
-	return pawn->canOccupy(_track->tile(entryTileIndex(pawn->playerId())));
+bool Board::canBringIn(int playerId) const
+{
+	auto *pawn{_baseAreas.at(playerId)->pawn()};
+
+	return _track->canBringPawnIn(pawn, entryTileIndex(playerId));
 }
 
 QList<int> Board::findPossibleMoves(int playerId, int score)
 {
 	QList<int> moves;
 
-	for (int n{0}; n < _track->tileCount(); n++) {
-		auto *pawn{_track->pawnAt(n)};
-
-		if (pawn && pawn->playerId() == playerId
-			&& Move(pawn, score, this).isPossible())
-			moves.append(n);
-	}
+	for (int tileIndex{0}; tileIndex < _track->tileCount(); tileIndex++)
+		if (MoveAction(this, playerId, tileIndex, score).isPossible())
+			moves.append(tileIndex);
 
 	return moves;
 }
 
-bool Board::bringPawnIn(Pawn *pawn)
+bool Board::bringPawnIn(int playerId)
 {
+	auto *pawn{_baseAreas.at(playerId)->takePawn()};
+
 	if (!pawn)
 		return false;
 
@@ -108,12 +134,7 @@ bool Board::bringPawnIn(Pawn *pawn)
 
 bool Board::movePawn(int playerId, int srcTileIndex, int steps)
 {
-	auto *pawn{_track->pawnAt(srcTileIndex)};
-
-	if (!pawn || pawn->playerId() != playerId)
-		return false;
-
-	return Move(pawn, steps, this).make();
+	return _track->movePawn(playerId, srcTileIndex, steps);
 }
 
 bool Board::takePawnOut(int tileIndex, int score)
@@ -136,9 +157,19 @@ bool Board::takePawnOut(int tileIndex, int score)
 	return false;
 }
 
+void Board::init()
+{
+	for (auto &playerPawns : _pawns)
+		for (auto *pawn : playerPawns)
+			_baseAreas.at(pawn->playerId())->addPawn(pawn);
+}
+
 void Board::reset()
 {
 	_track->reset();
+
+	for (auto *base : std::as_const(_baseAreas))
+		base->reset();
 
 	for (auto *home : std::as_const(_homeAreas))
 		home->reset();
@@ -147,4 +178,29 @@ void Board::reset()
 int Board::entryTileIndex(int playerId) const
 {
 	return playerId*PLAYER_OFFSET;
+}
+
+QList<QJsonObject> Board::toObjects(const QJsonArray& array)
+{
+	QList<QJsonObject> jsonObjects;
+
+	jsonObjects.reserve(array.size());
+
+	for (const QJsonValue& value : array)
+		if (value.isObject())
+			jsonObjects.append(value.toObject());
+
+	return jsonObjects;
+}
+
+void Board::onPawnReset()
+{
+	auto *pawn{static_cast<Pawn *>(sender())};
+
+	_pawns[pawn->playerId()].append(pawn);
+}
+
+void Board::onPawnBusted(Pawn *pawn)
+{
+	_baseAreas.at(pawn->playerId())->addPawn(pawn);
 }

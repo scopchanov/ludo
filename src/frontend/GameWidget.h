@@ -21,18 +21,43 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef UIGLOBALS_H
-#define UIGLOBALS_H
+#ifndef GAMEWIDGET_H
+#define GAMEWIDGET_H
 
-#include <QGraphicsItem>
+#include <QWidget>
 
-enum ItemType : int {
-	IT_Arrow = QGraphicsItem::UserType,
-	IT_Base,
-	IT_Dice,
-	IT_Home,
-	IT_Player,
-	IT_Tile
+class QPushButton;
+class BoardScene;
+class DiceItem;
+class Game;
+
+class GameWidget : public QWidget
+{
+	Q_OBJECT
+public:
+	explicit GameWidget(QWidget *parent = nullptr);
+
+	void startNewGame(const QString &filename);
+	void loadGame(const QString &filename);
+
+private:
+	void showActions();
+
+	Game *_game;
+	BoardScene *_board;
+	QPushButton *_btnRollDice;
+	DiceItem *_scoreDisplay;
+	QString _filename;
+
+private slots:
+	void onDiceRolled(int score);
+	void onStateChanged();
+	void onNextTurn(int currentPlayerId);
+	void onRollDice();
+
+signals:
+	void playerWon(int playerId);
+	void gameOver();
 };
 
-#endif // UIGLOBALS_H
+#endif // GAMEWIDGET_H

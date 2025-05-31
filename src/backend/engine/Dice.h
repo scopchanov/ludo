@@ -21,37 +21,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef PATH_H
-#define PATH_H
+#ifndef DICE_H
+#define DICE_H
 
 #include <QObject>
 
-class Tile;
-class Pawn;
-
-class Path : public QObject
+class Dice : public QObject
 {
 	Q_OBJECT
 public:
-	explicit Path(int tileCount, QObject *parent = nullptr);
+	explicit Dice(QObject *parent = nullptr);
 
-	Tile *tile(int n) const;
-	Pawn *pawnAt(int tileIndex) const;
-	int tileCount() const;
-	bool isFull() const;
-
-	bool bringPawnIn(Pawn *pawn, int tileIndex);
-	bool movePawn(int srcTileIndex, int steps);
-	Pawn *takePawn(int tileIndex);
-	void reset();
+	int score() const;
+    void setScore(int score);
+	void roll();
 
 private:
-	bool occupyTile(Tile *tile, Pawn *pawn);
-	int wrappedIndex(int n) const;
-	bool isValidTile(int n) const;
-
-	int _pawnsCount;
-	QList<Tile *> _tiles;
+	int _score;
 };
 
-#endif // PATH_H
+#endif // DICE_H

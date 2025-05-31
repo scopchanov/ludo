@@ -21,22 +21,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef DICE_H
-#define DICE_H
+#ifndef BASE_H
+#define BASE_H
 
 #include <QObject>
+#include <QStack>
 
-class Dice : public QObject
+class Pawn;
+
+class Base : public QObject
 {
 	Q_OBJECT
 public:
-	explicit Dice(QObject *parent = nullptr);
+	explicit Base(QObject *parent = nullptr);
 
-	int score() const;
-	void roll();
+	void addPawn(Pawn *pawn);
+	int pawnsCount() const;
+	Pawn *pawn() const;
+	Pawn *takePawn();
+	void reset();
 
 private:
-	int _score;
+	QStack<Pawn *> _pawns;
 };
 
-#endif // DICE_H
+#endif // BASE_H

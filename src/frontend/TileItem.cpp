@@ -21,11 +21,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "FieldItem.h"
+#include "TileItem.h"
 #include "UiGlobals.h"
 #include <QPainter>
 
-FieldItem::FieldItem(QGraphicsItem *parent) :
+TileItem::TileItem(QGraphicsItem *parent) :
 	QGraphicsEllipseItem(parent),
 	_number{0},
 	_highlighted{false}
@@ -35,50 +35,50 @@ FieldItem::FieldItem(QGraphicsItem *parent) :
 	setColor(0xEEEEEE);
 }
 
-int FieldItem::number() const
+int TileItem::number() const
 {
 	return _number;
 }
 
-void FieldItem::setNumber(int n)
+void TileItem::setNumber(int n)
 {
 	_number = n;
 }
 
-bool FieldItem::isHighlighted() const
+bool TileItem::isHighlighted() const
 {
 	return _highlighted;
 }
 
-void FieldItem::setHighlighted(bool value)
+void TileItem::setHighlighted(bool value)
 {
 	_highlighted = value;
 	update();
 }
 
-const QColor &FieldItem::color() const
+const QColor &TileItem::color() const
 {
 	return brush().color();
 }
 
-void FieldItem::setColor(const QColor &color)
+void TileItem::setColor(const QColor &color)
 {
 	setBrush(QBrush(color));
 	update();
 }
 
-void FieldItem::setPawnColor(const QColor &color)
+void TileItem::setPawnColor(const QColor &color)
 {
 	_pawnColor = color;
 	update();
 }
 
-int FieldItem::type() const
+int TileItem::type() const
 {
-	return IT_Field;
+	return IT_Tile;
 }
 
-void FieldItem::paint(QPainter *painter,
+void TileItem::paint(QPainter *painter,
 					  const QStyleOptionGraphicsItem */*option*/,
 					  QWidget */*widget*/)
 {
@@ -95,8 +95,8 @@ void FieldItem::paint(QPainter *painter,
 		painter->drawEllipse(rect().adjusted(10, 10, -10, -10));
 	}
 
-//	painter->drawText(rect(), Qt::AlignCenter | Qt::TextSingleLine,
-//					  QString::number(m_number));
+	painter->drawText(rect(), Qt::AlignCenter | Qt::TextSingleLine,
+					  QString::number(_number));
 
 	painter->restore();
 }

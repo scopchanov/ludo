@@ -26,9 +26,7 @@ SOFTWARE.
 #include <QPainter>
 
 ArrowItem::ArrowItem(QGraphicsItem *parent) :
-	QGraphicsPathItem{parent},
-	_number{0},
-	_highlighted{false}
+	QGraphicsPathItem{parent}
 {
 	QPainterPath p;
 
@@ -43,16 +41,6 @@ ArrowItem::ArrowItem(QGraphicsItem *parent) :
 				Qt::RoundJoin));
 }
 
-int ArrowItem::number() const
-{
-	return _number;
-}
-
-void ArrowItem::setNumber(int number)
-{
-	_number = number;
-}
-
 const QColor &ArrowItem::color() const
 {
 	return brush().color();
@@ -64,24 +52,13 @@ void ArrowItem::setColor(const QColor &color)
 	update();
 }
 
-bool ArrowItem::isHighlighted() const
-{
-	return _highlighted;
-}
-
-void ArrowItem::setHighlighted(bool highlighted)
-{
-	_highlighted = highlighted;
-	update();
-}
-
 void ArrowItem::paint(QPainter *painter,
 					  const QStyleOptionGraphicsItem */*option*/,
 					  QWidget */*widget*/)
 {
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing);
-	painter->setPen(_highlighted ? QPen(QBrush(0xF57C00), 5) : pen());
+	painter->setPen(QPen(QBrush(0xF57C00), 5));
 	painter->setBrush(brush());
 	painter->drawPath(path());
 	painter->restore();

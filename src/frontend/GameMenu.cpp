@@ -21,34 +21,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef PLAYER_H
-#define PLAYER_H
+#include "GameMenu.h"
+#include "MenuButton.h"
+#include <QApplication>
+#include <QBoxLayout>
 
-#include <QObject>
-
-class Pawn;
-
-class Player : public QObject
+GameMenu::GameMenu(QWidget *parent) :
+	QWidget{parent},
+	_btnNew{new MenuButton(tr("New game"), this)},
+	_btnLoad{new MenuButton(tr("Load game"), this)},
+	_btnExit{new MenuButton(tr("Exit"), this)}
 {
-	Q_OBJECT
-public:
-	explicit Player(int playerId, QObject *parent = nullptr);
+	auto *layoutMain{new QVBoxLayout(this)};
 
-	int id() const;
-	Pawn *pawn(int n) const;
-	int pawnsCount() const;
-	Pawn *takePawn();
-	void reset();
+	layoutMain->addWidget(_btnNew);
+	layoutMain->addWidget(_btnLoad);
+	layoutMain->addWidget(_btnExit);
+	layoutMain->setContentsMargins(0, 0, 0, 0);
+	layoutMain->setAlignment(Qt::AlignCenter);
 
-private:
-	int _id;
-	QList<Pawn *> _pawns;
-
-private slots:
-	void onPawnBusted();
-
-signals:
-	void pawnsCountChanged();
-};
-
-#endif // PLAYER_H
+	connect(_btnNew, &MenuButton::clicked, this, &GameMenu::newGame);
+	connect(_btnLoad, &MenuButton::clicked, this, &GameMenu::loadGame);
+	connect(_btnExit, &MenuButton::clicked, QApplication::quit);
+}

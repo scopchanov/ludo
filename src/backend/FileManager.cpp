@@ -21,26 +21,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#include "FileManager.h"
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QFile>
 
-#include <QWidget>
-
-class GameMenu;
-class GameWidget;
-
-class MainWindow : public QWidget
+FileManager::FileManager(QObject *parent) :
+	QObject{parent}
 {
-	Q_OBJECT
-public:
-	MainWindow(QWidget *parent = nullptr);
 
-private:
-	GameMenu *_gameMenu;
-	GameWidget *_gameWidget;
+}
 
-private slots:
-	void onPlayerWon(int playerId);
-	void onGameOver();
-};
-#endif // MAINWINDOW_H
+bool FileManager::saveFile(const QString &filename, const QJsonObject &content)
+{
+	QFile file{filename};
+
+	if (!file.open(QFile::WriteOnly))
+		return false;
+
+	file.write(QJsonDocument(content).toJson());
+	file.close();
+
+	return true;
+}
+
+QJsonObject FileManager::openFile(const QString &filename)
+{
+	QFile file{filename};
+
+	if (!file.open(QFile::ReadOnly))
+		return QJsonObject();
+
+	QJsonParseError err;
+
+	const QJsonDocument &doc{QJsonDocument::fromJson(file.readAll(), &err)};
+	file.close();
+
+	if (err.error || !doc.isObject())
+		return QJsonObject();
+
+	return doc.object();
+}

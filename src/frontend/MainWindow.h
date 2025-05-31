@@ -21,24 +21,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "GameMenu.h"
-#include "MenuButton.h"
-#include <QBoxLayout>
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
-GameMenu::GameMenu(QWidget *parent) :
-	QWidget{parent},
-	_btnNew{new MenuButton(tr("New game"), this)},
-	_btnLoad{new MenuButton(tr("Load game"), this)},
-	_btnExit{new MenuButton(tr("Exit"), this)}
+#include <QWidget>
+
+class QStackedLayout;
+class GameMenu;
+class GameWidget;
+
+class MainWindow : public QWidget
 {
-	auto *layoutMain{new QVBoxLayout(this)};
+	Q_OBJECT
+public:
+	MainWindow(QWidget *parent = nullptr);
 
-	layoutMain->addWidget(_btnNew);
-	layoutMain->addWidget(_btnLoad);
-	layoutMain->addWidget(_btnExit);
-	layoutMain->setContentsMargins(0, 0, 0, 0);
-	layoutMain->setAlignment(Qt::AlignCenter);
+private:
+	QStackedLayout *stackedLayout() const;
 
-	connect(_btnNew, &MenuButton::clicked, this, &GameMenu::newGame);
-	connect(_btnLoad, &MenuButton::clicked, this, &GameMenu::loadGame);
-}
+	GameMenu *_gameMenu;
+	GameWidget *_gameWidget;
+
+private slots:
+	void onNewGame();
+	void onLoadGame();
+	void onPlayerWon(int playerId);
+	void onGameOver();
+};
+#endif // MAINWINDOW_H

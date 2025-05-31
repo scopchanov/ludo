@@ -21,39 +21,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Tile.h"
-#include "Pawn.h"
+#ifndef FILEMANAGER_H
+#define FILEMANAGER_H
 
-Tile::Tile(QObject *parent) :
-	QObject(parent),
-	_pawn{nullptr}
+#include <QObject>
+
+class FileManager : public QObject
 {
+	Q_OBJECT
+public:
+	explicit FileManager(QObject *parent = nullptr);
 
-}
+	static bool saveFile(const QString &filename, const QJsonObject &content);
+	static QJsonObject openFile(const QString &filename);
+};
 
-Pawn *Tile::pawn() const
-{
-	return _pawn;
-}
-
-void Tile::setPawn(Pawn *pawn)
-{
-	_pawn = pawn;
-}
-
-Pawn *Tile::takePawn()
-{
-	auto *pawn{_pawn};
-
-	setPawn(nullptr);
-
-	return pawn;
-}
-
-void Tile::reset()
-{
-	if (_pawn)
-		_pawn->bust();
-
-	setPawn(nullptr);
-}
+#endif // FILEMANAGER_H

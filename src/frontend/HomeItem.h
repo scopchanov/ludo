@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include <QGraphicsRectItem>
 
-class FieldItem;
+class TileItem;
 
 class HomeItem : public QGraphicsRectItem
 {
@@ -37,7 +37,7 @@ public:
 	int type() const override;
 
 private:
-	QList<FieldItem *> _fieldItems;
+	QList<TileItem *> _fieldItems;
 };
 
 #endif // HOMEITEM_H

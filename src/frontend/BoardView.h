@@ -28,7 +28,7 @@ SOFTWARE.
 
 class BoardScene;
 class ArrowItem;
-class FieldItem;
+class TileItem;
 
 class BoardView : public QGraphicsView
 {
@@ -41,8 +41,7 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
-	void fieldClicked(FieldItem *field);
-	void arrowClicked(ArrowItem *arrow);
+	void tileClicked(TileItem *tile);
 
 signals:
 	void bringPawnIn();

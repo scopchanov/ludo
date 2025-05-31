@@ -21,22 +21,56 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Dice.h"
-#include <QRandomGenerator>
+#include "BaseItem.h"
+#include "TileItem.h"
+#include "UiGlobals.h"
+#include <QPainter>
 
-Dice::Dice(QObject *parent) :
-	QObject{parent},
-	_score{0}
+BaseItem::BaseItem(int playerId, const QColor &color, QGraphicsItem *parent) :
+	QGraphicsRectItem{parent},
+	_playerId{playerId}
+{
+	for (int n{0}; n < 4; n++) {
+        auto *field{new TileItem(this)};
+
+        field->setNumber(n);
+		field->setPos(n % 2 ? 105 : 35, n < 2 ? 35 : -35);
+		field->setFlags(ItemStacksBehindParent);
+		field->setColor(color);
+		field->setPawnColor(color);
+
+		_fields.append(field);
+	}
+
+	setRect(-70, -70, 140, 140);
+}
+
+int BaseItem::playerId() const
+{
+	return _playerId;
+}
+
+QColor BaseItem::color() const
+{
+	return _fields.first()->color();
+}
+
+void BaseItem::setPawnCount(int n)
+{
+	for (auto *field : std::as_const(_fields))
+		field->setPawnColor(_fields.indexOf(field) < n
+							? _fields.first()->color()
+							: QColor());
+}
+
+void BaseItem::paint(QPainter */*painter*/,
+					   const QStyleOptionGraphicsItem */*option*/,
+					   QWidget */*widget*/)
 {
 
 }
 
-int Dice::score() const
+int BaseItem::type() const
 {
-	return _score;
-}
-
-void Dice::roll()
-{
-	_score = QRandomGenerator::global()->bounded(1, 7);
+	return IT_Base;
 }

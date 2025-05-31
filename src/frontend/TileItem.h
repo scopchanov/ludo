@@ -21,56 +21,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "SpawnItem.h"
-#include "FieldItem.h"
-#include "UiGlobals.h"
-#include <QPainter>
+#ifndef TILEITEM_H
+#define TILEITEM_H
 
-SpawnItem::SpawnItem(int playerId, const QColor &color, QGraphicsItem *parent) :
-	QGraphicsRectItem{parent},
-	_playerId{playerId}
+#include <QGraphicsEllipseItem>
+
+class TileItem : public QGraphicsEllipseItem
 {
-	for (int n{0}; n < 4; n++) {
-        auto *field{new FieldItem(this)};
+public:
+	explicit TileItem(QGraphicsItem *parent = nullptr);
 
-        field->setNumber(n);
-		field->setPos(n % 2 ? 105 : 35, n < 2 ? 35 : -35);
-		field->setFlags(ItemStacksBehindParent);
-		field->setColor(color);
-		field->setPawnColor(color);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem *,
+			   QWidget *) override;
 
-		_fields.append(field);
-	}
+	int number() const;
+	void setNumber(int n);
+	bool isHighlighted() const;
+	void setHighlighted(bool value);
+	const QColor &color() const;
+	void setColor(const QColor &color);
+	void setPawnColor(const QColor &color);
+	int type() const override;
 
-	setRect(-70, -70, 140, 140);
-}
+private:
+	int _number;
+	bool _highlighted;
+	QColor _pawnColor;
+};
 
-int SpawnItem::playerId() const
-{
-	return _playerId;
-}
-
-QColor SpawnItem::color() const
-{
-	return _fields.first()->color();
-}
-
-void SpawnItem::setPawnCount(int n)
-{
-	for (auto *field : std::as_const(_fields))
-		field->setPawnColor(_fields.indexOf(field) < n
-							? _fields.first()->color()
-							: QColor());
-}
-
-void SpawnItem::paint(QPainter */*painter*/,
-					   const QStyleOptionGraphicsItem */*option*/,
-					   QWidget */*widget*/)
-{
-
-}
-
-int SpawnItem::type() const
-{
-	return IT_Spawn;
-}
+#endif // TILEITEM_H

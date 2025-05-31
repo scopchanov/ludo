@@ -21,37 +21,53 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef GAMEWIDGET_H
-#define GAMEWIDGET_H
+#ifndef GAME_H
+#define GAME_H
 
-#include <QWidget>
+#include <QObject>
 
-class QPushButton;
-class BoardScene;
-class DiceItem;
-class Game;
+class Board;
+class Dice;
+class Pawn;
 
-class GameWidget : public QWidget
+class Game : public QObject
 {
 	Q_OBJECT
 public:
-	explicit GameWidget(QWidget *parent = nullptr);
+	explicit Game(QObject *parent = nullptr);
+
+	QJsonObject state() const;
+	void setState(const QJsonObject &json);
+	int currentPlayerId() const;
+	bool canBringIn() const;
+	QList<int> possibleMoves() const;
+
+	void init();
+	void reset();
+	void rollDice();
+	void bringPawnIn();
+	void movePawn(int srcTileIndex);
 
 private:
-	Game *_game;
-	BoardScene *_board;
-	QPushButton *_btnRollDice;
-	DiceItem *_scoreDisplay;
+	void advance();
+	void switchToNextPlayer();
+
+	Dice *_dice;
+	Board *_board;
+	QList<Pawn *> _pawns;
+	int _playerCount;
+	int _currentPlayerId;
+	QList<int> _winners;
 
 private slots:
-	void onDiceRolled(int score);
-	void showPossibleMoves(const QList<int> &moves);
-	void onNextTurn(int currentPlayerId);
-	void onRollDice();
+	void onPlayerEscaped(int playerId);
 
 signals:
-	void playerWon(int playerId);
+	void stateChanged();
+	void diceRolled(int score);
+	void nextTurn(int playerId);
+	void playerEscaped(int playerId);
 	void gameOver();
 };
 
-#endif // GAMEWIDGET_H
+#endif // GAME_H

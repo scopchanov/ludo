@@ -21,42 +21,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef BOARD_H
-#define BOARD_H
+#include "MenuButton.h"
 
-#include <QObject>
-
-class Path;
-class Pawn;
-class Tile;
-
-class Board : public QObject
+MenuButton::MenuButton(const QString &text, QWidget *parent) :
+	QPushButton{text, parent}
 {
-	Q_OBJECT
-public:
-	explicit Board(QObject *parent = nullptr);
-
-	QJsonObject state() const;
-	void setState(const QJsonObject &json);
-
-	bool canBringIn(Pawn *pawn) const;
-	QList<int> findPossibleMoves(int playerId, int score);
-
-	bool bringPawnIn(Pawn *pawn);
-	bool movePawn(int playerId, int srcTileIndex, int steps);
-	bool takePawnOut(int tileIndex, int score);
-	void reset();
-
-private:
-	int entryTileIndex(int playerId) const;
-
-	Path *_track;
-	QList<Path *> _homeAreas;
-
-signals:
-	void playerEscaped(int playerId);
-
-	friend class Move;
-};
-
-#endif // BOARD_H
+	setFixedSize(250, 48);
+	setFlat(true);
+}

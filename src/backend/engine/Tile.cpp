@@ -21,31 +21,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef PAWN_H
-#define PAWN_H
+#include "Tile.h"
+#include "Pawn.h"
 
-#include <QObject>
-
-class Tile;
-
-class Pawn : public QObject
+Tile::Tile(QObject *parent) :
+	QObject(parent),
+	_pawn{nullptr}
 {
-	Q_OBJECT
-public:
-	explicit Pawn(int playerId, QObject *parent = nullptr);
 
-	int playerId() const;
-	bool canOccupy(Tile *tile) const;
-	int trip() const;
-	void addTrip(int steps);
-	void bust();
+}
 
-private:
-	int _playerId;
-	int _trip;
+Pawn *Tile::pawn() const
+{
+	return _pawn;
+}
 
-signals:
-	void busted();
-};
+void Tile::setPawn(Pawn *pawn)
+{
+	_pawn = pawn;
+}
 
-#endif // PAWN_H
+Pawn *Tile::takePawn()
+{
+	auto *pawn{_pawn};
+
+	setPawn(nullptr);
+
+	return pawn;
+}
+
+void Tile::reset()
+{
+	if (_pawn)
+		_pawn->reset();
+
+	setPawn(nullptr);
+}

@@ -27,8 +27,8 @@ SOFTWARE.
 #include <QGraphicsScene>
 
 class DiceItem;
-class FieldItem;
-class SpawnItem;
+class TileItem;
+class BaseItem;
 class ArrowItem;
 class HomeItem;
 class PlayerItem;
@@ -39,10 +39,8 @@ class BoardScene : public QGraphicsScene
 public:
 	explicit BoardScene(QObject *parent = nullptr);
 
-	bool canBringIn() const;
-	int currentPlayerId() const;
-	void setCurrentPlayerId(int currentPlayerId);
-    void setCurrentPlayerText(const QString &str);
+	void highlightPlayer(int playerId);
+	void setPlayerText(int playerId, const QString &str);
 
 	void setScore(int value);
 
@@ -51,26 +49,25 @@ public:
 	void updateBoard(const QJsonObject &json);
 
 public slots:
-	void enableBringIn(bool canBringIn);
-	void changePawnCount(int playerId, int pawnCount);
-	void highlightFields(const QList<int> &moves);
+	void updateArrows(bool canBringIn);
+    void showMoves(const QList<int> &moves);
 
 private:
 	void createPath();
-	void createIslands();
-	void createHomes();
-	void createFields();
+	void createBaseAreas();
+	void createHomeAreas();
+    void createTiles();
     void createPlayers();
 	int playerColor(int playerId) const;
+	bool isCurrentArrow(ArrowItem *arrow) const;
+	bool haveSameIndex(PlayerItem *player, ArrowItem *arrow) const;
 
-	QList<FieldItem *> _fieldItems;
-	QList<SpawnItem *> _spawnItems;
+	DiceItem *_diceItem;
+	QList<TileItem *> _tileItems;
+	QList<BaseItem *> _baseItems;
+	QList<HomeItem *> _homeItems;
 	QList<ArrowItem *> _arrowItems;
 	QList<PlayerItem *> _playerItems;
-	QList<HomeItem *> _homeItems;
-	DiceItem *_diceItem;
-	int _currentPlayerId;
-	bool _canBringPawnIn;
 };
 
 #endif // BOARDSCENE_H

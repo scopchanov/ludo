@@ -23,8 +23,8 @@ SOFTWARE.
 
 #include "BoardScene.h"
 #include "DiceItem.h"
-#include "FieldItem.h"
-#include "SpawnItem.h"
+#include "TileItem.h"
+#include "BaseItem.h"
 #include "ArrowItem.h"
 #include "HomeItem.h"
 #include "PlayerItem.h"
@@ -33,16 +33,14 @@ SOFTWARE.
 
 BoardScene::BoardScene(QObject *parent) :
 	QGraphicsScene{parent},
-	_diceItem{new DiceItem()},
-	_currentPlayerId{0},
-	_canBringPawnIn{false}
+	_diceItem{new DiceItem()}
 {
 	setSceneRect(-50, -50, 860, 860);
 
 	createPath();
-	createIslands();
-	createFields();
-	createHomes();
+	createBaseAreas();
+	createHomeAreas();
+    createTiles();
 	createPlayers();
 
 	_diceItem->setPos(380, 380);
@@ -50,29 +48,17 @@ BoardScene::BoardScene(QObject *parent) :
 	addItem(_diceItem);
 }
 
-bool BoardScene::canBringIn() const
+void BoardScene::highlightPlayer(int playerId)
 {
-	return _canBringPawnIn;
-}
-
-int BoardScene::currentPlayerId() const
-{
-	return _currentPlayerId;
-}
-
-void BoardScene::setCurrentPlayerId(int currentPlayerId)
-{
-	_currentPlayerId = currentPlayerId;
-
-	_playerItems.at(_currentPlayerId)->clearText();
+	_playerItems.at(playerId)->clearText();
 
 	for (auto *player : std::as_const(_playerItems))
-		player->setHighlighted(player->number() == _currentPlayerId);
+		player->setHighlighted(player->number() == playerId);
 }
 
-void BoardScene::setCurrentPlayerText(const QString &str)
+void BoardScene::setPlayerText(int playerId, const QString &str)
 {
-	_playerItems.at(_currentPlayerId)->setText(str);
+	_playerItems.at(playerId)->setText(str);
 }
 
 void BoardScene::setScore(int value)
@@ -82,8 +68,8 @@ void BoardScene::setScore(int value)
 
 void BoardScene::clearHighlight()
 {
-	for (auto *field : std::as_const(_fieldItems))
-		field->setHighlighted(false);
+	for (auto *tile : std::as_const(_tileItems))
+		tile->setHighlighted(false);
 }
 
 void BoardScene::clearPlayersText()
@@ -94,45 +80,39 @@ void BoardScene::clearPlayersText()
 
 void BoardScene::updateBoard(const QJsonObject &json)
 {
-	for (auto *field : std::as_const(_fieldItems))
-		field->setPawnColor(QColor());
+	for (auto *tile : std::as_const(_tileItems))
+		tile->setPawnColor(QColor());
 
 	const QJsonArray &track{json.value("track").toArray()};
 	const QJsonArray &homeAreas{json.value("homeAreas").toArray()};
+	QList<int> k{0, 0, 0, 0};
 
 	for (const auto &value : track) {
-		const QJsonObject &field{value.toObject()};
-		int n{field.value("index").toInt()};
-		int playerId{field.value("player").toInt()};
+		const QJsonObject &jsonTile{value.toObject()};
+		int index{jsonTile.value("index").toInt()};
+		int playerId{jsonTile.value("player").toInt()};
 
-		_fieldItems.at(n)->setPawnColor(_spawnItems.at(playerId)->color());
+		_tileItems.at(index)->setPawnColor(_baseItems.at(playerId)->color());
+		k[playerId]++;
 	}
 
 	for (int n{0}; n < _homeItems.count(); n++)
 		_homeItems.at(n)->updateItem(homeAreas.at(n).toArray());
+
+	for (int n{0}; n < k.count(); n++)
+		_baseItems.at(n)->setPawnCount(4 - k.at(n));
 }
 
-void BoardScene::enableBringIn(bool canBringIn)
+void BoardScene::updateArrows(bool canBringIn)
 {
-	_canBringPawnIn = canBringIn;
-
-	for (auto *arrow : std::as_const(_arrowItems)) {
-		bool en{_canBringPawnIn && arrow->number() == _currentPlayerId};
-
-		arrow->setHighlighted(en);
-		arrow->setVisible(en);
-	}
+	for (auto *arrow : std::as_const(_arrowItems))
+		arrow->setVisible(canBringIn && isCurrentArrow(arrow));
 }
 
-void BoardScene::highlightFields(const QList<int> &moves)
+void BoardScene::showMoves(const QList<int> &moves)
 {
 	for (const auto &move : moves)
-		_fieldItems.at(move)->setHighlighted(true);
-}
-
-void BoardScene::changePawnCount(int playerId, int pawnCount)
-{
-	_spawnItems.at(playerId)->setPawnCount(pawnCount);
+		_tileItems.at(move)->setHighlighted(true);
 }
 
 void BoardScene::createPath()
@@ -145,21 +125,20 @@ void BoardScene::createPath()
 			   }, QPen(QBrush(0x424242), 4));
 }
 
-void BoardScene::createIslands()
+void BoardScene::createBaseAreas()
 {
 	for (int n{0}; n < 4; n++) {
-		auto *island{new SpawnItem(n, playerColor(n))};
+		auto *island{new BaseItem(n, playerColor(n))};
 
 		island->setPos(630*(n / 2) + 65, -630*(n / 2 != n % 2) + 695);
 		island->setRotation(90*n);
 
 		addItem(island);
 
-		_spawnItems.append(island);
+		_baseItems.append(island);
 
 		auto *arrow{new ArrowItem()};
 
-		arrow->setNumber(n);
 		arrow->setColor(island->color());
 		arrow->setRotation(90*n);
 		arrow->setVisible(false);
@@ -185,10 +164,10 @@ void BoardScene::createIslands()
 	}
 }
 
-void BoardScene::createHomes()
+void BoardScene::createHomeAreas()
 {
 	for (int n{0}; n < 4; n++) {
-		auto *home{new HomeItem(_spawnItems.at(n)->color())};
+		auto *home{new HomeItem(_baseItems.at(n)->color())};
 		double pi{3.1415};
 
 		home->setPos(175*round(sin((4 - n)*pi/2)) + 380,
@@ -201,7 +180,7 @@ void BoardScene::createHomes()
 	}
 }
 
-void BoardScene::createFields()
+void BoardScene::createTiles()
 {
 	const QList<int> &directions{2, 3, 2, 1, 2, 1, 0, 1, 0, 3, 0, 3};
 	int x{310};
@@ -209,18 +188,18 @@ void BoardScene::createFields()
 	int k{-1};
 
 	for (int n{0}; n < 40; n++) {
-		auto *field{new FieldItem()};
+		auto *field{new TileItem()};
 		int mod10{n % 10};
 
 		field->setNumber(n);
 		field->setPos(x, y);
 
 		if (!mod10)
-			field->setColor(_spawnItems.at(n / 10)->color());
+			field->setColor(_baseItems.at(n / 10)->color());
 
 		addItem(field);
 
-		_fieldItems.append(field);
+		_tileItems.append(field);
 
 		if (!(mod10 % 4))
 			k++;
@@ -266,4 +245,18 @@ void BoardScene::createPlayers()
 int BoardScene::playerColor(int playerId) const
 {
 	return QList<int>{0x1976D2, 0xFBC02D, 0x388E3C, 0xD32F2F}.at(playerId);
+}
+
+bool BoardScene::isCurrentArrow(ArrowItem *arrow) const
+{
+	for (auto *player : _playerItems)
+		if (player->isHighlighted() && haveSameIndex(player, arrow))
+			return true;
+
+	return false;
+}
+
+bool BoardScene::haveSameIndex(PlayerItem *player, ArrowItem *arrow) const
+{
+	return _playerItems.indexOf(player) == _arrowItems.indexOf(arrow);
 }

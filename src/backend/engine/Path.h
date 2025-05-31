@@ -21,32 +21,47 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef FIELDITEM_H
-#define FIELDITEM_H
+#ifndef PATH_H
+#define PATH_H
 
-#include <QGraphicsEllipseItem>
+#include <QObject>
 
-class FieldItem : public QGraphicsEllipseItem
+class Tile;
+class Pawn;
+
+class Path : public QObject
 {
+	Q_OBJECT
 public:
-	explicit FieldItem(QGraphicsItem *parent = nullptr);
+	explicit Path(int tileCount, QObject *parent = nullptr);
 
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *,
-			   QWidget *) override;
+	Pawn *pawnAt(int tileIndex) const;
+	bool putPawnBackAt(Pawn *pawn, int tileIndex);
 
-	int number() const;
-	void setNumber(int n);
-	bool isHighlighted() const;
-	void setHighlighted(bool value);
-	const QColor &color() const;
-	void setColor(const QColor &color);
-	void setPawnColor(const QColor &color);
-	int type() const override;
+	Tile *tile(int n) const;
+	int tileCount() const;
+	bool canBringPawnIn(Pawn *pawn, int tileIndex);
+	bool canMove(int playerId, int srcTileIndex, int steps) const;
+	
+	int distance(int fromTileIndex, int toTileIndex);
+
+	bool bringPawnIn(Pawn *pawn, int tileIndex);
+	bool movePawn(int playerId, int srcTileIndex, int steps);
+	Pawn *takePawn(int tileIndex);
+	void reset();
 
 private:
-	int _number;
-	bool _highlighted;
-	QColor _pawnColor;
+	bool occupy(Pawn *pawn, Tile *tile);
+	bool canOccupy(Pawn *pawn, Tile *tile) const;
+	bool isFullyOccupied() const;
+	int wrappedIndex(int index) const;
+	bool isValidTile(int index) const;
+
+	int _pawnCount;
+	QList<Tile *> _tiles;
+
+signals:
+    void pawnBusted(Pawn *pawn);
 };
 
-#endif // FIELDITEM_H
+#endif // PATH_H
