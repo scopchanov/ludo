@@ -24,6 +24,7 @@ SOFTWARE.
 #include "Game.h"
 #include "Dice.h"
 #include "Board.h"
+#include "BoardSerializer.h"
 #include <QJsonObject>
 #include <QJsonArray>
 
@@ -41,14 +42,15 @@ QJsonObject Game::state() const
 {
 	return QJsonObject{{"currentPlayer", _currentplayer},
 					   {"score", _dice->score()},
-					   {"board", _board->state()}};
+					   {"board", BoardSerializer::toJson(_board)}};
 }
 
 void Game::setState(const QJsonObject &json)
 {
+	BoardSerializer::fromJson(_board, json.value("board").toObject());
+
 	_currentplayer = json.value("currentPlayer").toInt();
 	_dice->setScore(json.value("score").toInt());
-	_board->setState(json.value("board").toObject());
 
 	emit stateChanged();
 	advance();

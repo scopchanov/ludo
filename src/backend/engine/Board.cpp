@@ -29,75 +29,29 @@ SOFTWARE.
 #include <QJsonObject>
 
 #define PLAYER_OFFSET 10
-#define PLAYERS_COUNT 4
+#define PLAYER_COUNT 4
 #define PAWNS_PRO_PLAYER 4
 
 Board::Board(QObject *parent) :
 	QObject{parent},
-	_track{new Path(PLAYERS_COUNT*PLAYER_OFFSET, this)}
+	_track{new Path(PLAYER_COUNT*PLAYER_OFFSET, this)}
 {
-	for (int n{0}; n < PLAYERS_COUNT; n++) {
-		_homeAreas.append(new Path(PAWNS_PRO_PLAYER, this));
+	for (int n{0}; n < PLAYER_COUNT; n++) {
 		_baseAreas.append(new Base(this));
+		_homeAreas.append(new Path(PAWNS_PRO_PLAYER, this));
 	}
 
 	connect(_track, &Path::pawnBusted, this, &Board::onPawnBusted);
 }
 
-QJsonObject Board::state() const
+Base *Board::baseArea(int player) const
 {
-	QJsonArray baseAreas;
-	QJsonArray homeAreas;
-	QJsonArray track;
-
-	for (size_t m{0}; m < PLAYERS_COUNT; m++) {
-		auto *baseArea{_baseAreas.at(m)};
-		auto *homeArea{_homeAreas.at(m)};
-		QJsonArray home;
-
-		for (int tileIndex{0}; tileIndex < homeArea->tileCount(); tileIndex++) {
-			Player player{homeArea->playerAt(tileIndex)};
-
-			if (player.has_value())
-				home.append(QJsonObject{{"index", tileIndex},
-										{"player", player.value()}});
-		}
-
-		baseAreas.append(baseArea->pawnCount());
-		homeAreas.append(home);
-	}
-
-	for (int tileIndex{0}; tileIndex < _track->tileCount(); tileIndex++) {
-		Player player{_track->playerAt(tileIndex)};
-
-		if (player.has_value())
-			track.append(QJsonObject{{"index", tileIndex},
-									 {"player", player.value()}});
-	}
-
-	return QJsonObject{{"baseAreas", baseAreas},
-					   {"homeAreas", homeAreas},
-					   {"track", track}};
+	return isValidPlayer(player) ? _baseAreas.at(player) : nullptr;
 }
 
-void Board::setState(const QJsonObject &json)
+Path *Board::homeArea(int player) const
 {
-	const QJsonArray &baseAreas{json.value("baseAreas").toArray()};
-	const QJsonArray &homeAreas{json.value("homeAreas").toArray()};
-	const QJsonArray &track{json.value("track").toArray()};
-
-	for (int n{}; n < baseAreas.count(); n++)
-		_baseAreas.at(n)->setPawnCount(baseAreas.at(n).toInt());
-
-	for (int n{0}; n < homeAreas.count(); n++) {
-		const QJsonArray &homeAreaSettings{homeAreas.at(n).toArray()};
-
-		for (const auto &tileSettings : homeAreaSettings)
-			setPathTileState(_homeAreas.at(n), tileSettings.toObject());
-	}
-
-	for (const auto &tileSettings : track)
-		setPathTileState(_track, tileSettings.toObject());
+	return isValidPlayer(player) ? _homeAreas.at(player) : nullptr;
 }
 
 Path *Board::track() const
@@ -126,6 +80,11 @@ QList<int> Board::findPossibleMoves(int player, int score)
 	return moves;
 }
 
+int Board::entryTileIndex(int player) const
+{
+	return player*PLAYER_OFFSET;
+}
+
 bool Board::bringPawnIn(int player)
 {
 	if (!canBringIn(player))
@@ -138,27 +97,7 @@ bool Board::bringPawnIn(int player)
 
 bool Board::movePawn(int player, int srcTileIndex, int steps)
 {
-	return _track->movePawn(player, srcTileIndex, steps);
-}
-
-bool Board::takePawnOut(int tileIndex, int score)
-{
-	// auto *pawn{_track->takePawn(tileIndex)};
-
-	// if (!pawn)
-	// 	return false;
-
-	// auto *home{_homeAreas.at(pawn->player())};
-
-	// if (!home->bringPawnIn(pawn, wrappedIndex(pawn->trip() + score)))
-	// 	return false;
-
-	// if (home->isFull())
-	// 	emit playerEscaped(pawn->player());
-
-	// return true;
-
-	return false;
+	return MoveAction(this, player, srcTileIndex, steps).trigger();
 }
 
 void Board::init()
@@ -178,19 +117,6 @@ void Board::clear()
 		home->clear();
 }
 
-void Board::setPathTileState(Path *path, const QJsonObject &json)
-{
-	int player{json.value("player").toInt()};
-	int index{json.value("index").toInt()};
-
-	path->setPlayerAt(player, index);
-}
-
-int Board::entryTileIndex(int player) const
-{
-	return player*PLAYER_OFFSET;
-}
-
 QList<QJsonObject> Board::toObjects(const QJsonArray& array)
 {
 	QList<QJsonObject> jsonObjects;
@@ -202,6 +128,11 @@ QList<QJsonObject> Board::toObjects(const QJsonArray& array)
 			jsonObjects.append(value.toObject());
 
 	return jsonObjects;
+}
+
+bool Board::isValidPlayer(int player) const
+{
+	return player >= 0 && player < PLAYER_COUNT;
 }
 
 void Board::onPawnBusted(int player)

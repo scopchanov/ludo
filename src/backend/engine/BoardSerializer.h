@@ -21,48 +21,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef BOARDSERIALIZER_H
+#define BOARDSERIALIZER_H
 
-#include <QObject>
+#include <QJsonObject>
 
+class Board;
 class Path;
-class Pawn;
-class Base;
 
-class Board : public QObject
+class BoardSerializer
 {
-	Q_OBJECT
 public:
-	explicit Board(QObject *parent = nullptr);
+	explicit BoardSerializer();
 
-	Base *baseArea(int player) const;
-	Path *homeArea(int player) const;
-	Path *track() const;
-
-	bool canBringIn(int player) const;
-	QList<int> findPossibleMoves(int player, int score);
-	int entryTileIndex(int player) const;
-
-	bool bringPawnIn(int player);
-	bool movePawn(int player, int srcTileIndex, int steps);
-
-	void init();
-	void clear();
+	static QJsonObject toJson(Board *board);
+	static void fromJson(Board *board, const QJsonObject &json);
 
 private:
-	QList<QJsonObject> toObjects(const QJsonArray &array);
-	bool isValidPlayer(int player) const;
-
-	Path *_track;
-	QList<Base *> _baseAreas;
-	QList<Path *> _homeAreas;
-
-private slots:
-	void onPawnBusted(int player);
-
-signals:
-	void playerEscaped(int player);
+	static void setPathTileState(Path *path, const QJsonObject &json);
 };
 
-#endif // BOARD_H
+#endif // BOARDSERIALIZER_H

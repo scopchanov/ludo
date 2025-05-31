@@ -54,29 +54,45 @@ bool MoveAction::trigger()
 
 bool MoveAction::canMove() const
 {
-	return board()->_track->canMove(_player, _srcTileIndex, _steps);
+	return board()->track()->canMove(_player, _srcTileIndex, _steps);
 }
 
 bool MoveAction::canEscape() const
 {
     // TODO: Implement me
+
 	return false;//board()->_homeAreas.at(_player)->canBringPawnIn();
 }
 
 void MoveAction::movePawn()
 {
-	board()->_track->movePawn(_player, _srcTileIndex, _steps);
+	board()->track()->movePawn(_player, _srcTileIndex, _steps);
 }
 
 void MoveAction::takePawnOut()
 {
     // TODO: Implement me
+
+	// auto *pawn{_track->takePawn(tileIndex)};
+
+	// if (!pawn)
+	// 	return false;
+
+	// auto *home{_homeAreas.at(pawn->player())};
+
+	// if (!home->bringPawnIn(pawn, wrappedIndex(pawn->trip() + score)))
+	// 	return false;
+
+	// if (home->isFull())
+	// 	emit playerEscaped(pawn->player());
+
+	// return true;
 }
 
 bool MoveAction::exceedsTrackLength() const
 {
 	int entryTileIndex{board()->entryTileIndex(_player)};
-	int trip{board()->_track->distance(entryTileIndex, _srcTileIndex)};
+	int trip{board()->track()->distance(entryTileIndex, _srcTileIndex)};
 
-	return trip + _steps >= board()->_track->tileCount();
+	return trip + _steps >= board()->track()->tileCount();
 }

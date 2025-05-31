@@ -28,6 +28,7 @@ SOURCES += \
     backend/engine/AbstractGameAction.cpp \
     backend/engine/Base.cpp \
     backend/engine/Board.cpp \
+    backend/engine/BoardSerializer.cpp \
     backend/engine/Dice.cpp \
     backend/engine/Game.cpp \
     backend/engine/MoveAction.cpp \
@@ -52,6 +53,7 @@ HEADERS += \
     backend/engine/AbstractGameAction.h \
     backend/engine/Base.h \
     backend/engine/Board.h \
+    backend/engine/BoardSerializer.h \
     backend/engine/Dice.h \
     backend/engine/Game.h \
     backend/engine/MoveAction.h \
