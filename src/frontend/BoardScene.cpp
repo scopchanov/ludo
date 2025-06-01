@@ -35,15 +35,17 @@ BoardScene::BoardScene(QObject *parent) :
 	QGraphicsScene{parent},
 	_diceItem{new DiceItem()}
 {
-	setSceneRect(-50, -50, 860, 860);
+	setSceneRect(-450, -450, 900, 900);
+
+	for (int n{0}; n < 4; n++) {
+		createBaseArea(n);
+		createHomeArea(n);
+		createPlayer(n);
+		createArrow(n);
+	}
 
 	createPath();
-	createBaseAreas();
-	createHomeAreas();
-    createTiles();
-	createPlayers();
-
-	_diceItem->setPos(380, 380);
+	createTiles();
 
 	addItem(_diceItem);
 }
@@ -120,130 +122,115 @@ void BoardScene::showMoves(const QList<int> &moves)
 		_tileItems.at(move)->setHighlighted(true);
 }
 
+void BoardScene::createBaseArea(int n)
+{
+	auto *base{new BaseItem(n, playerColor(n))};
+	int distance{315};
+	int x{n < 2 ? -distance : distance};
+	int y{n % 3 ? -distance : distance};
+
+	base->setPos(x, y);
+	base->setRotation(90*n);
+
+	addItem(base);
+
+	_baseItems.append(base);
+}
+
+void BoardScene::createHomeArea(int n)
+{
+	auto *home{new HomeItem(_baseItems.at(n)->color())};
+	double pi{3.1415};
+
+	home->setPos(175*round(sin((4 - n)*pi/2)), 175*round(cos((4 - n)*pi/2)));
+	home->setRotation(90*n);
+
+	addItem(home);
+
+	_homeItems.append(home);
+}
+
+void BoardScene::createPlayer(int n)
+{
+	auto *player{new PlayerItem()};
+	int distance{175};
+	int x{n < 2 ? -distance : distance};
+	int y{n % 3 ? -distance : distance};
+
+	player->setNumber(n);
+	player->setColor(playerColor(n));
+	player->setPos(x, y);
+
+	addItem(player);
+	_playerItems.append(player);
+}
+
+void BoardScene::createArrow(int n)
+{
+	auto *arrow{new ArrowItem()};
+
+	arrow->setColor(playerColor(n));
+	arrow->setRotation(90*n);
+	arrow->setVisible(false);
+
+	switch (n) {
+	case 0:
+		arrow->setPos(-145, 350);
+		break;
+	case 1:
+		arrow->setPos(-350, -145);
+		break;
+	case 2:
+		arrow->setPos(145, -350);
+		break;
+	case 3:
+		arrow->setPos(350, 145);
+		break;
+	}
+
+	addItem(arrow);
+
+	_arrowItems.append(arrow);
+}
+
 void BoardScene::createPath()
 {
 	addPolygon(QList<QPointF>{
-				   QPoint(310, 730), QPoint(310, 450), QPoint(30, 450),
-				   QPoint(30, 310), QPoint(310, 310), QPoint(310, 30),
-				   QPoint(450, 30), QPoint(450, 310), QPoint(730, 310),
-				   QPoint(730, 450), QPoint(450, 450), QPoint(450, 730)
+				   QPoint(-70, 350), QPoint(-70, 70), QPoint(-350, 70),
+				   QPoint(-350, -70), QPoint(-70, -70), QPoint(-70, -350),
+				   QPoint(70, -350), QPoint(70, -70), QPoint(350, -70),
+				   QPoint(350, 70), QPoint(70, 70), QPoint(70, 350)
 			   }, QPen(QBrush(0x424242), 4));
-}
-
-void BoardScene::createBaseAreas()
-{
-	for (int n{0}; n < 4; n++) {
-		auto *island{new BaseItem(n, playerColor(n))};
-
-		island->setPos(630*(n / 2) + 65, -630*(n / 2 != n % 2) + 695);
-		island->setRotation(90*n);
-
-		addItem(island);
-
-		_baseItems.append(island);
-
-		auto *arrow{new ArrowItem()};
-
-		arrow->setColor(island->color());
-		arrow->setRotation(90*n);
-		arrow->setVisible(false);
-
-		switch (n) {
-		case 0:
-			arrow->setPos(235, 730);
-			break;
-		case 1:
-			arrow->setPos(30, 235);
-			break;
-		case 2:
-			arrow->setPos(525, 30);
-			break;
-		case 3:
-			arrow->setPos(730, 525);
-			break;
-		}
-
-		addItem(arrow);
-
-		_arrowItems.append(arrow);
-	}
-}
-
-void BoardScene::createHomeAreas()
-{
-	for (int n{0}; n < 4; n++) {
-		auto *home{new HomeItem(_baseItems.at(n)->color())};
-		double pi{3.1415};
-
-		home->setPos(175*round(sin((4 - n)*pi/2)) + 380,
-					 175*round(cos((4 - n)*pi/2)) + 380);
-		home->setRotation(90*n);
-
-		addItem(home);
-
-		_homeItems.append(home);
-	}
 }
 
 void BoardScene::createTiles()
 {
 	const QList<int> &directions{2, 3, 2, 1, 2, 1, 0, 1, 0, 3, 0, 3};
-	int x{310};
-	int y{730};
+	int x{-70};
+	int y{350};
 	int k{-1};
 
 	for (int n{0}; n < 40; n++) {
-		auto *field{new TileItem()};
+		auto *tile{new TileItem()};
 		int mod10{n % 10};
 
-		field->setNumber(n);
-		field->setPos(x, y);
-
 		if (!mod10)
-			field->setColor(_baseItems.at(n / 10)->color());
+			tile->setColor(_baseItems.at(n / 10)->color());
 
-		addItem(field);
+		tile->setNumber(n);
+		tile->setPos(x, y);
 
-		_tileItems.append(field);
+		addItem(tile);
+
+		_tileItems.append(tile);
 
 		if (!(mod10 % 4))
 			k++;
 
 		int direction{directions.at(k)};
 
-		x = direction == 1 ? x + 70 : direction == 3 ? x - 70 : x;
-		y = direction == 0 ? y + 70 : direction == 2 ? y - 70 : y;
-	}
-}
-
-void BoardScene::createPlayers()
-{
-	for (int n{0}; n < 4; n++) {
-		auto *player{new PlayerItem()};
-
-		player->setNumber(n);
-		player->setColor(playerColor(n));
-
-		if (!n)
-			player->setHighlighted(true);
-
-		addItem(player);
-		_playerItems.append(player);
-
-		switch (n) {
-		case 0:
-			player->setPos(205, 555);
-			break;
-		case 1:
-			player->setPos(205, 205);
-			break;
-		case 2:
-			player->setPos(555, 205);
-			break;
-		case 3:
-			player->setPos(555, 555);
-			break;
-		}
+		x += direction == 1 ? 70 : direction == 3 ? -70 : 0;
+		y += direction == 0 ? 70 : direction == 2 ? -70 : 0;
 	}
 }
 

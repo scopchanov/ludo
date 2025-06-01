@@ -43,7 +43,7 @@ public:
 
 private:
 	int _player;
-	QList<TileItem *> _fields;
+	QList<TileItem *> _tiles;
 };
 
 #endif // BASEITEM_H

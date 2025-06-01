@@ -54,11 +54,12 @@ public slots:
     void showMoves(const QList<int> &moves);
 
 private:
+	void createBaseArea(int n);
+	void createHomeArea(int n);
+	void createPlayer(int n);
+	void createArrow(int n);
 	void createPath();
-	void createBaseAreas();
-	void createHomeAreas();
     void createTiles();
-    void createPlayers();
 	int playerColor(int playerId) const;
 	bool isCurrentArrow(ArrowItem *arrow) const;
 	bool haveSameIndex(PlayerItem *player, ArrowItem *arrow) const;

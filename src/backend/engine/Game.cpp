@@ -82,7 +82,7 @@ bool Game::canBringIn() const
 {
 	int player{_ptr->currentplayer};
 
-	return _ptr->rolledSix() && BringInAction(_ptr->board, player).isPossible();
+	return BringInAction(_ptr->board, player, _ptr->dice->score()).isPossible();
 }
 
 QList<int> Game::possibleMoves()
@@ -105,7 +105,8 @@ void Game::rollDice()
 
 void Game::bringPawnIn()
 {
-	if (!BringInAction(_ptr->board, _ptr->currentplayer).trigger())
+	if (!BringInAction(_ptr->board, _ptr->currentplayer,
+					   _ptr->dice->score()).trigger())
 		return;
 
 	emit stateChanged();

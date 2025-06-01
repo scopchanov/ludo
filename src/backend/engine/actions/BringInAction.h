@@ -29,7 +29,7 @@ SOFTWARE.
 class BringInAction : public AbstractGameAction
 {
 public:
-	explicit BringInAction(Board *board, int player);
+	explicit BringInAction(Board *board, int player, int score);
 
 	bool isPossible() const override;
 	bool trigger() override;
@@ -37,6 +37,8 @@ public:
 private:
 	bool hasPawnsLeft() const;
 	bool canBringPawnOnTrack() const;
+
+	int _score;
 };
 
 #endif // BRINGINACTION_H

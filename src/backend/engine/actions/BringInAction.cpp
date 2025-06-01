@@ -26,15 +26,16 @@ SOFTWARE.
 #include "../Base.h"
 #include "../Path.h"
 
-BringInAction::BringInAction(Board *board, int player) :
-	AbstractGameAction{board, player}
+BringInAction::BringInAction(Board *board, int player, int score) :
+	AbstractGameAction{board, player},
+	_score{score}
 {
 
 }
 
 bool BringInAction::isPossible() const
 {
-	return hasPawnsLeft() ? canBringPawnOnTrack() : false;
+	return _score == 6 && hasPawnsLeft() ? canBringPawnOnTrack() : false;
 }
 
 bool BringInAction::trigger()

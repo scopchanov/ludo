@@ -95,8 +95,8 @@ void TileItem::paint(QPainter *painter,
 		painter->drawEllipse(rect().adjusted(10, 10, -10, -10));
 	}
 
-	painter->drawText(rect(), Qt::AlignCenter | Qt::TextSingleLine,
-					  QString::number(_number));
+	// painter->drawText(rect(), Qt::AlignCenter | Qt::TextSingleLine,
+	// 				  QString::number(_number));
 
 	painter->restore();
 }
