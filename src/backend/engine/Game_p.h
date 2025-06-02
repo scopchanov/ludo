@@ -25,7 +25,7 @@ SOFTWARE.
 #define GAME_P_H
 
 #include <QtCore/qglobal.h>
-#include <QList>
+#include <QJsonObject>
 
 class Game;
 class Board;
@@ -51,6 +51,7 @@ class GamePrivate
 	QList<int> winners;
 
 	friend class Game;
+	friend class GameSerializer;
 };
 
 #endif // GAME_P_H

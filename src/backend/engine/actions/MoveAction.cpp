@@ -41,7 +41,7 @@ bool MoveAction::isPossible() const
 	return exceedsTrackLength() ? canEscape() : canMove();
 }
 
-bool MoveAction::trigger()
+bool MoveAction::take()
 {
 	if (!isPossible())
 		return false;

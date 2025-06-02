@@ -59,6 +59,8 @@ signals:
 	void nextTurn(int player);
 	void playerEscaped(int player);
 	void gameOver();
+
+	friend class BoardSerializer;
 };
 
 #endif // GAME_H

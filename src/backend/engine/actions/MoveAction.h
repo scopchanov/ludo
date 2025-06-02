@@ -35,7 +35,7 @@ public:
 	explicit MoveAction(Board *board, int player, int srcTileIndex, int steps);
 
 	bool isPossible() const override;
-	bool trigger() override;
+	bool take() override;
 
 private:	
 	void movePawn();

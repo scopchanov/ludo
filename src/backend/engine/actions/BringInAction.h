@@ -29,16 +29,14 @@ SOFTWARE.
 class BringInAction : public AbstractGameAction
 {
 public:
-	explicit BringInAction(Board *board, int player, int score);
+	explicit BringInAction(Board *board, int player);
 
 	bool isPossible() const override;
-	bool trigger() override;
+	bool take() override;
 
 private:
 	bool hasPawnsLeft() const;
 	bool canBringPawnOnTrack() const;
-
-	int _score;
 };
 
 #endif // BRINGINACTION_H

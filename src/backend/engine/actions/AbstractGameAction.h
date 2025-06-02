@@ -32,7 +32,7 @@ public:
 	explicit AbstractGameAction(Board *board, int player);
 
 	virtual bool isPossible() const = 0;
-	virtual bool trigger() = 0;
+	virtual bool take() = 0;
 
 protected:
 	Board *board() const;

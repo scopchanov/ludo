@@ -34,7 +34,7 @@ SOURCES += \
 	backend/engine/actions/AbstractGameAction.cpp \
 	backend/engine/actions/BringInAction.cpp \
 	backend/engine/actions/MoveAction.cpp \
-	backend/engine/utils/BoardSerializer.cpp \
+	backend/engine/utils/GameSerializer.cpp \
     frontend/ArrowItem.cpp \
     frontend/BaseItem.cpp \
     frontend/BoardScene.cpp \
@@ -61,7 +61,7 @@ HEADERS += \
 	backend/engine/actions/AbstractGameAction.h \
 	backend/engine/actions/BringInAction.h \
 	backend/engine/actions/MoveAction.h \
-	backend/engine/utils/BoardSerializer.h \
+	backend/engine/utils/GameSerializer.h \
     frontend/ArrowItem.h \
     frontend/BaseItem.h \
     frontend/BoardScene.h \

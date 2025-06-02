@@ -28,7 +28,7 @@ SOFTWARE.
 #include "Path.h"
 #include "actions/BringInAction.h"
 #include "actions/MoveAction.h"
-#include "utils/BoardSerializer.h"
+#include "utils/GameSerializer.h"
 #include <QJsonObject>
 #include <QJsonArray>
 
@@ -46,28 +46,12 @@ Game::~Game()
 
 QJsonObject Game::state() const
 {
-	QJsonArray winners;
-
-	for (auto winner : std::as_const(_ptr->winners))
-		winners.append(winner);
-
-	return QJsonObject{{"currentPlayer", _ptr->currentplayer},
-					   {"score", _ptr->dice->score()},
-					   {"board", BoardSerializer::toJson(_ptr->board)},
-					   {"winners", winners}};
+	return GameSerializer(_ptr).serialize();
 }
 
 void Game::setState(const QJsonObject &json)
 {
-	const QJsonArray &winners{json.value("winners").toArray()};
-
-	BoardSerializer::fromJson(_ptr->board, json.value("board").toObject());
-
-	_ptr->currentplayer = json.value("currentPlayer").toInt();
-	_ptr->dice->setScore(json.value("score").toInt());
-
-	for (auto winner : winners)
-		_ptr->winners.append(winner.toInt());
+	GameSerializer(_ptr).deserialize(json);
 
 	emit stateChanged();
 	_ptr->advance();
@@ -80,9 +64,9 @@ int Game::currentplayer() const
 
 bool Game::canBringIn() const
 {
-	int player{_ptr->currentplayer};
+	BringInAction action(_ptr->board, _ptr->currentplayer);
 
-	return BringInAction(_ptr->board, player, _ptr->dice->score()).isPossible();
+	return _ptr->rolledSix() && action.isPossible();
 }
 
 QList<int> Game::possibleMoves()
@@ -105,8 +89,9 @@ void Game::rollDice()
 
 void Game::bringPawnIn()
 {
-	if (!BringInAction(_ptr->board, _ptr->currentplayer,
-					   _ptr->dice->score()).trigger())
+	BringInAction action(_ptr->board, _ptr->currentplayer);
+
+	if (!_ptr->rolledSix() || !action.take())
 		return;
 
 	emit stateChanged();
@@ -116,9 +101,9 @@ void Game::bringPawnIn()
 void Game::movePawn(int srcTileIndex)
 {
 	int score{_ptr->dice->score()};
-	int player{_ptr->currentplayer};
+	MoveAction action(_ptr->board, _ptr->currentplayer, srcTileIndex, score);
 
-	if (!MoveAction(_ptr->board, player, srcTileIndex, score).trigger())
+	if (!action.take())
 		return;
 
 	emit stateChanged();

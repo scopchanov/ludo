@@ -21,24 +21,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef BOARDSERIALIZER_H
-#define BOARDSERIALIZER_H
+#ifndef GAMESERIALIZER_H
+#define GAMESERIALIZER_H
 
 #include <QJsonObject>
 
+class GamePrivate;
 class Board;
 class Path;
 
-class BoardSerializer
+class GameSerializer
 {
 public:
-	explicit BoardSerializer();
+	explicit GameSerializer(GamePrivate *game_p);
 
-	static QJsonObject toJson(Board *board);
-	static void fromJson(Board *board, const QJsonObject &json);
+	QJsonObject serialize() const;
+	void deserialize(const QJsonObject &json);
 
 private:
-	static void setPathTileState(Path *path, const QJsonObject &json);
+	QJsonObject serializeBoard() const;
+	QJsonArray serializeWinners() const;
+	QJsonArray serializeBaseAreas() const;
+	QJsonArray serializeHomeAreas() const;
+	QJsonArray serializePath(Path *path) const;
+	void deserializeBoard(const QJsonObject &json);
+	void deserializeWinners(const QJsonArray &winners);
+	void deserializeBaseAreas(const QJsonArray &baseAreas);
+	void deserializeHomeAreas(const QJsonArray &homeAreas);
+	void deserializePath(Path *path, const QJsonArray &pawns);
+
+	GamePrivate *_game_p;
 };
 
-#endif // BOARDSERIALIZER_H
+#endif // GAMESERIALIZER_H
